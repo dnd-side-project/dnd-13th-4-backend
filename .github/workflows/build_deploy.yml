@@ -7,6 +7,9 @@ on:
     branches: [ "develop" ]
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: wini-server
+
 jobs:
   build-deploy:
 
