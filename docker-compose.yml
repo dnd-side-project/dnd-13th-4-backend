@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  backend:
+    image: ${IMAGE_FULL_URL}
+    container_name: wini-server
+    restart: always
+    network_mode: host
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Seoul
+      - DOCKER_IMAGE_TAG=${IMAGE_FULL_URL}
