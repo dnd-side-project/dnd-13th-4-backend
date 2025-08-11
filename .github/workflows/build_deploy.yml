@@ -3,7 +3,12 @@ name: Build and Deploy
 on:
   push:
     branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
   workflow_dispatch:
+
+env:
+  IMAGE_NAME: wini-server
 
 jobs:
   build-deploy:
