@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+stagedFiles=$(git diff --staged --name-only)
+echo "Running spotlessApply. Formatting code..."
+./gradlew spotlessApply
+echo "$stagedFiles" | while IFS= read -r file; do
+  if [ -f "$file" ]; then
+    git add "$file"
+  fi
+done

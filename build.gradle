@@ -1,36 +1,75 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.4'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.diffplug.spotless' version '7.2.1'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+spotless {
+    java {
+        target("src/**/*.java")
+        targetExclude("**/build/**", "**/.gradle/**")
+        googleJavaFormat().reflowLongStrings()
+        importOrder()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+        formatAnnotations()
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.register('autoInstallHooks') {
+    onlyIf {
+        def hookFile = new File(rootProject.rootDir, '.git/hooks/pre-commit')
+        !hookFile.exists()
+    }
+    dependsOn 'addGitHooks'
+}
+
+tasks.register('addGitHooks', Copy) {
+    from(new File(rootProject.rootDir, '.script/pre-commit'))
+    into(new File(rootProject.rootDir, '.git/hooks'))
+    eachFile { fileCopyDetails ->
+        fileCopyDetails.mode = 0755
+    }
+    onlyIf {
+        def gitDir = new File(rootProject.rootDir, '.git')
+        gitDir.exists() && gitDir.isDirectory()
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn 'spotlessApply'
+    dependsOn 'autoInstallHooks'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
