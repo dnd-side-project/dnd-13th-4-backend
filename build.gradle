@@ -16,7 +16,8 @@ java {
 
 spotless {
     java {
-        target("**/*.java")
+        target("src/**/*.java")
+        targetExclude("**/build/**", "**/.gradle/**")
         googleJavaFormat().reflowLongStrings()
         importOrder()
         removeUnusedImports()
@@ -44,15 +45,29 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.register('autoInstallHooks') {
+    onlyIf {
+        def hookFile = new File(rootProject.rootDir, '.git/hooks/pre-commit')
+        !hookFile.exists()
+    }
+    dependsOn 'addGitHooks'
+}
+
 tasks.register('addGitHooks', Copy) {
-    from new File(rootProject.rootDir, '.script/pre-commit')
-    into { new File(rootProject.rootDir, '.git/hooks') }
-    Runtime.getRuntime().exec("chmod -R +x .git/hooks/")
+    from(new File(rootProject.rootDir, '.script/pre-commit'))
+    into(new File(rootProject.rootDir, '.git/hooks'))
+    eachFile { fileCopyDetails ->
+        fileCopyDetails.mode = 0755
+    }
+    onlyIf {
+        def gitDir = new File(rootProject.rootDir, '.git')
+        gitDir.exists() && gitDir.isDirectory()
+    }
 }
 
 tasks.named('compileJava') {
     dependsOn 'spotlessApply'
-    dependsOn 'addGitHooks'
+    dependsOn 'autoInstallHooks'
 }
 
 tasks.named('test') {
