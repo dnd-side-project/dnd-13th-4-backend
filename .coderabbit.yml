@@ -1,0 +1,36 @@
+language: ko
+
+reviews:
+  auto_review:
+    enabled: true
+    base_branches:
+      - develop
+    auto_incremental_review: true
+  poem: false
+
+  profile: 'chill'
+
+  path_filters:
+    - '!build/**'
+    - '!.gradle/**'
+    - '!.idea/**'
+    - '!**/resources/**'
+    - '!src/test/**'
+    - '!**/generated/**'
+
+path_instructions:
+  - path: 'src/**/*.java'
+    instructions:
+      ## 1. 코딩 컨벤션
+      - 클래스는 PascalCase, 함수/변수는 camelCase, 상수는 UPPER_SNAKE_CASE로 작성하세요.
+
+      ## 2. 레이어별 역할 분리 및 명명 규칙
+      - Controller 메서드 네이밍은 HTTP 요청 메서드와 관련된 동사로 시작하여, 어떤 데이터를 다루는지 명확하게 표현해야 합니다.
+      - 예시로는 getUserById, createUser, updateUser, deleteUser 등이 있습니다.
+      - Service 메서드 네이밍은 비즈니스 로직을 수행하는 기능이나 업무를 명확히 설명하는 동사로 시작해야 합니다.
+      - Service 계층에서 조회는 search를 사용합니다.
+      - Service 계층에서 새로운 객체를 생성하는 것은 create를, 어떤 결과물을 만들어내는 행위는 generate를 사용합니다.
+      - 검증 메서드는 validate로 시작하고, 단순히 검증 로직을 담고 있다면 외부에서 호출되지 않도록 private 메서드로 선언합니다.
+      - Repository 계층 메서드는 주로 CRUD(Create, Read, Update, Delete) 기능과 관련된 동사로 시작합니다.
+      - 정적 팩토리 메서드 네이밍은 @Entity 클래스에서는 create, DTO는 from과 of를 사용합니다.
+      - @Entity 클래스에서 Setter 사용을 지양하고, 비즈니스 메서드를 통해 상태를 변경해야 합니다.
