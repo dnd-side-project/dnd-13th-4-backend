@@ -33,4 +33,4 @@ path_instructions:
       - 검증 메서드는 validate로 시작하고, 단순히 검증 로직을 담고 있다면 외부에서 호출되지 않도록 private 메서드로 선언합니다.
       - Repository 계층 메서드는 주로 CRUD(Create, Read, Update, Delete) 기능과 관련된 동사로 시작합니다.
       - 정적 팩토리 메서드 네이밍은 @Entity 클래스에서는 create, DTO는 from과 of를 사용합니다.
-      - ""@Entity 클래스에서 Setter 사용을 지양하고, 비즈니스 메서드를 통해 상태를 변경해야 합니다."
+      - "@Entity 클래스에서 Setter 사용을 지양하고, 비즈니스 메서드를 통해 상태를 변경해야 합니다."
