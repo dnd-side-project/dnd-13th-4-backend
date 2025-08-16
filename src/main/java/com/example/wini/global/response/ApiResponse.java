@@ -25,12 +25,12 @@ public class ApiResponse<T> {
   }
 
   // 데이터를 포함한 성공 응답
-  public static <T> ApiResponse<T> success(final int status, final T data) {
-    return new ApiResponse<>(status, data);
+  public static <T> ApiResponse<T> success(final HttpStatus status, final T data) {
+    return new ApiResponse<>(status.value(), data);
   }
 
   // 데이터 없이 싱테 코드만 포함한 성공 응답
-  public static <T> ApiResponse<T> success(final int status) {
-    return new ApiResponse<>(status, null);
+  public static <T> ApiResponse<T> success(final HttpStatus status) {
+    return new ApiResponse<>(status.value(), null);
   }
 }
