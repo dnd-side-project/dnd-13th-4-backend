@@ -4,6 +4,7 @@ import com.example.wini.domain.note.dto.response.NoteResponse;
 import com.example.wini.domain.note.service.NoteService;
 import com.example.wini.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +18,8 @@ public class NoteController {
   private final NoteService noteService;
 
   @GetMapping("/{noteId}")
-  public ApiResponse<NoteResponse> getNote(@PathVariable Long noteId) {
+  public ResponseEntity<ApiResponse<NoteResponse>> getNote(@PathVariable Long noteId) {
     NoteResponse response = noteService.findNoteById(noteId);
-    return ApiResponse.success(response);
+    return ResponseEntity.ok(ApiResponse.success(response));
   }
 }
