@@ -47,6 +47,6 @@ public class NoteController {
   public ResponseEntity<ApiResponse<NoteResponse>> createNote(
       @Valid @ModelAttribute NoteCreateRequest request) {
     NoteResponse response = noteService.createNote(request);
-    return ResponseEntity.ok(ApiResponse.success(HttpStatus.CREATED, response));
+    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
   }
 }
