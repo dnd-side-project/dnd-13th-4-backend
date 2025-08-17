@@ -56,6 +56,7 @@ public class NoteService {
             request.promiseId(),
             request.closingId(),
             nextSequence);
+    noteRepository.save(note);
     return NoteResponse.from(note);
   }
 
