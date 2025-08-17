@@ -1,3 +1,7 @@
+spring:
+  config:
+    activate:
+      on-profile: "swagger"
 springdoc:
   swagger-ui:
     persist-authorization: true
