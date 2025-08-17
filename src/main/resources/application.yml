@@ -1,7 +1,9 @@
 spring:
-  application:
-    name: wini
-
   profiles:
+    group:
+      dev: "dev, h2"
     include:
       - swagger
+
+  application:
+    name: wini
