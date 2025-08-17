@@ -35,7 +35,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
   }
 
   private BooleanExpression isToday() {
-    return note.createdAt.between(
-        LocalDate.now().atStartOfDay(), LocalDate.now().plusDays(1).atStartOfDay());
+    LocalDateTime start = LocalDate.now().atStartOfDay();
+    LocalDateTime end = LocalDate.now().plusDays(1).atStartOfDay();
+    return note.createdAt.goe(start).and(note.createdAt.lt(end));
   }
 }
