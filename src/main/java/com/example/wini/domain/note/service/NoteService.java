@@ -61,7 +61,6 @@ public class NoteService {
 
   private int getNextSequence() {
     // TODO : 인가받은 사용자의 노트로 필터링 필요
-    List<Note> notes = noteRepository.findTodayNotes();
-    return notes.size() + 1;
+    return noteRepository.countTodayNotes().intValue() + 1;
   }
 }

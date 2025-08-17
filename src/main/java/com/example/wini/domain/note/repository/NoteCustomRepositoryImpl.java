@@ -21,13 +21,13 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
   }
 
   @Override
-  public List<Note> findTodayNotes() {
-    return queryFactory.selectFrom(note).where(isToday()).fetch();
+  public List<Note> findSavedNotes() {
+    return queryFactory.selectFrom(note).where(note.isSaved.eq(true)).fetch();
   }
 
   @Override
-  public List<Note> findSavedNotes() {
-    return queryFactory.selectFrom(note).where(note.isSaved.eq(true)).fetch();
+  public Long countTodayNotes() {
+    return queryFactory.select(note.count()).from(note).where(isToday()).fetchFirst();
   }
 
   private BooleanExpression isLatest() {
