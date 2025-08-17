@@ -49,5 +49,5 @@ public class Member extends BaseEntity {
 
   private LocalDateTime statusStartedAt;
 
-  private LocalDateTime statusDuration;
+  private Long statusDuration;
 }
