@@ -24,6 +24,12 @@ public class NoteController {
     return ResponseEntity.ok(ApiResponse.success(response));
   }
 
+  @GetMapping("/today")
+  public ResponseEntity<ApiResponse<List<NoteResponse>>> getTodayNotes() {
+    List<NoteResponse> responses = noteService.findTodayNotes();
+    return ResponseEntity.ok(ApiResponse.success(responses));
+  }
+
   @GetMapping("/saved")
   public ResponseEntity<ApiResponse<List<NoteResponse>>> getSavedNotes() {
     List<NoteResponse> responses = noteService.findSavedNotes();
