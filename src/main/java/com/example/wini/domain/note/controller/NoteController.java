@@ -28,10 +28,10 @@ public class NoteController {
     return ResponseEntity.ok(ApiResponse.success(response));
   }
 
-  @GetMapping("/today")
-  @Operation(summary = "오늘 받은 쪽지 리스트 조회", description = "24시간 내 받은 쪽지 목록을 반환합니다.")
+  @GetMapping("/latest")
+  @Operation(summary = "최근 받은 쪽지 리스트 조회", description = "24시간 내 받은 쪽지 목록을 반환합니다.")
   public ResponseEntity<ApiResponse<List<NoteResponse>>> getTodayNotes() {
-    List<NoteResponse> responses = noteService.findTodayNotes();
+    List<NoteResponse> responses = noteService.findLatestNotes();
     return ResponseEntity.ok(ApiResponse.success(responses));
   }
 
