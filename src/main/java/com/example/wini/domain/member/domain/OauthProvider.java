@@ -1,4 +1,4 @@
-package com.example.wini.domain.member.entity;
+package com.example.wini.domain.member.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

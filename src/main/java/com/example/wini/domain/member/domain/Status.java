@@ -1,4 +1,4 @@
-package com.example.wini.domain.member.entity;
+package com.example.wini.domain.member.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
