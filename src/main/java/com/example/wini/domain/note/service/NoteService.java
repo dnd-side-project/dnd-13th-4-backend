@@ -28,6 +28,13 @@ public class NoteService {
   }
 
   @Transactional(readOnly = true)
+  public List<NoteResponse> findTodayNotes() {
+    // TODO : 인가받은 사용자의 노트로 필터링 필요
+    List<Note> notes = noteRepository.findTodayNotes();
+    return notes.stream().map(NoteResponse::from).toList();
+  }
+
+  @Transactional(readOnly = true)
   public List<NoteResponse> findSavedNotes() {
     // TODO : 인가받은 사용자의 노트로 필터링 필요
     List<Note> notes = noteRepository.findSavedNotes();
