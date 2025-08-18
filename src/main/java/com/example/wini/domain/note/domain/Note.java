@@ -88,4 +88,8 @@ public class Note extends BaseEntity {
         .sequence(sequence)
         .build();
   }
+
+  public void markAsSaved() {
+    isSaved = true;
+  }
 }
