@@ -60,6 +60,15 @@ public class NoteService {
     return NoteResponse.from(note);
   }
 
+  @Transactional(readOnly = false)
+  public NoteResponse saveNote(Long noteId) {
+    // TODO : 인가받은 사용자로 저장 가능한지 판단
+    Note note =
+        noteRepository.findById(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
+    note.save();
+    return NoteResponse.from(note);
+  }
+
   private int getNextSequence() {
     // TODO : 인가받은 사용자의 노트로 필터링 필요
     return noteRepository.countTodayNotes().intValue() + 1;
