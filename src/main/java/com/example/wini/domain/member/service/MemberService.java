@@ -2,11 +2,15 @@ package com.example.wini.domain.member.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.ROOM_NOT_FOUND;
+import static com.example.wini.global.error.exception.ErrorCode.STATUS_NOT_FOUND;
 
 import com.example.wini.domain.member.domain.Member;
+import com.example.wini.domain.member.domain.Status;
 import com.example.wini.domain.member.dto.common.ReservedTimeInfo;
+import com.example.wini.domain.member.dto.request.MemberStatusUpdateRequest;
 import com.example.wini.domain.member.dto.response.MemberStatusResponse;
 import com.example.wini.domain.member.repository.MemberRepository;
+import com.example.wini.domain.member.repository.StatusRepository;
 import com.example.wini.domain.room.repository.RoomRepository;
 import com.example.wini.global.error.exception.CustomException;
 import java.time.Duration;
@@ -21,9 +25,11 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
   private final RoomRepository roomRepository;
+  private final StatusRepository statusRepository;
 
   private static final Long MEMBER_ID = 1L;
 
+  @Transactional(readOnly = true)
   public MemberStatusResponse searchMyStatus() {
     Member member =
         memberRepository
@@ -73,5 +79,25 @@ public class MemberService {
   private ReservedTimeInfo createReservedTimeInfo(long durationSeconds) {
     Duration duration = Duration.ofSeconds(durationSeconds);
     return ReservedTimeInfo.of(duration.toHours(), duration.toMinutes() % 60);
+  }
+
+  @Transactional
+  public MemberStatusResponse updateStatus(MemberStatusUpdateRequest request) {
+    Member member =
+        memberRepository
+            .findById(MEMBER_ID)
+            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+
+    Status status =
+        statusRepository
+            .findById(request.statusId())
+            .orElseThrow(() -> new CustomException(STATUS_NOT_FOUND));
+
+    Duration statusDuration = request.reservedTimeInfo().toDuration();
+    Long statusDurationSeconds = statusDuration.getSeconds();
+
+    member.updateStatus(status, request.startedAt(), statusDurationSeconds);
+
+    return MemberStatusResponse.from(member, request.reservedTimeInfo());
   }
 }
