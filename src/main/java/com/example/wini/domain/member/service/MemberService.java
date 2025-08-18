@@ -1,22 +1,26 @@
 package com.example.wini.domain.member.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
+import static com.example.wini.global.error.exception.ErrorCode.ROOM_NOT_FOUND;
 
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.dto.common.ReservedTimeInfo;
 import com.example.wini.domain.member.dto.response.MemberStatusResponse;
 import com.example.wini.domain.member.repository.MemberRepository;
+import com.example.wini.domain.room.repository.RoomRepository;
 import com.example.wini.global.error.exception.CustomException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
   private final MemberRepository memberRepository;
+  private final RoomRepository roomRepository;
 
   private static final Long MEMBER_ID = 1L;
 
@@ -33,6 +37,28 @@ public class MemberService {
     ReservedTimeInfo reservedTimeInfo = createReservedTimeInfo(member.getStatusDuration());
 
     return MemberStatusResponse.from(member, reservedTimeInfo);
+  }
+
+  @Transactional(readOnly = true)
+  public MemberStatusResponse searchMateStatus() {
+
+    Long roomId =
+        roomRepository
+            .findOpenRoomIdByMemberId(MEMBER_ID)
+            .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+
+    Member mate =
+        memberRepository
+            .findRoommateInMyRoom(MEMBER_ID, roomId)
+            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+
+    if (!isStatusValid(mate)) {
+      return MemberStatusResponse.empty();
+    }
+
+    ReservedTimeInfo reservedTimeInfo = createReservedTimeInfo(mate.getStatusDuration());
+
+    return MemberStatusResponse.from(mate, reservedTimeInfo);
   }
 
   private boolean isStatusValid(Member member) {

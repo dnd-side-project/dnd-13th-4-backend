@@ -25,4 +25,15 @@ public class MemberController {
     MemberStatusResponse response = memberService.searchMyStatus();
     return ResponseEntity.ok(ApiResponse.success(response));
   }
+
+  @Operation(
+      summary = "현재 룸메 상태",
+      description = "현재 룸메 상태를 반환합니다. 현재 상태가 없을 시에는 각 필드가 Null로 반환됩니다.")
+  @GetMapping("/mate/status")
+  public ResponseEntity<ApiResponse<MemberStatusResponse>> getMateStatus(
+      // TODO: 토큰이 생기면 사용자 정보 추출하기
+      ) {
+    MemberStatusResponse response = memberService.searchMateStatus();
+    return ResponseEntity.ok(ApiResponse.success(response));
+  }
 }
