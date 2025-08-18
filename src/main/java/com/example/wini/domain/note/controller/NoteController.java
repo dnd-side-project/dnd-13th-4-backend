@@ -49,4 +49,11 @@ public class NoteController {
     NoteResponse response = noteService.createNote(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
   }
+
+  @PatchMapping("/{noteId}/save")
+  @Operation(summary = "쪽지 저장", description = "사용자가 쪽지를 저장합니다.")
+  public ResponseEntity<ApiResponse<NoteResponse>> saveNote(@PathVariable Long noteId) {
+    NoteResponse response = noteService.saveNote(noteId);
+    return ResponseEntity.ok(ApiResponse.success(response));
+  }
 }
