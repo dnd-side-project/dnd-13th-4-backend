@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
   @EntityGraph(attributePaths = "status")
-  Optional<Member> findWithStatusById(Long id);
+  Optional<Member> findWithStatusByMemberId(Long memberId);
 }

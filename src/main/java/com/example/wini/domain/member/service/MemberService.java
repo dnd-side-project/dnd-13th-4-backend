@@ -23,7 +23,7 @@ public class MemberService {
   public MemberStatusResponse searchMyStatus() {
     Member member =
         memberRepository
-            .findWithStatusById(MEMBER_ID)
+            .findWithStatusByMemberId(MEMBER_ID)
             .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
     if (!isStatusValid(member)) {
