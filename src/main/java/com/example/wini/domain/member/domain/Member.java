@@ -50,4 +50,10 @@ public class Member extends BaseEntity {
   private LocalDateTime statusStartedAt;
 
   private Long statusDuration;
+
+  public void updateStatus(Status status, LocalDateTime statusStartedAt, Long statusDuration) {
+    this.status = status;
+    this.statusStartedAt = statusStartedAt;
+    this.statusDuration = statusDuration;
+  }
 }
