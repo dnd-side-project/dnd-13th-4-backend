@@ -1,7 +1,8 @@
 spring:
   profiles:
     group:
-      dev: "dev, h2"
+      dev: "dev, mysql"
+      test: "h2"
     include:
       - swagger
 
