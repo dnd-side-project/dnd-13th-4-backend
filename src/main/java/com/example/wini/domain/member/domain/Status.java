@@ -24,7 +24,7 @@ public class Status {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(length = 1, nullable = false)
+  @Column(length = 5, nullable = false)
   private String emoji;
 
   @Column(length = 10, nullable = false)
