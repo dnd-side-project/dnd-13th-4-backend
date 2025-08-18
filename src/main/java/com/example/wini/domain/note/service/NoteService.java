@@ -65,7 +65,7 @@ public class NoteService {
     // TODO : 인가받은 사용자로 저장 가능한지 판단
     Note note =
         noteRepository.findById(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
-    note.save();
+    note.markAsSaved();
     return NoteResponse.from(note);
   }
 

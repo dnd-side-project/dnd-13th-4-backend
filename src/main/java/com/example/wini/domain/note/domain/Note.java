@@ -89,7 +89,7 @@ public class Note extends BaseEntity {
         .build();
   }
 
-  public void save() {
+  public void markAsSaved() {
     isSaved = true;
   }
 }
