@@ -5,6 +5,7 @@ import static com.example.wini.global.error.exception.ErrorCode.ROOM_NOT_FOUND;
 
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.dto.common.ReservedTimeInfo;
+import com.example.wini.domain.member.dto.response.MemberResponse;
 import com.example.wini.domain.member.dto.response.MemberStatusResponse;
 import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.domain.room.repository.RoomRepository;
@@ -73,5 +74,14 @@ public class MemberService {
   private ReservedTimeInfo createReservedTimeInfo(long durationSeconds) {
     Duration duration = Duration.ofSeconds(durationSeconds);
     return ReservedTimeInfo.of(duration.toHours(), duration.toMinutes() % 60);
+  }
+
+  @Transactional(readOnly = true)
+  public MemberResponse getMyInfo() {
+    Member member =
+        memberRepository
+            .findById(MEMBER_ID)
+            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+    return MemberResponse.from(member);
   }
 }
