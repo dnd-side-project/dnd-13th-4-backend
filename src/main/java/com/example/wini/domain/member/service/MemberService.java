@@ -8,6 +8,7 @@ import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.domain.Status;
 import com.example.wini.domain.member.dto.common.ReservedTimeInfo;
 import com.example.wini.domain.member.dto.request.MemberStatusUpdateRequest;
+import com.example.wini.domain.member.dto.response.MemberResponse;
 import com.example.wini.domain.member.dto.response.MemberStatusResponse;
 import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.domain.member.repository.StatusRepository;
@@ -99,5 +100,14 @@ public class MemberService {
     member.updateStatus(status, request.startedAt(), statusDurationSeconds);
 
     return MemberStatusResponse.from(member, request.reservedTimeInfo());
+  }
+
+  @Transactional(readOnly = true)
+  public MemberResponse getMyInfo() {
+    Member member =
+        memberRepository
+            .findById(MEMBER_ID)
+            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+    return MemberResponse.from(member);
   }
 }

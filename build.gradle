@@ -35,6 +35,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // Database
+    runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
 
     // swagger
