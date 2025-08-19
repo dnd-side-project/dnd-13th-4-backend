@@ -1,14 +1,18 @@
 package com.example.wini.domain.member.controller;
 
+import com.example.wini.domain.member.dto.request.MemberStatusUpdateRequest;
 import com.example.wini.domain.member.dto.response.MemberResponse;
 import com.example.wini.domain.member.dto.response.MemberStatusResponse;
 import com.example.wini.domain.member.service.MemberService;
 import com.example.wini.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,6 +39,15 @@ public class MemberController {
       // TODO: 토큰이 생기면 사용자 정보 추출하기
       ) {
     MemberStatusResponse response = memberService.searchMateStatus();
+    return ResponseEntity.ok(ApiResponse.success(response));
+  }
+
+  @Operation(summary = "내 상태 수정", description = "수정한 상태를 반환합니다. '계속 유지'의 경우 시간과 분은 -1로 입력해주세요.")
+  @PutMapping("/me/status")
+  public ResponseEntity<ApiResponse<MemberStatusResponse>> putStatus(
+      // TODO: 토큰이 생기면 사용자 정보 추출하기
+      @Valid @RequestBody MemberStatusUpdateRequest request) {
+    MemberStatusResponse response = memberService.updateStatus(request);
     return ResponseEntity.ok(ApiResponse.success(response));
   }
 
