@@ -31,4 +31,13 @@ public class MemberRoom extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "room_id")
   private Room room;
+
+  private MemberRoom(Member member, Room room) {
+    this.member = member;
+    this.room = room;
+  }
+
+  public static MemberRoom create(Member member, Room room) {
+    return new MemberRoom(member, room);
+  }
 }
