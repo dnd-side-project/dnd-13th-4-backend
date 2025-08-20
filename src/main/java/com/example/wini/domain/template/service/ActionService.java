@@ -3,7 +3,7 @@ package com.example.wini.domain.template.service;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
 import com.example.wini.domain.template.dto.response.ActionCategoryResponse;
-import com.example.wini.domain.template.repository.ActionCategoryRepository;
+import com.example.wini.domain.template.repository.action.ActionCategoryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
