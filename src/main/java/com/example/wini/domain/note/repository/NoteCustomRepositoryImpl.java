@@ -8,12 +8,24 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class NoteCustomRepositoryImpl implements NoteCustomRepository {
 
   private final JPAQueryFactory queryFactory;
+
+  @Override
+  public Optional<Note> findWithEmotionByNoteId(Long noteId) {
+    return Optional.ofNullable(
+        queryFactory
+            .selectFrom(note)
+            .join(note.emotion)
+            .fetchJoin()
+            .where(note.id.eq(noteId))
+            .fetchOne());
+  }
 
   @Override
   public List<Note> findLatestNotes() {
