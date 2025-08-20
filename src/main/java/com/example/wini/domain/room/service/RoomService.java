@@ -1,9 +1,16 @@
 package com.example.wini.domain.room.service;
 
+import static com.example.wini.global.common.constant.RoomConstants.ROOM_CODE_CHAR_SET;
+import static com.example.wini.global.common.constant.RoomConstants.ROOM_CODE_LENGTH;
+import static com.example.wini.global.common.constant.RoomConstants.ROOM_MEMBER_MAX_COUNT;
+import static com.example.wini.global.error.exception.ErrorCode.ALREADY_JOIN_ROOM;
 import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
+import static com.example.wini.global.error.exception.ErrorCode.ROOM_IS_FULL;
+import static com.example.wini.global.error.exception.ErrorCode.ROOM_NOT_FOUND;
 
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.repository.MemberRepository;
+import com.example.wini.domain.room.dto.request.RoomJoinRequest;
 import com.example.wini.domain.room.dto.response.RoomResponse;
 import com.example.wini.domain.room.entity.MemberRoom;
 import com.example.wini.domain.room.entity.Room;
@@ -19,8 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RoomService {
 
-    private static final Integer ROOM_CODE_LENGTH = 7;
-
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
     private final MemberRoomRepository memberRoomRepository;
@@ -28,6 +33,7 @@ public class RoomService {
     @Transactional
     public RoomResponse createRoom(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+        validateMemberCanJoinRoom(memberId);
 
         String roomCode = generateUniqueRoomCode();
 
@@ -49,7 +55,7 @@ public class RoomService {
     }
 
     private String generateRoomCode() {
-        String charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        String charSet = ROOM_CODE_CHAR_SET;
         SecureRandom random = new SecureRandom();
         StringBuilder codeBuilder = new StringBuilder(ROOM_CODE_LENGTH);
 
@@ -58,5 +64,37 @@ public class RoomService {
             codeBuilder.append(charSet.charAt(index));
         }
         return codeBuilder.toString();
+    }
+
+    @Transactional
+    public RoomResponse joinRoom(Long memberId, RoomJoinRequest request) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+
+        validateMemberCanJoinRoom(memberId);
+
+        Room room = roomRepository
+                .findOpenRoomByRoomCode(request.roomCode())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+
+        validateRoomCapacity(room);
+
+        MemberRoom memberRoom = MemberRoom.create(member, room);
+        memberRoomRepository.save(memberRoom);
+
+        return RoomResponse.from(room);
+    }
+
+    private void validateMemberCanJoinRoom(Long memberId) {
+        boolean isAlreadyJoined = roomRepository.existsOpenRoomByMemberId(memberId);
+        if (isAlreadyJoined) {
+            throw new CustomException(ALREADY_JOIN_ROOM);
+        }
+    }
+
+    private void validateRoomCapacity(Room room) {
+        long memberCount = memberRoomRepository.countMembersByRoomId(room.getId());
+        if (memberCount >= ROOM_MEMBER_MAX_COUNT) {
+            throw new CustomException(ROOM_IS_FULL);
+        }
     }
 }

@@ -17,7 +17,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
     public Optional<Member> findWithStatusByMemberId(Long memberId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(member)
-                .join(member.status)
+                .leftJoin(member.status)
                 .fetchJoin()
                 .where(member.id.eq(memberId))
                 .fetchOne());
@@ -29,7 +29,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .selectFrom(member)
                 .join(memberRoom)
                 .on(memberRoom.member.id.eq(member.id))
-                .join(member.status)
+                .leftJoin(member.status)
                 .fetchJoin()
                 .where(memberRoom.room.id.in(roomId).and(memberRoom.member.id.ne(memberId)))
                 .fetchOne());
