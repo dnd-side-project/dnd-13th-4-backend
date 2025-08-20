@@ -1,6 +1,6 @@
 package com.example.wini.domain.template.controller;
 
-import com.example.wini.domain.template.dto.response.ActionResponse;
+import com.example.wini.domain.template.dto.response.ActionCategoryResponse;
 import com.example.wini.domain.template.dto.response.EmotionResponse;
 import com.example.wini.domain.template.service.ActionService;
 import com.example.wini.domain.template.service.EmotionService;
@@ -31,9 +31,9 @@ public class TemplateController {
   }
 
   @GetMapping("/actions")
-  @Operation(summary = "행동 리스트 조회", description = "행동 목록을 반환합니다.")
-  public ResponseEntity<ApiResponse<List<ActionResponse>>> getActions() {
-    List<ActionResponse> responses = actionService.findAllActions();
+  @Operation(summary = "행동 리스트 조회", description = "행동 목록을 카테고리로 분류하여 반환합니다.")
+  public ResponseEntity<ApiResponse<List<ActionCategoryResponse>>> getActions() {
+    List<ActionCategoryResponse> responses = actionService.findAllActionCategories();
     return ResponseEntity.ok(ApiResponse.success(responses));
   }
 }

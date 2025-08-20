@@ -1,8 +1,8 @@
 package com.example.wini.domain.template.service;
 
-import com.example.wini.domain.template.domain.Action;
-import com.example.wini.domain.template.dto.response.ActionResponse;
-import com.example.wini.domain.template.repository.ActionRepository;
+import com.example.wini.domain.template.domain.ActionCategory;
+import com.example.wini.domain.template.dto.response.ActionCategoryResponse;
+import com.example.wini.domain.template.repository.ActionCategoryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ActionService {
 
-  private final ActionRepository actionRepository;
+  private final ActionCategoryRepository actionCategoryRepository;
 
   @Transactional(readOnly = true)
-  public List<ActionResponse> findAllActions() {
-    List<Action> actions = actionRepository.findAllWithCategory();
-    return actions.stream().map(ActionResponse::from).toList();
+  public List<ActionCategoryResponse> findAllActionCategories() {
+    List<ActionCategory> categories = actionCategoryRepository.findAll();
+    return categories.stream().map(ActionCategoryResponse::from).toList();
   }
 }
