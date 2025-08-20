@@ -47,7 +47,6 @@ public class NoteService {
 
   @Transactional(readOnly = false)
   public NoteResponse createNote(NoteCreateRequest request) {
-    // TODO : 인가받은 사용자로 송신자, 수신자 판단
     Note note = buildNewNote(request);
     noteRepository.save(note);
     return NoteResponse.from(note);
@@ -63,6 +62,7 @@ public class NoteService {
   }
 
   private Note buildNewNote(NoteCreateRequest request) {
+    // TODO : 인가받은 사용자로 송신자, 수신자 판단
     Emotion emotion =
         emotionRepository
             .findById(request.emotionId())

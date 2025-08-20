@@ -17,6 +17,7 @@ public class Note extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  // TODO : 인증인가 후 MemberRoom 연결
   @Column(nullable = false)
   private Long memberRoomSenderId;
 
