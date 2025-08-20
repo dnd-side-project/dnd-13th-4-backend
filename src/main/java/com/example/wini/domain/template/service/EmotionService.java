@@ -1,6 +1,7 @@
 package com.example.wini.domain.template.service;
 
 import com.example.wini.domain.template.domain.Emotion;
+import com.example.wini.domain.template.domain.EmotionType;
 import com.example.wini.domain.template.dto.response.EmotionResponse;
 import com.example.wini.domain.template.repository.EmotionRepository;
 import java.util.List;
@@ -17,8 +18,9 @@ public class EmotionService {
   private final EmotionRepository emotionRepository;
 
   @Transactional(readOnly = true)
-  public List<EmotionResponse> findAllEmotions() {
-    List<Emotion> emotions = emotionRepository.findAll();
+  public List<EmotionResponse> findAllEmotionsByEmotionType(String emotionType) {
+    EmotionType type = EmotionType.from(emotionType);
+    List<Emotion> emotions = emotionRepository.findAllByEmotionType(type);
     return emotions.stream().map(EmotionResponse::from).toList();
   }
 }
