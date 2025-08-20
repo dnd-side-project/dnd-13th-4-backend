@@ -59,8 +59,9 @@ public class TemplateController {
 
   @GetMapping("/promises")
   @Operation(summary = "약속 리스트 조회", description = "약속 목록을 반환합니다.")
-  public ResponseEntity<ApiResponse<List<PromiseResponse>>> getPromises() {
-    List<PromiseResponse> responses = promiseService.findAllPromises();
+  public ResponseEntity<ApiResponse<List<PromiseResponse>>> getPromisesByEmotionType(
+      @RequestParam(value = "emotionType") @NotBlank String emotionType) {
+    List<PromiseResponse> responses = promiseService.findAllPromisesByEmotionType(emotionType);
     return ResponseEntity.ok(ApiResponse.success(responses));
   }
 }

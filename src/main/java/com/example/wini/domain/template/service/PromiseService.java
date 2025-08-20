@@ -1,5 +1,6 @@
 package com.example.wini.domain.template.service;
 
+import com.example.wini.domain.template.domain.EmotionType;
 import com.example.wini.domain.template.domain.Promise;
 import com.example.wini.domain.template.dto.response.PromiseResponse;
 import com.example.wini.domain.template.repository.PromiseRepository;
@@ -17,7 +18,8 @@ public class PromiseService {
   private final PromiseRepository promiseRepository;
 
   @Transactional(readOnly = true)
-  public List<PromiseResponse> findAllPromises() {
+  public List<PromiseResponse> findAllPromisesByEmotionType(String emotionType) {
+    EmotionType type = EmotionType.from(emotionType);
     List<Promise> promises = promiseRepository.findAll();
     return promises.stream().map(PromiseResponse::from).toList();
   }
