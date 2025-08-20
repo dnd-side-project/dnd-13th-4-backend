@@ -3,6 +3,7 @@ package com.example.wini.domain.note.domain;
 import com.example.wini.domain.common.BaseEntity;
 import com.example.wini.domain.template.domain.Action;
 import com.example.wini.domain.template.domain.Emotion;
+import com.example.wini.domain.template.domain.Situation;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,12 +30,13 @@ public class Note extends BaseEntity {
   @JoinColumn(name = "emotion_id")
   private Emotion emotion;
 
-  @Column(nullable = true)
-  private Long situationId;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "action_id")
   private Action action;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "situation_id")
+  private Situation situation;
 
   @Column(nullable = false)
   private Long promiseId;
@@ -56,16 +58,16 @@ public class Note extends BaseEntity {
       Long memberRoomSenderId,
       Long memberRoomReceiverId,
       Emotion emotion,
-      Long situationId,
       Action action,
+      Situation situation,
       Long promiseId,
       Long closingId,
       int sequence) {
     this.memberRoomSenderId = memberRoomSenderId;
     this.memberRoomReceiverId = memberRoomReceiverId;
     this.emotion = emotion;
-    this.situationId = situationId;
     this.action = action;
+    this.situation = situation;
     this.promiseId = promiseId;
     this.closingId = closingId;
     this.sequence = sequence;
@@ -77,8 +79,8 @@ public class Note extends BaseEntity {
       Long memberRoomSenderId,
       Long memberRoomReceiverId,
       Emotion emotion,
-      Long situationId,
       Action action,
+      Situation situation,
       Long promiseId,
       Long closingId,
       int sequence) {
@@ -86,8 +88,8 @@ public class Note extends BaseEntity {
         .memberRoomSenderId(memberRoomSenderId)
         .memberRoomReceiverId(memberRoomReceiverId)
         .emotion(emotion)
-        .situationId(situationId)
         .action(action)
+        .situation(situation)
         .promiseId(promiseId)
         .closingId(closingId)
         .sequence(sequence)
