@@ -6,6 +6,8 @@ import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.dto.request.NoteCreateRequest;
 import com.example.wini.domain.note.dto.response.NoteResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
+import com.example.wini.domain.template.domain.Emotion;
+import com.example.wini.domain.template.repository.EmotionRepository;
 import com.example.wini.global.error.exception.CustomException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoteService {
 
   private final NoteRepository noteRepository;
+  private final EmotionRepository emotionRepository;
 
   @Transactional(readOnly = true)
   public NoteResponse findNoteById(Long noteId) {
@@ -45,17 +48,7 @@ public class NoteService {
   @Transactional(readOnly = false)
   public NoteResponse createNote(NoteCreateRequest request) {
     // TODO : 인가받은 사용자로 송신자, 수신자 판단
-    int nextSequence = getNextSequence();
-    Note note =
-        Note.create(
-            1L,
-            2L,
-            request.emotionId(),
-            request.situationId(),
-            request.actionId(),
-            request.promiseId(),
-            request.closingId(),
-            nextSequence);
+    Note note = buildNewNote(request);
     noteRepository.save(note);
     return NoteResponse.from(note);
   }
@@ -67,6 +60,24 @@ public class NoteService {
         noteRepository.findById(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
     note.markAsSaved();
     return NoteResponse.from(note);
+  }
+
+  private Note buildNewNote(NoteCreateRequest request) {
+    Emotion emotion =
+        emotionRepository
+            .findById(request.emotionId())
+            .orElseThrow(() -> new CustomException(EMOTION_NOT_FOUND));
+    int nextSequence = getNextSequence();
+
+    return Note.create(
+        1L,
+        2L,
+        emotion,
+        request.situationId(),
+        request.actionId(),
+        request.promiseId(),
+        request.closingId(),
+        nextSequence);
   }
 
   private int getNextSequence() {

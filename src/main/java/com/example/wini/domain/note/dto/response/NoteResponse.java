@@ -19,7 +19,7 @@ public record NoteResponse(
         note.getId(),
         note.getMemberRoomSenderId(),
         note.getMemberRoomReceiverId(),
-        note.getEmotionId(),
+        note.getEmotion().getId(),
         note.getSituationId(),
         note.getActionId(),
         note.getPromiseId(),
