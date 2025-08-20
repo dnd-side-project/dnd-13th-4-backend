@@ -17,8 +17,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public Optional<Note> findWithEmotionAndActionAndSituationAndPromiseAndClosingByNoteId(
-      Long noteId) {
+  public Optional<Note> findFullNoteById(Long noteId) {
     return Optional.ofNullable(
         queryFactory
             .selectFrom(note)
