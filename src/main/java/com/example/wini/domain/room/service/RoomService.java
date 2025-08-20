@@ -33,6 +33,7 @@ public class RoomService {
     @Transactional
     public RoomResponse createRoom(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+        validateMemberCanJoinRoom(memberId);
 
         String roomCode = generateUniqueRoomCode();
 
