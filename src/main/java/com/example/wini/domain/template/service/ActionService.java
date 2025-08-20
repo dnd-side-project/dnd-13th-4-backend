@@ -18,7 +18,7 @@ public class ActionService {
 
   @Transactional(readOnly = true)
   public List<ActionResponse> findAllActions() {
-    List<Action> actions = actionRepository.findAll();
+    List<Action> actions = actionRepository.findAllWithCategory();
     return actions.stream().map(ActionResponse::from).toList();
   }
 }
