@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Location {
-  HOME("집"),
-  OUTDOORS("야외"),
-  ;
+    HOME("집"),
+    OUTDOORS("야외"),
+    ;
 
-  private final String value;
+    private final String value;
 }

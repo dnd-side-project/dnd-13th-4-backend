@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StatusController {
 
-  private final StatusService statusService;
+    private final StatusService statusService;
 
-  @Operation(summary = "상태 리스트 조회", description = "상태 리스트를 반환합니다.")
-  @GetMapping("/status")
-  public ResponseEntity<ApiResponse<List<StatusResponse>>> getStatuses() {
-    List<StatusResponse> response = statusService.getStatuses();
-    return ResponseEntity.ok(ApiResponse.success(response));
-  }
+    @Operation(summary = "상태 리스트 조회", description = "상태 리스트를 반환합니다.")
+    @GetMapping("/status")
+    public ResponseEntity<ApiResponse<List<StatusResponse>>> getStatuses() {
+        List<StatusResponse> response = statusService.getStatuses();
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 }

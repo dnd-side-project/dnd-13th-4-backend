@@ -6,6 +6,4 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public record MemberStatusUpdateRequest(
-    @NotNull Long statusId,
-    @NotNull LocalDateTime startedAt,
-    @NotNull @Valid ReservedTimeInfo reservedTimeInfo) {}
+        @NotNull Long statusId, @NotNull LocalDateTime startedAt, @NotNull @Valid ReservedTimeInfo reservedTimeInfo) {}

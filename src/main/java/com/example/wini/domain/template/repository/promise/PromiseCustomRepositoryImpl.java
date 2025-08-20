@@ -11,10 +11,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PromiseCustomRepositoryImpl implements PromiseCustomRepository {
 
-  private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
-  @Override
-  public List<Promise> findAllByEmotionType(EmotionType emotionType) {
-    return queryFactory.selectFrom(promise).where(promise.emotionType.eq(emotionType)).fetch();
-  }
+    @Override
+    public List<Promise> findAllByEmotionType(EmotionType emotionType) {
+        return queryFactory
+                .selectFrom(promise)
+                .where(promise.emotionType.eq(emotionType))
+                .fetch();
+    }
 }

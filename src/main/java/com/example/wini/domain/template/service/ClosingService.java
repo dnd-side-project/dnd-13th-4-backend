@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ClosingService {
 
-  private final ClosingRepository closingRepository;
+    private final ClosingRepository closingRepository;
 
-  @Transactional(readOnly = true)
-  public List<ClosingResponse> findAllClosingsByEmotionType(String emotionType) {
-    EmotionType type = EmotionType.from(emotionType);
-    List<Closing> closings = closingRepository.findAllByEmotionType(type);
-    return closings.stream().map(ClosingResponse::from).toList();
-  }
+    @Transactional(readOnly = true)
+    public List<ClosingResponse> findAllClosingsByEmotionType(String emotionType) {
+        EmotionType type = EmotionType.from(emotionType);
+        List<Closing> closings = closingRepository.findAllByEmotionType(type);
+        return closings.stream().map(ClosingResponse::from).toList();
+    }
 }

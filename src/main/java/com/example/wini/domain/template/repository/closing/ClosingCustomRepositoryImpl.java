@@ -11,10 +11,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClosingCustomRepositoryImpl implements ClosingCustomRepository {
 
-  private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
-  @Override
-  public List<Closing> findAllByEmotionType(EmotionType emotionType) {
-    return queryFactory.selectFrom(closing).where(closing.emotionType.eq(emotionType)).fetch();
-  }
+    @Override
+    public List<Closing> findAllByEmotionType(EmotionType emotionType) {
+        return queryFactory
+                .selectFrom(closing)
+                .where(closing.emotionType.eq(emotionType))
+                .fetch();
+    }
 }

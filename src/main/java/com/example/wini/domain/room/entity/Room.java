@@ -17,22 +17,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(length = 10, nullable = false, unique = true)
-  private String roomCode;
+    @Column(length = 10, nullable = false, unique = true)
+    private String roomCode;
 
-  @Column(nullable = false)
-  private Boolean isClosed;
+    @Column(nullable = false)
+    private Boolean isClosed;
 
-  private Room(String roomCode) {
-    this.roomCode = roomCode;
-    this.isClosed = false;
-  }
+    private Room(String roomCode) {
+        this.roomCode = roomCode;
+        this.isClosed = false;
+    }
 
-  public static Room create(String roomCode) {
-    return new Room(roomCode);
-  }
+    public static Room create(String roomCode) {
+        return new Room(roomCode);
+    }
 }

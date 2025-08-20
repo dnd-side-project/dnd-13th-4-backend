@@ -10,17 +10,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RoomCustomRepositoryImpl implements RoomCustomRepository {
 
-  private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
-  @Override
-  public Optional<Long> findOpenRoomIdByMemberId(Long memberId) {
-    return Optional.ofNullable(
-        queryFactory
-            .select(room.id)
-            .from(room)
-            .join(memberRoom)
-            .on(memberRoom.room.id.eq(room.id))
-            .where(memberRoom.member.id.eq(memberId).and(room.isClosed.isFalse()))
-            .fetchOne());
-  }
+    @Override
+    public Optional<Long> findOpenRoomIdByMemberId(Long memberId) {
+        return Optional.ofNullable(queryFactory
+                .select(room.id)
+                .from(room)
+                .join(memberRoom)
+                .on(memberRoom.room.id.eq(room.id))
+                .where(memberRoom.member.id.eq(memberId).and(room.isClosed.isFalse()))
+                .fetchOne());
+    }
 }

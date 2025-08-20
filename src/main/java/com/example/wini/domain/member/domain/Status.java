@@ -16,24 +16,23 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(
-    uniqueConstraints = {@UniqueConstraint(columnNames = {"emoji", "text", "request", "location"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"emoji", "text", "request", "location"})})
 public class Status {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(length = 5, nullable = false)
-  private String emoji;
+    @Column(length = 5, nullable = false)
+    private String emoji;
 
-  @Column(length = 10, nullable = false)
-  private String text;
+    @Column(length = 10, nullable = false)
+    private String text;
 
-  @Column(length = 20, nullable = false)
-  private String request;
+    @Column(length = 20, nullable = false)
+    private String request;
 
-  @Column(length = 10, nullable = false)
-  @Enumerated(EnumType.STRING)
-  private Location location;
+    @Column(length = 10, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Location location;
 }

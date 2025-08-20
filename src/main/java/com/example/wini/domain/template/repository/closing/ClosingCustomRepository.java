@@ -5,5 +5,5 @@ import com.example.wini.domain.template.domain.EmotionType;
 import java.util.List;
 
 public interface ClosingCustomRepository {
-  List<Closing> findAllByEmotionType(EmotionType emotionType);
+    List<Closing> findAllByEmotionType(EmotionType emotionType);
 }
