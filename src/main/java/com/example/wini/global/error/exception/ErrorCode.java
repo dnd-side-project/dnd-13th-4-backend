@@ -34,6 +34,7 @@ public enum ErrorCode {
 
   // Template
   EMOTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 감정입니다."),
+  ACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 행동입니다."),
   ;
 
   private final HttpStatus httpStatus;

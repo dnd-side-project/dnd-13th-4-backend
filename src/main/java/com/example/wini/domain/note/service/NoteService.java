@@ -6,7 +6,9 @@ import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.dto.request.NoteCreateRequest;
 import com.example.wini.domain.note.dto.response.NoteResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
+import com.example.wini.domain.template.domain.Action;
 import com.example.wini.domain.template.domain.Emotion;
+import com.example.wini.domain.template.repository.ActionRepository;
 import com.example.wini.domain.template.repository.EmotionRepository;
 import com.example.wini.global.error.exception.CustomException;
 import java.util.List;
@@ -22,12 +24,13 @@ public class NoteService {
 
   private final NoteRepository noteRepository;
   private final EmotionRepository emotionRepository;
+  private final ActionRepository actionRepository;
 
   @Transactional(readOnly = true)
   public NoteResponse findNoteById(Long noteId) {
     Note note =
         noteRepository
-            .findWithEmotionByNoteId(noteId)
+            .findWithEmotionAndActionByNoteId(noteId)
             .orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
     // TODO : 인가받은 사용자 확인 후 읽음 처리 필요
     return NoteResponse.from(note);
@@ -69,6 +72,10 @@ public class NoteService {
         emotionRepository
             .findById(request.emotionId())
             .orElseThrow(() -> new CustomException(EMOTION_NOT_FOUND));
+    Action action =
+        actionRepository
+            .findById(request.actionId())
+            .orElseThrow(() -> new CustomException(ACTION_NOT_FOUND));
     int nextSequence = getNextSequence();
 
     return Note.create(
@@ -76,7 +83,7 @@ public class NoteService {
         2L,
         emotion,
         request.situationId(),
-        request.actionId(),
+        action,
         request.promiseId(),
         request.closingId(),
         nextSequence);
