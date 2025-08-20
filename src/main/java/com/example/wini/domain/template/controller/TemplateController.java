@@ -50,8 +50,10 @@ public class TemplateController {
 
   @GetMapping("/situations")
   @Operation(summary = "상황 리스트 조회", description = "상황 목록을 반환합니다.")
-  public ResponseEntity<ApiResponse<List<SituationResponse>>> getSituations() {
-    List<SituationResponse> responses = situationService.findAllSituations();
+  public ResponseEntity<ApiResponse<List<SituationResponse>>> getSituationsByEmotionType(
+      @RequestParam(value = "emotionType") @NotBlank String emotionType) {
+    List<SituationResponse> responses =
+        situationService.findAllSituationsByEmotionType(emotionType);
     return ResponseEntity.ok(ApiResponse.success(responses));
   }
 
