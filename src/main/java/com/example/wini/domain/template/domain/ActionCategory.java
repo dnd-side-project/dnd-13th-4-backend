@@ -2,6 +2,8 @@ package com.example.wini.domain.template.domain;
 
 import com.example.wini.domain.common.BaseEntity;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,13 +25,18 @@ public class ActionCategory extends BaseEntity {
   @Column(length = 10, nullable = false)
   private String name;
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "action_category_id")
+  private List<Action> actions = new ArrayList<>();
+
   @Builder(access = AccessLevel.PRIVATE)
-  private ActionCategory(EmotionType emotionType, String name) {
+  private ActionCategory(EmotionType emotionType, String name, List<Action> actions) {
     this.emotionType = emotionType;
     this.name = name;
+    this.actions = actions;
   }
 
-  public static ActionCategory create(EmotionType emotionType, String name) {
-    return ActionCategory.builder().emotionType(emotionType).name(name).build();
+  public static ActionCategory create(EmotionType emotionType, String name, List<Action> actions) {
+    return ActionCategory.builder().emotionType(emotionType).name(name).actions(actions).build();
   }
 }
