@@ -61,15 +61,22 @@ jar {
 }
 
 spotless {
-    java {
-        target("src/**/*.java")
-        targetExclude("**/build/**", "**/.gradle/**")
-        googleJavaFormat().reflowLongStrings()
-        importOrder()
-        removeUnusedImports()
+    format 'misc', {
+        target '**/*.gradle', '**/*.md'
         trimTrailingWhitespace()
+        indentWithSpaces(4)
         endWithNewline()
+    }
+
+    java {
+        removeUnusedImports()
+        palantirJavaFormat()
         formatAnnotations()
+    }
+
+    yaml {
+        target '**/*.yml'
+        prettier()
     }
 }
 
