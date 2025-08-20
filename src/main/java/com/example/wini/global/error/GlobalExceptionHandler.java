@@ -4,6 +4,7 @@ import static com.example.wini.global.error.exception.ErrorCode.*;
 
 import com.example.wini.global.error.exception.CustomException;
 import com.example.wini.global.error.exception.ErrorCode;
+import com.example.wini.global.response.GlobalResponse;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -119,12 +120,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> createErrorResponseEntity(final Exception ex, final ErrorCode errorCode) {
         final ErrorResponse errorResponse = ErrorResponse.of(ex.getClass().getSimpleName(), errorCode.getMessage());
-        return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
+        final GlobalResponse globalResponse =
+                GlobalResponse.error(errorCode.getHttpStatus().value(), errorResponse);
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(globalResponse);
     }
 
     private ResponseEntity<Object> createHttpClientErrorResponseEntity(final HttpClientErrorException ex) {
         final ErrorResponse errorResponse =
                 ErrorResponse.of(ex.getClass().getSimpleName(), ex.getResponseBodyAsString());
-        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
+        final GlobalResponse globalResponse =
+                GlobalResponse.error(ex.getStatusCode().value(), errorResponse);
+        return ResponseEntity.status(ex.getStatusCode()).body(globalResponse);
     }
 }
