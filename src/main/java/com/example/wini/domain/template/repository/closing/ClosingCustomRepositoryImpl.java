@@ -1,4 +1,4 @@
-package com.example.wini.domain.template.repository;
+package com.example.wini.domain.template.repository.closing;
 
 import static com.example.wini.domain.template.domain.QClosing.closing;
 

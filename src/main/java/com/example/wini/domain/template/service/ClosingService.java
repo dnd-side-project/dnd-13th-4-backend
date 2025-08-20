@@ -3,7 +3,7 @@ package com.example.wini.domain.template.service;
 import com.example.wini.domain.template.domain.Closing;
 import com.example.wini.domain.template.domain.EmotionType;
 import com.example.wini.domain.template.dto.response.ClosingResponse;
-import com.example.wini.domain.template.repository.ClosingRepository;
+import com.example.wini.domain.template.repository.closing.ClosingRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
