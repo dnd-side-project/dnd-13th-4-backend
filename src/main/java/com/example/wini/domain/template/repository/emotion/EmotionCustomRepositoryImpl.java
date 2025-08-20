@@ -1,4 +1,4 @@
-package com.example.wini.domain.template.repository;
+package com.example.wini.domain.template.repository.emotion;
 
 import static com.example.wini.domain.template.domain.QEmotion.emotion;
 
