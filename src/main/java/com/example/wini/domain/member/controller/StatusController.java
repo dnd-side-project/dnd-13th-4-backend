@@ -16,8 +16,8 @@ public class StatusController {
 
     private final StatusService statusService;
 
-    @Operation(summary = "상태 리스트 조회", description = "상태 리스트를 반환합니다.")
     @GetMapping("/status")
+    @Operation(summary = "상태 리스트 조회", description = "상태 리스트를 반환합니다.")
     public List<StatusResponse> getStatuses() {
         return statusService.getStatuses();
     }

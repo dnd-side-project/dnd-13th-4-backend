@@ -25,18 +25,18 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @Operation(summary = "초대코드 생성", description = "생성된 초대코드를 반환합니다.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "초대코드 생성", description = "생성된 초대코드를 반환합니다.")
     public RoomResponse createRoom(
             // TODO: 토큰이 생기면 사용자 정보 추출하기
             ) {
         return roomService.createRoom(MEMBER_ID);
     }
 
-    @Operation(summary = "초대코드 입력", description = "초대코드와 연결된 방 정보를 반환합니다.")
     @PostMapping("/join")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "초대코드 입력", description = "초대코드와 연결된 방 정보를 반환합니다.")
     public RoomResponse joinRoom(
             // TODO: 토큰이 생기면 사용자 정보 추출하기
             @Valid @RequestBody RoomJoinRequest request) {
