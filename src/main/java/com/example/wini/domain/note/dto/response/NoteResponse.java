@@ -3,6 +3,7 @@ package com.example.wini.domain.note.dto.response;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.template.dto.response.ActionResponse;
 import com.example.wini.domain.template.dto.response.EmotionResponse;
+import com.example.wini.domain.template.dto.response.SituationResponse;
 import java.time.LocalDateTime;
 
 public record NoteResponse(
@@ -10,8 +11,8 @@ public record NoteResponse(
     Long memberRoomSenderId,
     Long memberRoomReceiverId,
     EmotionResponse emotion,
-    Long situationId,
     ActionResponse action,
+    SituationResponse situation,
     Long promiseId,
     Long closingId,
     int sequence,
@@ -24,8 +25,8 @@ public record NoteResponse(
         note.getMemberRoomSenderId(),
         note.getMemberRoomReceiverId(),
         EmotionResponse.from(note.getEmotion()),
-        note.getSituationId(),
         ActionResponse.from(note.getAction()),
+        SituationResponse.from(note.getSituation()),
         note.getPromiseId(),
         note.getClosingId(),
         note.getSequence(),
