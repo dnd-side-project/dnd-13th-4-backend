@@ -1,5 +1,8 @@
 package com.example.wini.domain.room.service;
 
+import static com.example.wini.global.common.constant.RoomConstants.ROOM_CODE_CHAR_SET;
+import static com.example.wini.global.common.constant.RoomConstants.ROOM_CODE_LENGTH;
+import static com.example.wini.global.common.constant.RoomConstants.ROOM_MEMBER_MAX_COUNT;
 import static com.example.wini.global.error.exception.ErrorCode.ALREADY_JOIN_ROOM;
 import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.ROOM_IS_FULL;
@@ -22,9 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class RoomService {
-
-    private static final Integer ROOM_CODE_LENGTH = 7;
-    private static final Integer ROOM_MEMBER_MAX_COUNT = 2;
 
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
@@ -55,7 +55,7 @@ public class RoomService {
     }
 
     private String generateRoomCode() {
-        String charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        String charSet = ROOM_CODE_CHAR_SET;
         SecureRandom random = new SecureRandom();
         StringBuilder codeBuilder = new StringBuilder(ROOM_CODE_LENGTH);
 
