@@ -3,6 +3,7 @@ package com.example.wini.domain.note.domain;
 import com.example.wini.domain.common.BaseEntity;
 import com.example.wini.domain.template.domain.Action;
 import com.example.wini.domain.template.domain.Emotion;
+import com.example.wini.domain.template.domain.Promise;
 import com.example.wini.domain.template.domain.Situation;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -38,8 +39,9 @@ public class Note extends BaseEntity {
   @JoinColumn(name = "situation_id")
   private Situation situation;
 
-  @Column(nullable = false)
-  private Long promiseId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "promise_id")
+  private Promise promise;
 
   @Column(nullable = false)
   private Long closingId;
@@ -60,7 +62,7 @@ public class Note extends BaseEntity {
       Emotion emotion,
       Action action,
       Situation situation,
-      Long promiseId,
+      Promise promise,
       Long closingId,
       int sequence) {
     this.memberRoomSenderId = memberRoomSenderId;
@@ -68,7 +70,7 @@ public class Note extends BaseEntity {
     this.emotion = emotion;
     this.action = action;
     this.situation = situation;
-    this.promiseId = promiseId;
+    this.promise = promise;
     this.closingId = closingId;
     this.sequence = sequence;
     this.isRead = false;
@@ -81,7 +83,7 @@ public class Note extends BaseEntity {
       Emotion emotion,
       Action action,
       Situation situation,
-      Long promiseId,
+      Promise promise,
       Long closingId,
       int sequence) {
     return Note.builder()
@@ -90,7 +92,7 @@ public class Note extends BaseEntity {
         .emotion(emotion)
         .action(action)
         .situation(situation)
-        .promiseId(promiseId)
+        .promise(promise)
         .closingId(closingId)
         .sequence(sequence)
         .build();

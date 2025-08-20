@@ -1,4 +1,4 @@
-package com.example.wini.domain.template.repository;
+package com.example.wini.domain.template.repository.action;
 
 import com.example.wini.domain.template.domain.Action;
 import org.springframework.data.jpa.repository.JpaRepository;

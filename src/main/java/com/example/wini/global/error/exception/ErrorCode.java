@@ -33,9 +33,11 @@ public enum ErrorCode {
   NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 마음쪽지입니다."),
 
   // Template
+  EMOTION_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "잘못된 감정 분류입니다."),
   EMOTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 감정입니다."),
   ACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 행동입니다."),
   SITUATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상황입니다."),
+  PROMISE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 약속입니다."),
   ;
 
   private final HttpStatus httpStatus;
