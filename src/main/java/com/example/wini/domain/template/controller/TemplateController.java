@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping
+@RequestMapping("/templates")
 @Tag(name = "3. 템플릿 관리", description = "템플릿 관련 API")
 @RequiredArgsConstructor
 public class TemplateController {
