@@ -1,10 +1,7 @@
 package com.example.wini.domain.note.dto.response;
 
 import com.example.wini.domain.note.domain.Note;
-import com.example.wini.domain.template.dto.response.ActionResponse;
-import com.example.wini.domain.template.dto.response.EmotionResponse;
-import com.example.wini.domain.template.dto.response.PromiseResponse;
-import com.example.wini.domain.template.dto.response.SituationResponse;
+import com.example.wini.domain.template.dto.response.*;
 import java.time.LocalDateTime;
 
 public record NoteResponse(
@@ -15,7 +12,7 @@ public record NoteResponse(
     ActionResponse action,
     SituationResponse situation,
     PromiseResponse promise,
-    Long closingId,
+    ClosingResponse closing,
     int sequence,
     boolean isRead,
     boolean isSaved,
@@ -29,7 +26,7 @@ public record NoteResponse(
         ActionResponse.from(note.getAction()),
         SituationResponse.from(note.getSituation()),
         PromiseResponse.from(note.getPromise()),
-        note.getClosingId(),
+        ClosingResponse.from(note.getClosing()),
         note.getSequence(),
         note.isRead(),
         note.isSaved(),

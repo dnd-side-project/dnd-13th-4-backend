@@ -1,13 +1,7 @@
 package com.example.wini.domain.template.controller;
 
-import com.example.wini.domain.template.dto.response.ActionCategoryResponse;
-import com.example.wini.domain.template.dto.response.EmotionResponse;
-import com.example.wini.domain.template.dto.response.PromiseResponse;
-import com.example.wini.domain.template.dto.response.SituationResponse;
-import com.example.wini.domain.template.service.ActionService;
-import com.example.wini.domain.template.service.EmotionService;
-import com.example.wini.domain.template.service.PromiseService;
-import com.example.wini.domain.template.service.SituationService;
+import com.example.wini.domain.template.dto.response.*;
+import com.example.wini.domain.template.service.*;
 import com.example.wini.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +24,7 @@ public class TemplateController {
   private final ActionService actionService;
   private final SituationService situationService;
   private final PromiseService promiseService;
+  private final ClosingService closingService;
 
   @GetMapping("/emotions")
   @Operation(summary = "감정 리스트 조회", description = "감정 유형을 쿼리로 받아 감정 목록을 반환합니다.")
@@ -62,6 +57,14 @@ public class TemplateController {
   public ResponseEntity<ApiResponse<List<PromiseResponse>>> getPromisesByEmotionType(
       @RequestParam(value = "emotionType") @NotBlank String emotionType) {
     List<PromiseResponse> responses = promiseService.findAllPromisesByEmotionType(emotionType);
+    return ResponseEntity.ok(ApiResponse.success(responses));
+  }
+
+  @GetMapping("/closings")
+  @Operation(summary = "끝맺음 리스트 조회", description = "감정 유형을 쿼리로 받아 끝맺음 목록을 반환합니다.")
+  public ResponseEntity<ApiResponse<List<ClosingResponse>>> getClosingsByEmotionType(
+      @RequestParam(value = "emotionType") @NotBlank String emotionType) {
+    List<ClosingResponse> responses = closingService.findAllClosingsByEmotionType(emotionType);
     return ResponseEntity.ok(ApiResponse.success(responses));
   }
 }

@@ -6,11 +6,9 @@ import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.dto.request.NoteCreateRequest;
 import com.example.wini.domain.note.dto.response.NoteResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
-import com.example.wini.domain.template.domain.Action;
-import com.example.wini.domain.template.domain.Emotion;
-import com.example.wini.domain.template.domain.Promise;
-import com.example.wini.domain.template.domain.Situation;
+import com.example.wini.domain.template.domain.*;
 import com.example.wini.domain.template.repository.action.ActionRepository;
+import com.example.wini.domain.template.repository.closing.ClosingRepository;
 import com.example.wini.domain.template.repository.emotion.EmotionRepository;
 import com.example.wini.domain.template.repository.promise.PromiseRepository;
 import com.example.wini.domain.template.repository.situation.SituationRepository;
@@ -31,12 +29,13 @@ public class NoteService {
   private final ActionRepository actionRepository;
   private final SituationRepository situationRepository;
   private final PromiseRepository promiseRepository;
+  private final ClosingRepository closingRepository;
 
   @Transactional(readOnly = true)
   public NoteResponse findNoteById(Long noteId) {
     Note note =
         noteRepository
-            .findWithEmotionAndActionAndSituationAndPromiseByNoteId(noteId)
+            .findFullNoteById(noteId)
             .orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
     // TODO : 인가받은 사용자 확인 후 읽음 처리 필요
     return NoteResponse.from(note);
@@ -90,10 +89,13 @@ public class NoteService {
         promiseRepository
             .findById(request.promiseId())
             .orElseThrow(() -> new CustomException(PROMISE_NOT_FOUND));
+    Closing closing =
+        closingRepository
+            .findById(request.closingId())
+            .orElseThrow(() -> new CustomException(CLOSING_NOT_FOUND));
     int nextSequence = getNextSequence();
 
-    return Note.create(
-        1L, 2L, emotion, action, situation, promise, request.closingId(), nextSequence);
+    return Note.create(1L, 2L, emotion, action, situation, promise, closing, nextSequence);
   }
 
   private int getNextSequence() {
