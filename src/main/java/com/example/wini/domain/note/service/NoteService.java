@@ -8,8 +8,10 @@ import com.example.wini.domain.note.dto.response.NoteResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
 import com.example.wini.domain.template.domain.Action;
 import com.example.wini.domain.template.domain.Emotion;
+import com.example.wini.domain.template.domain.Situation;
 import com.example.wini.domain.template.repository.ActionRepository;
 import com.example.wini.domain.template.repository.EmotionRepository;
+import com.example.wini.domain.template.repository.SituationRepository;
 import com.example.wini.global.error.exception.CustomException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,13 @@ public class NoteService {
   private final NoteRepository noteRepository;
   private final EmotionRepository emotionRepository;
   private final ActionRepository actionRepository;
+  private final SituationRepository situationRepository;
 
   @Transactional(readOnly = true)
   public NoteResponse findNoteById(Long noteId) {
     Note note =
         noteRepository
-            .findWithEmotionAndActionByNoteId(noteId)
+            .findWithEmotionAndActionAndSituationByNoteId(noteId)
             .orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
     // TODO : 인가받은 사용자 확인 후 읽음 처리 필요
     return NoteResponse.from(note);
@@ -76,17 +79,14 @@ public class NoteService {
         actionRepository
             .findById(request.actionId())
             .orElseThrow(() -> new CustomException(ACTION_NOT_FOUND));
+    Situation situation =
+        situationRepository
+            .findById(request.situationId())
+            .orElseThrow(() -> new CustomException(SITUATION_NOT_FOUND));
     int nextSequence = getNextSequence();
 
     return Note.create(
-        1L,
-        2L,
-        emotion,
-        request.situationId(),
-        action,
-        request.promiseId(),
-        request.closingId(),
-        nextSequence);
+        1L, 2L, emotion, action, situation, request.promiseId(), request.closingId(), nextSequence);
   }
 
   private int getNextSequence() {
