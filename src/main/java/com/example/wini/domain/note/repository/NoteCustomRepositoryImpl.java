@@ -17,11 +17,13 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public Optional<Note> findWithEmotionByNoteId(Long noteId) {
+  public Optional<Note> findWithEmotionAndActionByNoteId(Long noteId) {
     return Optional.ofNullable(
         queryFactory
             .selectFrom(note)
             .join(note.emotion)
+            .fetchJoin()
+            .join(note.action)
             .fetchJoin()
             .where(note.id.eq(noteId))
             .fetchOne());
