@@ -1,4 +1,4 @@
-package com.example.wini.domain.template.repository;
+package com.example.wini.domain.template.repository.promise;
 
 import static com.example.wini.domain.template.domain.QPromise.promise;
 

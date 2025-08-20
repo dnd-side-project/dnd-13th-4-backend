@@ -1,4 +1,4 @@
-package com.example.wini.domain.template.repository;
+package com.example.wini.domain.template.repository.promise;
 
 import com.example.wini.domain.template.domain.EmotionType;
 import com.example.wini.domain.template.domain.Promise;

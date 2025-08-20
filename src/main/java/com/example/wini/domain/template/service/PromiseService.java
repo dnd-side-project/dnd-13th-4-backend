@@ -3,7 +3,7 @@ package com.example.wini.domain.template.service;
 import com.example.wini.domain.template.domain.EmotionType;
 import com.example.wini.domain.template.domain.Promise;
 import com.example.wini.domain.template.dto.response.PromiseResponse;
-import com.example.wini.domain.template.repository.PromiseRepository;
+import com.example.wini.domain.template.repository.promise.PromiseRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
