@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NoteCustomRepository {
-  Optional<Note> findWithEmotionAndActionAndSituationAndPromiseByNoteId(Long noteId);
+  Optional<Note> findWithEmotionAndActionAndSituationAndPromiseAndClosingByNoteId(Long noteId);
 
   List<Note> findLatestNotes();
 

@@ -38,6 +38,7 @@ public enum ErrorCode {
   ACTION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 행동입니다."),
   SITUATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상황입니다."),
   PROMISE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 약속입니다."),
+  CLOSING_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 끝맺음입니다."),
   ;
 
   private final HttpStatus httpStatus;
