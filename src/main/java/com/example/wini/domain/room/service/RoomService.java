@@ -68,15 +68,11 @@ public class RoomService {
 
     @Transactional
     public RoomResponse joinRoom(Long memberId, RoomJoinRequest request) {
-        Member member =
-            memberRepository
-                .findById(memberId)
-                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
         validateMemberCanJoinRoom(memberId);
 
-        Room room =
-            roomRepository
+        Room room = roomRepository
                 .findOpenRoomByRoomCode(request.roomCode())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
 
@@ -95,7 +91,7 @@ public class RoomService {
         }
     }
 
-   private void validateRoomCapacity(Room room) {
+    private void validateRoomCapacity(Room room) {
         long memberCount = memberRoomRepository.countMembersByRoomId(room.getId());
         if (memberCount >= ROOM_MEMBER_MAX_COUNT) {
             throw new CustomException(ROOM_IS_FULL);
