@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PromiseService {
 
-  private final PromiseRepository promiseRepository;
+    private final PromiseRepository promiseRepository;
 
-  @Transactional(readOnly = true)
-  public List<PromiseResponse> findAllPromisesByEmotionType(String emotionType) {
-    EmotionType type = EmotionType.from(emotionType);
-    List<Promise> promises = promiseRepository.findAllByEmotionType(type);
-    return promises.stream().map(PromiseResponse::from).toList();
-  }
+    @Transactional(readOnly = true)
+    public List<PromiseResponse> findAllPromisesByEmotionType(String emotionType) {
+        EmotionType type = EmotionType.from(emotionType);
+        List<Promise> promises = promiseRepository.findAllByEmotionType(type);
+        return promises.stream().map(PromiseResponse::from).toList();
+    }
 }

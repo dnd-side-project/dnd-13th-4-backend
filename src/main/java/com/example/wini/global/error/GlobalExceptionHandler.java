@@ -27,129 +27,104 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-  private static final String ERROR_MESSAGE_DELIMITER = " ";
+    private static final String ERROR_MESSAGE_DELIMITER = " ";
 
-  @Override
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(
-      MethodArgumentNotValidException ex,
-      HttpHeaders headers,
-      HttpStatusCode statusCode,
-      WebRequest request) {
-    log.error("MethodArgumentNotValid : {}", ex.getMessage(), ex);
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        log.error("MethodArgumentNotValid : {}", ex.getMessage(), ex);
 
-    Map<String, String> errors = new HashMap<>();
-    ex.getBindingResult()
-        .getFieldErrors()
-        .forEach(
-            fieldError -> {
-              String fieldName = fieldError.getField();
-              String errorMessage = fieldError.getDefaultMessage();
-              errors.put(fieldName, errorMessage);
-            });
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
+            String fieldName = fieldError.getField();
+            String errorMessage = fieldError.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
 
-    final ErrorCode errorCode = METHOD_ARGUMENT_INVALID;
-    final String errorMessage =
-        String.join(ERROR_MESSAGE_DELIMITER, errorCode.getMessage(), errors.toString());
-    final ErrorResponse errorResponse =
-        ErrorResponse.of(ex.getClass().getSimpleName(), errorMessage);
-    return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
-  }
+        final ErrorCode errorCode = METHOD_ARGUMENT_INVALID;
+        final String errorMessage = String.join(ERROR_MESSAGE_DELIMITER, errorCode.getMessage(), errors.toString());
+        final ErrorResponse errorResponse = ErrorResponse.of(ex.getClass().getSimpleName(), errorMessage);
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
+    }
 
-  @Override
-  protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
-      HttpRequestMethodNotSupportedException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    log.error("HttpRequestMethodNotSupported : {}", ex.getMessage(), ex);
-    final ErrorCode errorCode = METHOD_NOT_SUPPORTED;
-    return createErrorResponseEntity(ex, errorCode);
-  }
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.error("HttpRequestMethodNotSupported : {}", ex.getMessage(), ex);
+        final ErrorCode errorCode = METHOD_NOT_SUPPORTED;
+        return createErrorResponseEntity(ex, errorCode);
+    }
 
-  @Override
-  protected ResponseEntity<Object> handleHandlerMethodValidationException(
-      HandlerMethodValidationException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    log.error("HandlerMethodValidationException : {}", ex.getMessage(), ex);
-    final ErrorCode errorCode = QUERY_PARAM_INVALID;
-    return createErrorResponseEntity(ex, errorCode);
-  }
+    @Override
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(
+            HandlerMethodValidationException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.error("HandlerMethodValidationException : {}", ex.getMessage(), ex);
+        final ErrorCode errorCode = QUERY_PARAM_INVALID;
+        return createErrorResponseEntity(ex, errorCode);
+    }
 
-  @Override
-  protected ResponseEntity<Object> handleMissingServletRequestParameter(
-      MissingServletRequestParameterException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    log.error("MissingServletRequestParameter : {}", ex.getMessage(), ex);
-    final ErrorCode errorCode = QUERY_PARAM_NOT_FOUND;
-    return createErrorResponseEntity(ex, errorCode);
-  }
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+        log.error("MissingServletRequestParameter : {}", ex.getMessage(), ex);
+        final ErrorCode errorCode = QUERY_PARAM_NOT_FOUND;
+        return createErrorResponseEntity(ex, errorCode);
+    }
 
-  @Override
-  protected ResponseEntity<Object> handleExceptionInternal(
-      Exception ex,
-      Object body,
-      HttpHeaders headers,
-      HttpStatusCode statusCode,
-      WebRequest request) {
-    log.error("ExceptionInternal : {}", ex.getMessage(), ex);
-    final ErrorCode errorCode = INTERNAL_SERVER_ERROR;
-    return createErrorResponseEntity(ex, errorCode);
-  }
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(
+            Exception ex, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+        log.error("ExceptionInternal : {}", ex.getMessage(), ex);
+        final ErrorCode errorCode = INTERNAL_SERVER_ERROR;
+        return createErrorResponseEntity(ex, errorCode);
+    }
 
-  @Override
-  protected ResponseEntity<Object> handleHttpMessageNotReadable(
-      HttpMessageNotReadableException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    log.error("HttpMessageNotReadable : {}", ex.getMessage(), ex);
-    final ErrorCode errorCode = HTTP_MESSAGE_NOT_READABLE;
-    return createErrorResponseEntity(ex, errorCode);
-  }
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        log.error("HttpMessageNotReadable : {}", ex.getMessage(), ex);
+        final ErrorCode errorCode = HTTP_MESSAGE_NOT_READABLE;
+        return createErrorResponseEntity(ex, errorCode);
+    }
 
-  @ExceptionHandler(CustomException.class)
-  public ResponseEntity<Object> handleCustomException(CustomException ex) {
-    log.error("CustomException : {}", ex.getMessage(), ex);
-    final ErrorCode errorCode = ex.getErrorCode();
-    return createErrorResponseEntity(ex, errorCode);
-  }
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<Object> handleCustomException(CustomException ex) {
+        log.error("CustomException : {}", ex.getMessage(), ex);
+        final ErrorCode errorCode = ex.getErrorCode();
+        return createErrorResponseEntity(ex, errorCode);
+    }
 
-  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(
-      MethodArgumentTypeMismatchException ex) {
-    log.error("MethodArgumentTypeMismatchException : {}", ex.getMessage(), ex);
-    final ErrorCode errorCode = QUERY_TYPE_MISMATCH;
-    return createErrorResponseEntity(ex, errorCode);
-  }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        log.error("MethodArgumentTypeMismatchException : {}", ex.getMessage(), ex);
+        final ErrorCode errorCode = QUERY_TYPE_MISMATCH;
+        return createErrorResponseEntity(ex, errorCode);
+    }
 
-  @ExceptionHandler(HttpClientErrorException.class)
-  protected ResponseEntity<Object> handleClientErrorException(HttpClientErrorException ex) {
-    log.error("HttpClientError : {}", ex.getMessage(), ex);
-    return createHttpClientErrorResponseEntity(ex);
-  }
+    @ExceptionHandler(HttpClientErrorException.class)
+    protected ResponseEntity<Object> handleClientErrorException(HttpClientErrorException ex) {
+        log.error("HttpClientError : {}", ex.getMessage(), ex);
+        return createHttpClientErrorResponseEntity(ex);
+    }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<Object> handleException(Exception ex) {
-    log.error("InternalServerError : {}", ex.getMessage(), ex);
-    final ErrorCode errorCode = INTERNAL_SERVER_ERROR;
-    return createErrorResponseEntity(ex, errorCode);
-  }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleException(Exception ex) {
+        log.error("InternalServerError : {}", ex.getMessage(), ex);
+        final ErrorCode errorCode = INTERNAL_SERVER_ERROR;
+        return createErrorResponseEntity(ex, errorCode);
+    }
 
-  private ResponseEntity<Object> createErrorResponseEntity(
-      final Exception ex, final ErrorCode errorCode) {
-    final ErrorResponse errorResponse =
-        ErrorResponse.of(ex.getClass().getSimpleName(), errorCode.getMessage());
-    return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
-  }
+    private ResponseEntity<Object> createErrorResponseEntity(final Exception ex, final ErrorCode errorCode) {
+        final ErrorResponse errorResponse = ErrorResponse.of(ex.getClass().getSimpleName(), errorCode.getMessage());
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
+    }
 
-  private ResponseEntity<Object> createHttpClientErrorResponseEntity(
-      final HttpClientErrorException ex) {
-    final ErrorResponse errorResponse =
-        ErrorResponse.of(ex.getClass().getSimpleName(), ex.getResponseBodyAsString());
-    return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
-  }
+    private ResponseEntity<Object> createHttpClientErrorResponseEntity(final HttpClientErrorException ex) {
+        final ErrorResponse errorResponse =
+                ErrorResponse.of(ex.getClass().getSimpleName(), ex.getResponseBodyAsString());
+        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
+    }
 }

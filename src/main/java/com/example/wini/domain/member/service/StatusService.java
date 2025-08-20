@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StatusService {
 
-  private final StatusRepository statusRepository;
+    private final StatusRepository statusRepository;
 
-  @Transactional(readOnly = true)
-  public List<StatusResponse> getStatuses() {
-    List<Status> statuses = statusRepository.findAll();
-    return statuses.stream().map(StatusResponse::from).toList();
-  }
+    @Transactional(readOnly = true)
+    public List<StatusResponse> getStatuses() {
+        List<Status> statuses = statusRepository.findAll();
+        return statuses.stream().map(StatusResponse::from).toList();
+    }
 }

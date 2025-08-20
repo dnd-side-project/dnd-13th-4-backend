@@ -5,5 +5,5 @@ import com.example.wini.domain.template.domain.Situation;
 import java.util.List;
 
 public interface SituationCustomRepository {
-  List<Situation> findAllByEmotionType(EmotionType emotionType);
+    List<Situation> findAllByEmotionType(EmotionType emotionType);
 }

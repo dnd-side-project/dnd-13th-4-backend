@@ -8,18 +8,18 @@ reviews:
     auto_incremental_review: true
   poem: false
 
-  profile: 'chill'
+  profile: "chill"
 
   path_filters:
-    - '!build/**'
-    - '!.gradle/**'
-    - '!.idea/**'
-    - '!**/resources/**'
-    - '!src/test/**'
-    - '!**/generated/**'
+    - "!build/**"
+    - "!.gradle/**"
+    - "!.idea/**"
+    - "!**/resources/**"
+    - "!src/test/**"
+    - "!**/generated/**"
 
 path_instructions:
-  - path: 'src/**/*.java'
+  - path: "src/**/*.java"
     instructions:
       ## 1. 코딩 컨벤션
       - 클래스는 PascalCase, 함수/변수는 camelCase, 상수는 UPPER_SNAKE_CASE로 작성하세요.

@@ -24,36 +24,36 @@ import lombok.NoArgsConstructor;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"oauthId", "oauthProvider"})})
 public class Member extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "status_id")
-  private Status status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "status_id")
+    private Status status;
 
-  @Column(nullable = false)
-  private String email;
+    @Column(nullable = false)
+    private String email;
 
-  @Column(length = 10, nullable = false)
-  private String name;
+    @Column(length = 10, nullable = false)
+    private String name;
 
-  private String image;
+    private String image;
 
-  @Column(nullable = false)
-  private String oauthId;
+    @Column(nullable = false)
+    private String oauthId;
 
-  @Column(length = 10, nullable = false)
-  @Enumerated(EnumType.STRING)
-  private OauthProvider oauthProvider;
+    @Column(length = 10, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OauthProvider oauthProvider;
 
-  private LocalDateTime statusStartedAt;
+    private LocalDateTime statusStartedAt;
 
-  private Long statusDuration;
+    private Long statusDuration;
 
-  public void updateStatus(Status status, LocalDateTime statusStartedAt, Long statusDuration) {
-    this.status = status;
-    this.statusStartedAt = statusStartedAt;
-    this.statusDuration = statusDuration;
-  }
+    public void updateStatus(Status status, LocalDateTime statusStartedAt, Long statusDuration) {
+        this.status = status;
+        this.statusStartedAt = statusStartedAt;
+        this.statusDuration = statusDuration;
+    }
 }

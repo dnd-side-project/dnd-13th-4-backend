@@ -9,12 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-  @Bean
-  public OpenAPI openAPI() {
-    return new OpenAPI().addServersItem(new Server().url("/")).info(apiInfo());
-  }
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI().addServersItem(new Server().url("/")).info(apiInfo());
+    }
 
-  private Info apiInfo() {
-    return new Info().title("Wini API 문서").version("v1.0.0");
-  }
+    private Info apiInfo() {
+        return new Info().title("Wini API 문서").version("v1.0.0");
+    }
 }

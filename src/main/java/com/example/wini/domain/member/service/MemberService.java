@@ -24,90 +24,78 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
 
-  private final MemberRepository memberRepository;
-  private final RoomRepository roomRepository;
-  private final StatusRepository statusRepository;
+    private final MemberRepository memberRepository;
+    private final RoomRepository roomRepository;
+    private final StatusRepository statusRepository;
 
-  private static final Long MEMBER_ID = 1L;
+    private static final Long MEMBER_ID = 1L;
 
-  @Transactional(readOnly = true)
-  public MemberStatusResponse searchMyStatus() {
-    Member member =
-        memberRepository
-            .findWithStatusByMemberId(MEMBER_ID)
-            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+    @Transactional(readOnly = true)
+    public MemberStatusResponse searchMyStatus() {
+        Member member = memberRepository
+                .findWithStatusByMemberId(MEMBER_ID)
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
-    if (!isStatusValid(member)) {
-      return MemberStatusResponse.empty();
+        if (!isStatusValid(member)) {
+            return MemberStatusResponse.empty();
+        }
+
+        ReservedTimeInfo reservedTimeInfo = createReservedTimeInfo(member.getStatusDuration());
+
+        return MemberStatusResponse.from(member, reservedTimeInfo);
     }
 
-    ReservedTimeInfo reservedTimeInfo = createReservedTimeInfo(member.getStatusDuration());
+    @Transactional(readOnly = true)
+    public MemberStatusResponse searchMateStatus() {
 
-    return MemberStatusResponse.from(member, reservedTimeInfo);
-  }
+        Long roomId = roomRepository
+                .findOpenRoomIdByMemberId(MEMBER_ID)
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
 
-  @Transactional(readOnly = true)
-  public MemberStatusResponse searchMateStatus() {
+        Member mate = memberRepository
+                .findRoommateInMyRoom(MEMBER_ID, roomId)
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
-    Long roomId =
-        roomRepository
-            .findOpenRoomIdByMemberId(MEMBER_ID)
-            .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        if (!isStatusValid(mate)) {
+            return MemberStatusResponse.empty();
+        }
 
-    Member mate =
-        memberRepository
-            .findRoommateInMyRoom(MEMBER_ID, roomId)
-            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+        ReservedTimeInfo reservedTimeInfo = createReservedTimeInfo(mate.getStatusDuration());
 
-    if (!isStatusValid(mate)) {
-      return MemberStatusResponse.empty();
+        return MemberStatusResponse.from(mate, reservedTimeInfo);
     }
 
-    ReservedTimeInfo reservedTimeInfo = createReservedTimeInfo(mate.getStatusDuration());
-
-    return MemberStatusResponse.from(mate, reservedTimeInfo);
-  }
-
-  private boolean isStatusValid(Member member) {
-    if (member.getStatus() == null) {
-      return false;
+    private boolean isStatusValid(Member member) {
+        if (member.getStatus() == null) {
+            return false;
+        }
+        LocalDateTime endTime = member.getStatusStartedAt().plus(Duration.ofSeconds(member.getStatusDuration()));
+        return endTime.isAfter(LocalDateTime.now());
     }
-    LocalDateTime endTime =
-        member.getStatusStartedAt().plus(Duration.ofSeconds(member.getStatusDuration()));
-    return endTime.isAfter(LocalDateTime.now());
-  }
 
-  private ReservedTimeInfo createReservedTimeInfo(long durationSeconds) {
-    Duration duration = Duration.ofSeconds(durationSeconds);
-    return ReservedTimeInfo.of(duration.toHours(), duration.toMinutes() % 60);
-  }
+    private ReservedTimeInfo createReservedTimeInfo(long durationSeconds) {
+        Duration duration = Duration.ofSeconds(durationSeconds);
+        return ReservedTimeInfo.of(duration.toHours(), duration.toMinutes() % 60);
+    }
 
-  @Transactional
-  public MemberStatusResponse updateStatus(MemberStatusUpdateRequest request) {
-    Member member =
-        memberRepository
-            .findById(MEMBER_ID)
-            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+    @Transactional
+    public MemberStatusResponse updateStatus(MemberStatusUpdateRequest request) {
+        Member member = memberRepository.findById(MEMBER_ID).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
 
-    Status status =
-        statusRepository
-            .findById(request.statusId())
-            .orElseThrow(() -> new CustomException(STATUS_NOT_FOUND));
+        Status status =
+                statusRepository.findById(request.statusId()).orElseThrow(() -> new CustomException(STATUS_NOT_FOUND));
 
-    Duration statusDuration = request.reservedTimeInfo().toDuration();
-    Long statusDurationSeconds = statusDuration.getSeconds();
+        Duration statusDuration = request.reservedTimeInfo().toDuration();
+        Long statusDurationSeconds = statusDuration.getSeconds();
 
-    member.updateStatus(status, request.startedAt(), statusDurationSeconds);
+        member.updateStatus(status, request.startedAt(), statusDurationSeconds);
 
-    return MemberStatusResponse.from(member, request.reservedTimeInfo());
-  }
+        return MemberStatusResponse.from(member, request.reservedTimeInfo());
+    }
 
-  @Transactional(readOnly = true)
-  public MemberResponse getMyInfo() {
-    Member member =
-        memberRepository
-            .findById(MEMBER_ID)
-            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
-    return MemberResponse.from(member);
-  }
+    @Transactional(readOnly = true)
+    public MemberResponse getMyInfo() {
+        Member member = memberRepository.findById(MEMBER_ID).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+        return MemberResponse.from(member);
+    }
 }

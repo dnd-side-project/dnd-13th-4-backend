@@ -11,10 +11,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmotionCustomRepositoryImpl implements EmotionCustomRepository {
 
-  private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
-  @Override
-  public List<Emotion> findAllByEmotionType(EmotionType emotionType) {
-    return queryFactory.selectFrom(emotion).where(emotion.emotionType.eq(emotionType)).fetch();
-  }
+    @Override
+    public List<Emotion> findAllByEmotionType(EmotionType emotionType) {
+        return queryFactory
+                .selectFrom(emotion)
+                .where(emotion.emotionType.eq(emotionType))
+                .fetch();
+    }
 }

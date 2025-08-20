@@ -10,16 +10,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum EmotionType {
-  POSITIVE("positive"),
-  NEGATIVE("negative"),
-  ;
+    POSITIVE("positive"),
+    NEGATIVE("negative"),
+    ;
 
-  private final String value;
+    private final String value;
 
-  public static EmotionType from(String value) {
-    return Arrays.stream(EmotionType.values())
-        .filter(emotionType -> emotionType.value.equals(value))
-        .findFirst()
-        .orElseThrow(() -> new CustomException(EMOTION_TYPE_NOT_FOUND));
-  }
+    public static EmotionType from(String value) {
+        return Arrays.stream(EmotionType.values())
+                .filter(emotionType -> emotionType.value.equals(value))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(EMOTION_TYPE_NOT_FOUND));
+    }
 }

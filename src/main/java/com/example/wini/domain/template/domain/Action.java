@@ -12,19 +12,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Action extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(length = 30, nullable = false)
-  private String text;
+    @Column(length = 30, nullable = false)
+    private String text;
 
-  @Builder(access = AccessLevel.PRIVATE)
-  private Action(String text) {
-    this.text = text;
-  }
+    @Builder(access = AccessLevel.PRIVATE)
+    private Action(String text) {
+        this.text = text;
+    }
 
-  public static Action create(String text) {
-    return Action.builder().text(text).build();
-  }
+    public static Action create(String text) {
+        return Action.builder().text(text).build();
+    }
 }

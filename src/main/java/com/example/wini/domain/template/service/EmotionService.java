@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EmotionService {
 
-  private final EmotionRepository emotionRepository;
+    private final EmotionRepository emotionRepository;
 
-  @Transactional(readOnly = true)
-  public List<EmotionResponse> findAllEmotionsByEmotionType(String emotionType) {
-    EmotionType type = EmotionType.from(emotionType);
-    List<Emotion> emotions = emotionRepository.findAllByEmotionType(type);
-    return emotions.stream().map(EmotionResponse::from).toList();
-  }
+    @Transactional(readOnly = true)
+    public List<EmotionResponse> findAllEmotionsByEmotionType(String emotionType) {
+        EmotionType type = EmotionType.from(emotionType);
+        List<Emotion> emotions = emotionRepository.findAllByEmotionType(type);
+        return emotions.stream().map(EmotionResponse::from).toList();
+    }
 }

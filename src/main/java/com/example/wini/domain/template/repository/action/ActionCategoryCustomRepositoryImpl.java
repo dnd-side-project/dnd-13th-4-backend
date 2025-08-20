@@ -11,16 +11,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ActionCategoryCustomRepositoryImpl implements ActionCategoryCustomRepository {
 
-  private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory queryFactory;
 
-  @Override
-  public List<ActionCategory> findAllWithActionsByEmotionType(EmotionType emotionType) {
-    return queryFactory
-        .selectFrom(actionCategory)
-        .distinct()
-        .join(actionCategory.actions)
-        .fetchJoin()
-        .where(actionCategory.emotionType.eq(emotionType))
-        .fetch();
-  }
+    @Override
+    public List<ActionCategory> findAllWithActionsByEmotionType(EmotionType emotionType) {
+        return queryFactory
+                .selectFrom(actionCategory)
+                .distinct()
+                .join(actionCategory.actions)
+                .fetchJoin()
+                .where(actionCategory.emotionType.eq(emotionType))
+                .fetch();
+    }
 }
