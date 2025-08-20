@@ -1,5 +1,6 @@
 package com.example.wini.domain.room.service;
 
+import static com.example.wini.global.error.exception.ErrorCode.ALREADY_JOIN_ROOM;
 import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
 
 import com.example.wini.domain.member.domain.Member;
@@ -58,5 +59,12 @@ public class RoomService {
             codeBuilder.append(charSet.charAt(index));
         }
         return codeBuilder.toString();
+    }
+
+    private void validateMemberCanJoinRoom(Long memberId) {
+        boolean isAlreadyJoined = roomRepository.existsOpenRoomByMemberId(memberId);
+        if (isAlreadyJoined) {
+            throw new CustomException(ALREADY_JOIN_ROOM);
+        }
     }
 }

@@ -28,6 +28,8 @@ public enum ErrorCode {
 
     // Room
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 방입니다."),
+    ALREADY_JOIN_ROOM(HttpStatus.BAD_REQUEST, "이미 방에 속해있습니다."),
+    ROOM_IS_FULL(HttpStatus.BAD_REQUEST, "방의 정원이 가득 찼습니다."),
 
     // Note
     NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 마음쪽지입니다."),
