@@ -2,12 +2,10 @@ package com.example.wini.domain.member.controller;
 
 import com.example.wini.domain.member.dto.response.StatusResponse;
 import com.example.wini.domain.member.service.StatusService;
-import com.example.wini.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,8 +18,7 @@ public class StatusController {
 
     @Operation(summary = "상태 리스트 조회", description = "상태 리스트를 반환합니다.")
     @GetMapping("/status")
-    public ResponseEntity<ApiResponse<List<StatusResponse>>> getStatuses() {
-        List<StatusResponse> response = statusService.getStatuses();
-        return ResponseEntity.ok(ApiResponse.success(response));
+    public List<StatusResponse> getStatuses() {
+        return statusService.getStatuses();
     }
 }
