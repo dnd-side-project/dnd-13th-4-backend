@@ -38,8 +38,8 @@ public class RoomController {
     @Operation(summary = "초대코드 입력", description = "초대코드와 연결된 방 정보를 반환합니다.")
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<RoomResponse>> joinRoom(
-        // TODO: 토큰이 생기면 사용자 정보 추출하기
-        @Valid @RequestBody RoomJoinRequest request) {
+            // TODO: 토큰이 생기면 사용자 정보 추출하기
+            @Valid @RequestBody RoomJoinRequest request) {
         RoomResponse response = roomService.joinRoom(MATE_ID, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(HttpStatus.CREATED, response));
     }
