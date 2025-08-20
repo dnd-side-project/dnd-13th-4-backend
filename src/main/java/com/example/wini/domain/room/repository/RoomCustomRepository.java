@@ -4,9 +4,9 @@ import com.example.wini.domain.room.entity.Room;
 import java.util.Optional;
 
 public interface RoomCustomRepository {
-   Optional<Long> findOpenRoomIdByMemberId(Long memberId);
+    Optional<Long> findOpenRoomIdByMemberId(Long memberId);
 
-  Optional<Room> findOpenRoomByRoomCode(String roomCode);
+    Optional<Room> findOpenRoomByRoomCode(String roomCode);
 
-  boolean existsOpenRoomByMemberId(Long memberId);
+    boolean existsOpenRoomByMemberId(Long memberId);
 }
