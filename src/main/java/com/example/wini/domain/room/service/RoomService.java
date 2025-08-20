@@ -2,6 +2,7 @@ package com.example.wini.domain.room.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.ALREADY_JOIN_ROOM;
 import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
+import static com.example.wini.global.error.exception.ErrorCode.ROOM_IS_FULL;
 
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.repository.MemberRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoomService {
 
     private static final Integer ROOM_CODE_LENGTH = 7;
+    private static final Integer ROOM_MEMBER_MAX_COUNT = 2;
 
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
@@ -65,6 +67,13 @@ public class RoomService {
         boolean isAlreadyJoined = roomRepository.existsOpenRoomByMemberId(memberId);
         if (isAlreadyJoined) {
             throw new CustomException(ALREADY_JOIN_ROOM);
+        }
+    }
+
+   private void validateRoomCapacity(Room room) {
+        long memberCount = memberRoomRepository.countMembersByRoomId(room.getId());
+        if (memberCount >= ROOM_MEMBER_MAX_COUNT) {
+            throw new CustomException(ROOM_IS_FULL);
         }
     }
 }
