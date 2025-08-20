@@ -41,7 +41,7 @@ public class TemplateController {
 
   @GetMapping("/actions")
   @Operation(summary = "행동 리스트 조회", description = "감정 유형을 쿼리로 받아 행동 목록을 카테고리로 분류하여 반환합니다.")
-  public ResponseEntity<ApiResponse<List<ActionCategoryResponse>>> getActions(
+  public ResponseEntity<ApiResponse<List<ActionCategoryResponse>>> getActionsByEmotionType(
       @RequestParam(value = "emotionType") @NotBlank String emotionType) {
     List<ActionCategoryResponse> responses =
         actionService.findAllActionCategoriesByEmotionType(emotionType);
