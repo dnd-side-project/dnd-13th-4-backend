@@ -1,6 +1,7 @@
 package com.example.wini.domain.template.service;
 
 import com.example.wini.domain.template.domain.ActionCategory;
+import com.example.wini.domain.template.domain.EmotionType;
 import com.example.wini.domain.template.dto.response.ActionCategoryResponse;
 import com.example.wini.domain.template.repository.ActionCategoryRepository;
 import java.util.List;
@@ -17,8 +18,10 @@ public class ActionService {
   private final ActionCategoryRepository actionCategoryRepository;
 
   @Transactional(readOnly = true)
-  public List<ActionCategoryResponse> findAllActionCategories() {
-    List<ActionCategory> categories = actionCategoryRepository.findAllWithActions();
+  public List<ActionCategoryResponse> findAllActionCategoriesByEmotionType(String emotionType) {
+    EmotionType type = EmotionType.from(emotionType);
+    List<ActionCategory> categories =
+        actionCategoryRepository.findAllWithActionsByEmotionType(type);
     return categories.stream().map(ActionCategoryResponse::from).toList();
   }
 }
