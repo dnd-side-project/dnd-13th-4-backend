@@ -16,7 +16,7 @@ public class Action extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(length = 10, nullable = false)
+  @Column(length = 30, nullable = false)
   private String text;
 
   @Builder(access = AccessLevel.PRIVATE)
