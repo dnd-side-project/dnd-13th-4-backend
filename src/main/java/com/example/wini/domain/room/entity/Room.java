@@ -26,4 +26,13 @@ public class Room extends BaseEntity {
 
   @Column(nullable = false)
   private Boolean isClosed;
+
+  private Room(String roomCode) {
+    this.roomCode = roomCode;
+    this.isClosed = false;
+  }
+
+  public static Room create(String roomCode) {
+    return new Room(roomCode);
+  }
 }
