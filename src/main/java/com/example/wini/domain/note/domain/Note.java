@@ -1,6 +1,7 @@
 package com.example.wini.domain.note.domain;
 
 import com.example.wini.domain.common.BaseEntity;
+import com.example.wini.domain.template.domain.Emotion;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,14 +17,16 @@ public class Note extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  // TODO : 인증인가 후 MemberRoom 연결
   @Column(nullable = false)
   private Long memberRoomSenderId;
 
   @Column(nullable = false)
   private Long memberRoomReceiverId;
 
-  @Column(nullable = false)
-  private Long emotionId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "emotion_id")
+  private Emotion emotion;
 
   @Column(nullable = true)
   private Long situationId;
@@ -50,7 +53,7 @@ public class Note extends BaseEntity {
   private Note(
       Long memberRoomSenderId,
       Long memberRoomReceiverId,
-      Long emotionId,
+      Emotion emotion,
       Long situationId,
       Long actionId,
       Long promiseId,
@@ -58,7 +61,7 @@ public class Note extends BaseEntity {
       int sequence) {
     this.memberRoomSenderId = memberRoomSenderId;
     this.memberRoomReceiverId = memberRoomReceiverId;
-    this.emotionId = emotionId;
+    this.emotion = emotion;
     this.situationId = situationId;
     this.actionId = actionId;
     this.promiseId = promiseId;
@@ -71,7 +74,7 @@ public class Note extends BaseEntity {
   public static Note create(
       Long memberRoomSenderId,
       Long memberRoomReceiverId,
-      Long emotionId,
+      Emotion emotion,
       Long situationId,
       Long actionId,
       Long promiseId,
@@ -80,7 +83,7 @@ public class Note extends BaseEntity {
     return Note.builder()
         .memberRoomSenderId(memberRoomSenderId)
         .memberRoomReceiverId(memberRoomReceiverId)
-        .emotionId(emotionId)
+        .emotion(emotion)
         .situationId(situationId)
         .actionId(actionId)
         .promiseId(promiseId)
