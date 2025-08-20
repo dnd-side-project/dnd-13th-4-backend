@@ -17,7 +17,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public Optional<Note> findWithEmotionAndActionAndSituationByNoteId(Long noteId) {
+  public Optional<Note> findWithEmotionAndActionAndSituationAndPromiseByNoteId(Long noteId) {
     return Optional.ofNullable(
         queryFactory
             .selectFrom(note)
@@ -26,6 +26,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
             .join(note.action)
             .fetchJoin()
             .join(note.situation)
+            .fetchJoin()
+            .join(note.promise)
             .fetchJoin()
             .where(note.id.eq(noteId))
             .fetchOne());
