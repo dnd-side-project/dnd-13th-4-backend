@@ -20,7 +20,7 @@ public class PromiseService {
   @Transactional(readOnly = true)
   public List<PromiseResponse> findAllPromisesByEmotionType(String emotionType) {
     EmotionType type = EmotionType.from(emotionType);
-    List<Promise> promises = promiseRepository.findAll();
+    List<Promise> promises = promiseRepository.findAllByEmotionType(type);
     return promises.stream().map(PromiseResponse::from).toList();
   }
 }
