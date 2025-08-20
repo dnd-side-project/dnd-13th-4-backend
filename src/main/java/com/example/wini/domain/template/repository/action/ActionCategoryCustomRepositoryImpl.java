@@ -17,7 +17,9 @@ public class ActionCategoryCustomRepositoryImpl implements ActionCategoryCustomR
   public List<ActionCategory> findAllWithActionsByEmotionType(EmotionType emotionType) {
     return queryFactory
         .selectFrom(actionCategory)
+        .distinct()
         .join(actionCategory.actions)
+        .fetchJoin()
         .where(actionCategory.emotionType.eq(emotionType))
         .fetch();
   }
