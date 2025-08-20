@@ -49,7 +49,7 @@ public class TemplateController {
   }
 
   @GetMapping("/situations")
-  @Operation(summary = "상황 리스트 조회", description = "상황 목록을 반환합니다.")
+  @Operation(summary = "상황 리스트 조회", description = "감정 유형을 쿼리로 받아 상황 목록을 반환합니다.")
   public ResponseEntity<ApiResponse<List<SituationResponse>>> getSituationsByEmotionType(
       @RequestParam(value = "emotionType") @NotBlank String emotionType) {
     List<SituationResponse> responses =
@@ -58,7 +58,7 @@ public class TemplateController {
   }
 
   @GetMapping("/promises")
-  @Operation(summary = "약속 리스트 조회", description = "약속 목록을 반환합니다.")
+  @Operation(summary = "약속 리스트 조회", description = "감정 유형을 쿼리로 받아 약속 목록을 반환합니다.")
   public ResponseEntity<ApiResponse<List<PromiseResponse>>> getPromisesByEmotionType(
       @RequestParam(value = "emotionType") @NotBlank String emotionType) {
     List<PromiseResponse> responses = promiseService.findAllPromisesByEmotionType(emotionType);
