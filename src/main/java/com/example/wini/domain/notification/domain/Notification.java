@@ -1,4 +1,4 @@
-package com.example.wini.domain.notification.entity;
+package com.example.wini.domain.notification.domain;
 
 import com.example.wini.domain.common.BaseEntity;
 import com.example.wini.domain.member.domain.Member;

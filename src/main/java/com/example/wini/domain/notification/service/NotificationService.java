@@ -4,8 +4,8 @@ import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND
 
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.repository.MemberRepository;
+import com.example.wini.domain.notification.domain.Notification;
 import com.example.wini.domain.notification.dto.request.NotificationCreateRequest;
-import com.example.wini.domain.notification.entity.Notification;
 import com.example.wini.domain.notification.repository.NotificationRepository;
 import com.example.wini.global.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
