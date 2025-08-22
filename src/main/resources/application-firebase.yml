@@ -1,0 +1,6 @@
+spring:
+  config:
+    activate:
+      on-profile: "firebase"
+fcm:
+  file-path: ${FCM_FILE_PATH}

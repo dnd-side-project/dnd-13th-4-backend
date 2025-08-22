@@ -5,6 +5,7 @@ spring:
       test: "h2"
     include:
       - swagger
+      - firebase
 
   application:
     name: wini
