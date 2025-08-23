@@ -18,26 +18,26 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification extends BaseEntity {
+public class NotificationToken extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", unique = true)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Column(length = 500, nullable = false, unique = true)
     private String token;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Notification(Member member, String token) {
+    private NotificationToken(Member member, String token) {
         this.member = member;
         this.token = token;
     }
 
-    public static Notification create(Member member, String token) {
-        return Notification.builder().member(member).token(token).build();
+    public static NotificationToken create(Member member, String token) {
+        return NotificationToken.builder().member(member).token(token).build();
     }
 }

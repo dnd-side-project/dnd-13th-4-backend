@@ -2,4 +2,4 @@ package com.example.wini.domain.notification.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record NotificationCreateRequest(@NotBlank String token) {}
+public record NotificationTokenSaveRequest(@NotBlank String token) {}
