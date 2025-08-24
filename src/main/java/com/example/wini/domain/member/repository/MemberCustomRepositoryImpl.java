@@ -4,6 +4,7 @@ import static com.example.wini.domain.member.domain.QMember.member;
 import static com.example.wini.domain.room.entity.QMemberRoom.memberRoom;
 
 import com.example.wini.domain.member.domain.Member;
+import com.example.wini.domain.room.entity.QMemberRoom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,23 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .leftJoin(member.status)
                 .fetchJoin()
                 .where(memberRoom.room.id.in(roomId).and(memberRoom.member.id.ne(memberId)))
+                .fetchOne());
+    }
+
+    @Override
+    public Optional<Member> findRoommateByMemberId(Long memberId) {
+        QMemberRoom myMemberRoom = new QMemberRoom("mr1");
+        QMemberRoom mateMemberRoom = new QMemberRoom("mr2");
+
+        return Optional.ofNullable(queryFactory
+                .select(mateMemberRoom.member)
+                .from(myMemberRoom)
+                .join(mateMemberRoom)
+                .on(myMemberRoom.room.eq(mateMemberRoom.room))
+                .where(
+                        myMemberRoom.member.id.eq(memberId),
+                        mateMemberRoom.member.id.ne(memberId),
+                        myMemberRoom.room.isClosed.isFalse())
                 .fetchOne());
     }
 }

@@ -7,4 +7,6 @@ public interface MemberCustomRepository {
     Optional<Member> findWithStatusByMemberId(Long memberId);
 
     Optional<Member> findRoommateInMyRoom(Long memberId, Long roomId);
+
+    Optional<Member> findRoommateByMemberId(Long memberId);
 }
