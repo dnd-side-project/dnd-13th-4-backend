@@ -3,4 +3,4 @@ spring:
     activate:
       on-profile: "firebase"
 fcm:
-  file-path: ${FCM_FILE_PATH}
+  secret-key: ${FCM_SECRET_KEY}
