@@ -24,6 +24,7 @@ public enum ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    MATE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 룸메이트입니다."),
 
     // Status
     STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상태입니다."),
