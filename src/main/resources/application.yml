@@ -1,11 +1,10 @@
 spring:
   profiles:
     group:
-      dev: "dev, mysql"
+      dev: "dev, mysql, firebase"
       test: "h2"
     include:
       - swagger
-      - firebase
 
   application:
     name: wini
