@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class NotificationToken extends BaseEntity {
+public class FirebaseToken extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +32,12 @@ public class NotificationToken extends BaseEntity {
     private String token;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private NotificationToken(Member member, String token) {
+    private FirebaseToken(Member member, String token) {
         this.member = member;
         this.token = token;
     }
 
-    public static NotificationToken create(Member member, String token) {
-        return NotificationToken.builder().member(member).token(token).build();
+    public static FirebaseToken create(Member member, String token) {
+        return FirebaseToken.builder().member(member).token(token).build();
     }
 }

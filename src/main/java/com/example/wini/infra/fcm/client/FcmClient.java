@@ -1,8 +1,8 @@
 package com.example.wini.infra.fcm.client;
 
-import com.example.wini.domain.notification.domain.NotificationToken;
+import com.example.wini.domain.notification.domain.FirebaseToken;
 import com.example.wini.domain.notification.domain.NotificationType;
-import com.example.wini.domain.notification.repository.NotificationTokenRepository;
+import com.example.wini.domain.notification.repository.FirebaseTokenRepository;
 import com.example.wini.domain.notification.sender.NotificationSender;
 import com.example.wini.infra.fcm.converter.FcmMessageConverter;
 import com.example.wini.infra.fcm.dto.FcmMessageRequest;
@@ -23,41 +23,41 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FcmClient implements NotificationSender {
 
-    private final NotificationTokenRepository notificationTokenRepository;
+    private final FirebaseTokenRepository firebaseTokenRepository;
     private final FirebaseMessaging firebaseMessaging;
     private final FcmMessageConverter fcmMessageConverter;
 
     @Override
     @Transactional
     public void send(Long recipientId, NotificationType notificationType) {
-        List<NotificationToken> notificationTokens = notificationTokenRepository.findAllByMember_Id(recipientId);
+        List<FirebaseToken> firebaseTokens = firebaseTokenRepository.findAllByMember_Id(recipientId);
 
-        if (notificationTokens.isEmpty()) {
+        if (firebaseTokens.isEmpty()) {
             log.info("알림 발송 대상 없음 - memberId: {}", recipientId);
             return;
         }
 
-        notificationTokens.forEach(notificationToken -> pushNotification(notificationToken, notificationType));
+        firebaseTokens.forEach(firebaseToken -> pushNotification(firebaseToken, notificationType));
     }
 
-    private void pushNotification(NotificationToken notificationToken, NotificationType notificationType) {
-        FcmMessageRequest request = FcmMessageRequest.from(notificationToken.getToken(), notificationType);
+    private void pushNotification(FirebaseToken firebaseToken, NotificationType notificationType) {
+        FcmMessageRequest request = FcmMessageRequest.from(firebaseToken.getToken(), notificationType);
         Message message = fcmMessageConverter.convert(request);
         try {
             firebaseMessaging.send(message);
         } catch (FirebaseMessagingException e) {
-            handleFirebaseMessagingException(e, notificationToken);
+            handleFirebaseMessagingException(e, firebaseToken);
         }
     }
 
-    private void handleFirebaseMessagingException(FirebaseMessagingException e, NotificationToken notificationToken) {
+    private void handleFirebaseMessagingException(FirebaseMessagingException e, FirebaseToken firebaseToken) {
         MessagingErrorCode errorCode = e.getMessagingErrorCode();
         if (errorCode == MessagingErrorCode.UNREGISTERED) {
-            notificationTokenRepository.delete(notificationToken);
+            firebaseTokenRepository.delete(firebaseToken);
         } else {
             log.error(
                     "알림 발송 실패. token: {}, errorCode: {}, error: {}",
-                    notificationToken.getToken(),
+                    firebaseToken.getToken(),
                     errorCode,
                     e.getMessage());
         }
