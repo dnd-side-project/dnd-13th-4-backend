@@ -46,20 +46,14 @@ public class FcmClient implements NotificationSender {
         try {
             firebaseMessaging.send(message);
         } catch (FirebaseMessagingException e) {
-            handleFirebaseMessagingException(e, firebaseToken);
+            deleteUnregisteredFirebaseToken(e, firebaseToken);
         }
     }
 
-    private void handleFirebaseMessagingException(FirebaseMessagingException e, FirebaseToken firebaseToken) {
+    private void deleteUnregisteredFirebaseToken(FirebaseMessagingException e, FirebaseToken firebaseToken) {
         MessagingErrorCode errorCode = e.getMessagingErrorCode();
         if (errorCode == MessagingErrorCode.UNREGISTERED) {
             firebaseTokenRepository.delete(firebaseToken);
-        } else {
-            log.error(
-                    "알림 발송 실패. token: {}, errorCode: {}, error: {}",
-                    firebaseToken.getToken(),
-                    errorCode,
-                    e.getMessage());
         }
     }
 }

@@ -5,6 +5,7 @@ import static com.example.wini.global.error.exception.ErrorCode.*;
 import com.example.wini.global.error.exception.CustomException;
 import com.example.wini.global.error.exception.ErrorCode;
 import com.example.wini.global.response.GlobalResponse;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -116,6 +117,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("InternalServerError : {}", ex.getMessage(), ex);
         final ErrorCode errorCode = INTERNAL_SERVER_ERROR;
         return createErrorResponseEntity(ex, errorCode);
+    }
+
+    @ExceptionHandler(FirebaseMessagingException.class)
+    protected void handleFirebaseMessagingException(FirebaseMessagingException ex) {
+        log.error("FirebaseMessagingException : {}", ex.getMessage(), ex);
     }
 
     private ResponseEntity<Object> createErrorResponseEntity(final Exception ex, final ErrorCode errorCode) {
