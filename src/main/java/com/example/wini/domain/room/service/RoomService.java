@@ -4,12 +4,15 @@ import static com.example.wini.global.common.constant.RoomConstants.ROOM_CODE_CH
 import static com.example.wini.global.common.constant.RoomConstants.ROOM_CODE_LENGTH;
 import static com.example.wini.global.common.constant.RoomConstants.ROOM_MEMBER_MAX_COUNT;
 import static com.example.wini.global.error.exception.ErrorCode.ALREADY_JOIN_ROOM;
+import static com.example.wini.global.error.exception.ErrorCode.MATE_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.ROOM_IS_FULL;
 import static com.example.wini.global.error.exception.ErrorCode.ROOM_NOT_FOUND;
 
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.repository.MemberRepository;
+import com.example.wini.domain.notification.domain.NotificationType;
+import com.example.wini.domain.notification.event.NotificationEvent;
 import com.example.wini.domain.room.dto.request.RoomJoinRequest;
 import com.example.wini.domain.room.dto.response.RoomResponse;
 import com.example.wini.domain.room.entity.MemberRoom;
@@ -19,6 +22,7 @@ import com.example.wini.domain.room.repository.RoomRepository;
 import com.example.wini.global.error.exception.CustomException;
 import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +33,7 @@ public class RoomService {
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
     private final MemberRoomRepository memberRoomRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public RoomResponse createRoom(Long memberId) {
@@ -80,6 +85,7 @@ public class RoomService {
 
         MemberRoom memberRoom = MemberRoom.create(member, room);
         memberRoomRepository.save(memberRoom);
+        notifyRoommateOfNewJoiner(memberId);
 
         return RoomResponse.from(room);
     }
@@ -96,5 +102,14 @@ public class RoomService {
         if (memberCount >= ROOM_MEMBER_MAX_COUNT) {
             throw new CustomException(ROOM_IS_FULL);
         }
+    }
+
+    private void notifyRoommateOfNewJoiner(Long memberId) {
+        Member mate = memberRepository
+                .findRoommateByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
+
+        NotificationEvent event = NotificationEvent.from(mate.getId(), NotificationType.NEW_ROOMMATE);
+        eventPublisher.publishEvent(event);
     }
 }

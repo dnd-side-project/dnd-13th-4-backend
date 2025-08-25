@@ -39,3 +39,6 @@ out/
 ### Secrets ###
 .env
 .env.*
+
+### firebase ###
+src/main/resources/firebase

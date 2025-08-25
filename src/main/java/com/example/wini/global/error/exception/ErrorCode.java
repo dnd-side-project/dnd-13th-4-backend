@@ -15,6 +15,8 @@ public enum ErrorCode {
     QUERY_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "올바르지 않은 쿼리 타입 입니다."),
     QUERY_PARAM_INVALID(HttpStatus.BAD_REQUEST, "올바르지 않은 쿼리 파라미터 값입니다."),
     QUERY_PARAM_NOT_FOUND(HttpStatus.BAD_REQUEST, "쿼리 파라미터가 존재하지 않습니다."),
+    FIREBASE_KEY_FILE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "Firebase 키 파일을 찾을 수 없습니다."),
+    FIREBASE_INITIALIZATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Firebase 연동 중 오류가 발생했습니다."),
 
     // Authentication
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
@@ -22,6 +24,7 @@ public enum ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
+    MATE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 룸메이트입니다."),
 
     // Status
     STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상태입니다."),

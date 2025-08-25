@@ -1,0 +1,6 @@
+spring:
+  config:
+    activate:
+      on-profile: "firebase"
+fcm:
+  secret-key: ${FCM_SECRET_KEY}

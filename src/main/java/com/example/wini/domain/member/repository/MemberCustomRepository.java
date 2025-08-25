@@ -6,5 +6,7 @@ import java.util.Optional;
 public interface MemberCustomRepository {
     Optional<Member> findWithStatusByMemberId(Long memberId);
 
-    Optional<Member> findRoommateInMyRoom(Long memberId, Long roomId);
+    Optional<Member> findRoommateWithStatusByMemberId(Long memberId);
+
+    Optional<Member> findRoommateByMemberId(Long memberId);
 }
