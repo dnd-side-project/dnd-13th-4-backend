@@ -33,7 +33,7 @@ public class FcmClient implements NotificationSender {
         List<FirebaseToken> firebaseTokens = firebaseTokenRepository.findAllByMember_Id(recipientId);
 
         if (firebaseTokens.isEmpty()) {
-            log.info("알림 발송 대상 없음 - memberId: {}", recipientId);
+            log.info("[FcmClient] 알림 발송 대상 없음 - memberId: {}", recipientId);
             return;
         }
 
