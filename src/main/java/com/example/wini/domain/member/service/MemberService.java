@@ -2,7 +2,6 @@ package com.example.wini.domain.member.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.MATE_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
-import static com.example.wini.global.error.exception.ErrorCode.ROOM_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.STATUS_NOT_FOUND;
 
 import com.example.wini.domain.member.domain.Member;
@@ -52,14 +51,9 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberStatusResponse searchMateStatus() {
-
-        Long roomId = roomRepository
-                .findOpenRoomIdByMemberId(MEMBER_ID)
-                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
-
         Member mate = memberRepository
-                .findRoommateInMyRoom(MEMBER_ID, roomId)
-                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+                .findRoommateWithStatusByMemberId(MEMBER_ID)
+                .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
 
         if (!isStatusValid(mate)) {
             return MemberStatusResponse.empty();

@@ -1,7 +1,6 @@
 package com.example.wini.domain.member.repository;
 
 import static com.example.wini.domain.member.domain.QMember.member;
-import static com.example.wini.domain.room.entity.QMemberRoom.memberRoom;
 
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.room.entity.QMemberRoom;
@@ -25,14 +24,21 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
     }
 
     @Override
-    public Optional<Member> findRoommateInMyRoom(Long memberId, Long roomId) {
+    public Optional<Member> findRoommateWithStatusByMemberId(Long memberId) {
+        QMemberRoom myMemberRoom = new QMemberRoom("mr1");
+        QMemberRoom mateMemberRoom = new QMemberRoom("mr2");
+
         return Optional.ofNullable(queryFactory
-                .selectFrom(member)
-                .join(memberRoom)
-                .on(memberRoom.member.id.eq(member.id))
-                .leftJoin(member.status)
+                .select(mateMemberRoom.member)
+                .from(myMemberRoom)
+                .join(mateMemberRoom)
+                .on(myMemberRoom.room.eq(mateMemberRoom.room))
+                .leftJoin(mateMemberRoom.member.status)
                 .fetchJoin()
-                .where(memberRoom.room.id.in(roomId).and(memberRoom.member.id.ne(memberId)))
+                .where(
+                        myMemberRoom.member.id.eq(memberId),
+                        mateMemberRoom.member.id.ne(memberId),
+                        myMemberRoom.room.isClosed.isFalse())
                 .fetchOne());
     }
 
