@@ -4,7 +4,7 @@ import static com.example.wini.domain.note.domain.QNote.note;
 import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
-import com.example.wini.domain.log.dto.response.ActionAndCount;
+import com.example.wini.domain.log.dto.response.ActionChange;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
@@ -55,14 +55,14 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public ActionAndCount findMostIncreasedPositiveActionAndCountByMemberId(Long memberId) {
+    public ActionChange findMostIncreasedPositiveActionChangeByMemberId(Long memberId) {
         LocalDate today = LocalDate.now();
         NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
         NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
         return queryFactory
-                .select(Projections.constructor(ActionAndCount.class, action, increaseCount))
+                .select(Projections.constructor(ActionChange.class, action, increaseCount))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -73,14 +73,14 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public ActionAndCount findMostDecreasedNegativeActionAndCountByMemberId(Long memberId) {
+    public ActionChange findMostDecreasedNegativeActionChangeByMemberId(Long memberId) {
         LocalDate today = LocalDate.now();
         NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
         NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
         return queryFactory
-                .select(Projections.constructor(ActionAndCount.class, action, decreaseCount))
+                .select(Projections.constructor(ActionChange.class, action, decreaseCount))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)

@@ -1,6 +1,6 @@
 package com.example.wini.domain.note.repository;
 
-import com.example.wini.domain.log.dto.response.ActionAndCount;
+import com.example.wini.domain.log.dto.response.ActionChange;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
@@ -14,9 +14,9 @@ public interface NoteCustomRepository {
 
     List<Note> findSavedNotes();
 
-    ActionAndCount findMostIncreasedPositiveActionAndCountByMemberId(Long memberId);
+    ActionChange findMostIncreasedPositiveActionChangeByMemberId(Long memberId);
 
-    ActionAndCount findMostDecreasedNegativeActionAndCountByMemberId(Long memberId);
+    ActionChange findMostDecreasedNegativeActionChangeByMemberId(Long memberId);
 
     ActionCategory findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(Long memberId, EmotionType emotionType);
 

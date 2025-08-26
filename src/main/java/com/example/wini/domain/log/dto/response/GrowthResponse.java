@@ -1,10 +1,10 @@
 package com.example.wini.domain.log.dto.response;
 
-public record GrowthResponse(ActionTextWithCount increasedPositiveAction, ActionTextWithCount decreasedNegativeAction) {
+public record GrowthResponse(SimpleActionChange increasedPositiveAction, SimpleActionChange decreasedNegativeAction) {
     public static GrowthResponse from(
-            ActionAndCount increasedPositiveActionAndCount, ActionAndCount decreasedNegativeActionAndCount) {
+            ActionChange increasedPositiveActionChange, ActionChange decreasedNegativeActionChange) {
         return new GrowthResponse(
-                ActionTextWithCount.from(increasedPositiveActionAndCount),
-                ActionTextWithCount.from(decreasedNegativeActionAndCount));
+                SimpleActionChange.from(increasedPositiveActionChange),
+                SimpleActionChange.from(decreasedNegativeActionChange));
     }
 }

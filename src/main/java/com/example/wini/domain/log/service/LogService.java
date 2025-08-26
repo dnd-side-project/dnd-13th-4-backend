@@ -2,7 +2,7 @@ package com.example.wini.domain.log.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.*;
 
-import com.example.wini.domain.log.dto.response.ActionAndCount;
+import com.example.wini.domain.log.dto.response.ActionChange;
 import com.example.wini.domain.log.dto.response.GrowthResponse;
 import com.example.wini.domain.log.dto.response.KeywordResponse;
 import com.example.wini.domain.log.dto.response.StatisticsResponse;
@@ -49,8 +49,8 @@ public class LogService {
     @Transactional(readOnly = true)
     public GrowthResponse getActionTrends() {
         // TODO : 인가받은 사용자의 노트로 필터링 필요
-        ActionAndCount increasedPositiveAction = noteRepository.findMostIncreasedPositiveActionAndCountByMemberId(1L);
-        ActionAndCount decreasedNegativeAction = noteRepository.findMostDecreasedNegativeActionAndCountByMemberId(1L);
+        ActionChange increasedPositiveAction = noteRepository.findMostIncreasedPositiveActionChangeByMemberId(1L);
+        ActionChange decreasedNegativeAction = noteRepository.findMostDecreasedNegativeActionChangeByMemberId(1L);
 
         return GrowthResponse.from(increasedPositiveAction, decreasedNegativeAction);
     }
