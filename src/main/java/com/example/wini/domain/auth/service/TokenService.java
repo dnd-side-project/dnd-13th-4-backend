@@ -42,18 +42,16 @@ public class TokenService {
 
     @Transactional
     public TokenResponse reissueToken(String refreshTokenHeader) {
-        String refreshToken = validateRefreshToken(refreshTokenHeader);
+        String refreshToken = jwtProvider.substringToken(refreshTokenHeader);
+        validateRefreshToken(refreshToken);
 
         return updateAndGenerateTokens(refreshToken);
     }
 
-    private String validateRefreshToken(String refreshTokenHeader) {
-        String refreshToken = jwtProvider.substringToken(refreshTokenHeader);
-
+    private void validateRefreshToken(String refreshToken) {
         if (!jwtProvider.validToken(refreshToken, REFRESH_TOKEN)) {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }
-        return refreshToken;
     }
 
     private TokenResponse updateAndGenerateTokens(String refreshToken) {
