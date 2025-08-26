@@ -5,6 +5,7 @@ import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
 import com.example.wini.domain.log.dto.response.ActionChange;
+import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
@@ -17,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -107,6 +109,33 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
+    public List<WeeklyNoteCount> getWeeklyPositiveNoteCountsByMemberId(Long memberId) {
+        List<WeeklyNoteCount> results = new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime endDateTime = today.plusDays(1).atStartOfDay();
+
+        int weeksAgo = 0;
+        while (weeksAgo <= 8) {
+            Long weeklyCount = queryFactory
+                    .select(note.count())
+                    .from(note)
+                    .join(note.action, action)
+                    .join(action.actionCategory, actionCategory)
+                    .where(isReceiver(memberId)
+                            .and(actionCategory.emotionType.eq(EmotionType.POSITIVE))
+                            .and(isCreatedInLast7Days(endDateTime)))
+                    .fetchOne();
+
+            results.add(WeeklyNoteCount.of(weeksAgo, weeklyCount));
+            endDateTime = endDateTime.minusDays(1);
+            weeksAgo++;
+        }
+
+        return results;
+    }
+
+    @Override
     public Long countTodayNotes() {
         return queryFactory.select(note.count()).from(note).where(isToday()).fetchFirst();
     }
@@ -180,6 +209,11 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 today.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay();
 
         return note.createdAt.goe(startOfWeek).and(note.createdAt.lt(startOfNextWeek));
+    }
+
+    private BooleanExpression isCreatedInLast7Days(LocalDateTime endDateTime) {
+        LocalDateTime startDateTime = endDateTime.minusWeeks(1);
+        return note.createdAt.goe(startDateTime).and(note.createdAt.lt(endDateTime));
     }
 
     private BooleanExpression isCreatedInLast30Days() {

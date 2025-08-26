@@ -1,6 +1,7 @@
 package com.example.wini.domain.note.repository;
 
 import com.example.wini.domain.log.dto.response.ActionChange;
+import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
@@ -19,6 +20,8 @@ public interface NoteCustomRepository {
     ActionChange findMostDecreasedNegativeActionChangeByMemberId(Long memberId);
 
     ActionCategory findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(Long memberId, EmotionType emotionType);
+
+    List<WeeklyNoteCount> getWeeklyPositiveNoteCountsByMemberId(Long memberId);
 
     Long countTodayNotes();
 
