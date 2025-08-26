@@ -14,10 +14,9 @@ public class RoomCustomRepositoryImpl implements RoomCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<Long> findOpenRoomIdByMemberId(Long memberId) {
+    public Optional<Room> findOpenRoomByMemberId(Long memberId) {
         return Optional.ofNullable(queryFactory
-                .select(room.id)
-                .from(room)
+                .selectFrom(room)
                 .join(memberRoom)
                 .on(memberRoom.room.id.eq(room.id))
                 .where(memberRoom.member.id.eq(memberId).and(room.isClosed.isFalse()))

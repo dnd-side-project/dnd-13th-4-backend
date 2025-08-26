@@ -6,8 +6,9 @@ import java.time.LocalDateTime;
 
 public record NoteResponse(
         Long id,
-        Long memberRoomSenderId,
-        Long memberRoomReceiverId,
+        Long senderId,
+        Long receiverId,
+        Long roomId,
         EmotionResponse emotion,
         ActionResponse action,
         SituationResponse situation,
@@ -20,8 +21,9 @@ public record NoteResponse(
     public static NoteResponse from(Note note) {
         return new NoteResponse(
                 note.getId(),
-                note.getMemberRoomSenderId(),
-                note.getMemberRoomReceiverId(),
+                note.getSenderId(),
+                note.getReceiverId(),
+                note.getRoomId(),
                 EmotionResponse.from(note.getEmotion()),
                 ActionResponse.from(note.getAction()),
                 SituationResponse.from(note.getSituation()),
