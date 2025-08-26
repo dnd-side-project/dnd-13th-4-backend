@@ -4,10 +4,14 @@ import static com.example.wini.domain.note.domain.QNote.note;
 import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
+import com.example.wini.domain.log.dto.response.ActionAndCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -51,6 +55,42 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
+    public ActionAndCount findMostIncreasedPositiveActionAndCountByMemberId(Long memberId) {
+        LocalDate today = LocalDate.now();
+        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
+        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
+        NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
+
+        return queryFactory
+                .select(Projections.constructor(ActionAndCount.class, action, increaseCount))
+                .from(note)
+                .join(note.action, action)
+                .join(action.actionCategory, actionCategory)
+                .where(isReceiver(memberId).and(actionCategory.emotionType.eq(EmotionType.POSITIVE)))
+                .groupBy(action)
+                .orderBy(increaseCount.desc())
+                .fetchFirst();
+    }
+
+    @Override
+    public ActionAndCount findMostDecreasedNegativeActionAndCountByMemberId(Long memberId) {
+        LocalDate today = LocalDate.now();
+        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
+        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
+        NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
+
+        return queryFactory
+                .select(Projections.constructor(ActionAndCount.class, action, decreaseCount))
+                .from(note)
+                .join(note.action, action)
+                .join(action.actionCategory, actionCategory)
+                .where(isReceiver(memberId).and(actionCategory.emotionType.eq(EmotionType.NEGATIVE)))
+                .groupBy(action)
+                .orderBy(decreaseCount.asc())
+                .fetchFirst();
+    }
+
+    @Override
     public ActionCategory findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(
             Long memberId, EmotionType emotionType) {
         return queryFactory
@@ -87,6 +127,34 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .from(note)
                 .where(isThisWeek().and(isReceiver(memberId)))
                 .fetchFirst();
+    }
+
+    private NumberExpression<Long> countThisMonthNotes(LocalDate today) {
+        LocalDateTime startOfThisMonth = today.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfThisMonth = today.plusDays(1).atStartOfDay();
+
+        return new CaseBuilder()
+                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
+                .then(1L)
+                .otherwise(0L)
+                .sum();
+    }
+
+    private NumberExpression<Long> countLastMonthNotes(LocalDate today) {
+        LocalDate lastMonthOfToday = today.minusMonths(1);
+
+        LocalDateTime startOfLastMonth = lastMonthOfToday.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfLastMonth = lastMonthOfToday.plusDays(1).atStartOfDay();
+        if (today.getDayOfMonth() == today.lengthOfMonth()) {
+            endOfLastMonth =
+                    lastMonthOfToday.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay();
+        }
+
+        return new CaseBuilder()
+                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
+                .then(1L)
+                .otherwise(0L)
+                .sum();
     }
 
     private BooleanExpression isLatest() {
