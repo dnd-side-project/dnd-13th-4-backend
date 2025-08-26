@@ -34,7 +34,7 @@ public class LogService {
     }
 
     @Transactional(readOnly = true)
-    public KeywordResponse getMyKeywords() {
+    public KeywordResponse getTopActionCategoriesInLast30Days() {
         // TODO : 인가받은 사용자의 노트로 필터링 필요
         ActionCategory positive =
                 noteRepository.findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(1L, EmotionType.POSITIVE);

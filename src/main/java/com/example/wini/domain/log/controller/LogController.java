@@ -27,6 +27,6 @@ public class LogController {
     @GetMapping("/keywords")
     @Operation(summary = "나를 대표하는 키워드", description = "최근 30일간 가장 많이 받은 긍정과 부정 카테고리를 반환합니다.")
     public KeywordResponse getKeywords() {
-        return logService.getMyKeywords();
+        return logService.getTopActionCategoriesInLast30Days();
     }
 }
