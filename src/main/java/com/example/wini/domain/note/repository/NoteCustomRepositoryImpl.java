@@ -1,8 +1,12 @@
 package com.example.wini.domain.note.repository;
 
 import static com.example.wini.domain.note.domain.QNote.note;
+import static com.example.wini.domain.template.domain.QAction.action;
+import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
 import com.example.wini.domain.note.domain.Note;
+import com.example.wini.domain.template.domain.ActionCategory;
+import com.example.wini.domain.template.domain.EmotionType;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
@@ -47,6 +51,23 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
+    public ActionCategory findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(
+            Long memberId, EmotionType emotionType) {
+        return queryFactory
+                .select(actionCategory)
+                .from(note)
+                .join(note.action, action)
+                .join(action.actionCategory, actionCategory)
+                .where(isReceiver(memberId)
+                        .and(isCreatedInLast30Days())
+                        .and(actionCategory.emotionType.eq(emotionType)))
+                .groupBy(actionCategory.id)
+                .orderBy(actionCategory.id.count().desc(), note.createdAt.max().desc())
+                .limit(1)
+                .fetchOne();
+    }
+
+    @Override
     public Long countTodayNotes() {
         return queryFactory.select(note.count()).from(note).where(isToday()).fetchFirst();
     }
@@ -86,6 +107,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         LocalDateTime startOfNextWeek =
                 LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay();
         return note.createdAt.goe(startOfWeek).and(note.createdAt.lt(startOfNextWeek));
+    }
+
+    private BooleanExpression isCreatedInLast30Days() {
+        return note.createdAt.goe(LocalDateTime.now().minusDays(30));
     }
 
     private BooleanExpression isSender(Long memberId) {
