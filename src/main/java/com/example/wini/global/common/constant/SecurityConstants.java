@@ -9,7 +9,14 @@ public class SecurityConstants {
     public static final String BEARER_TOKEN_PREFIX = "Bearer ";
 
     public static final String[] PUBLIC_URLS = {
-        "/", "/auth/kakao/**", "/auth/login/**", "/v3/api-docs", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
+        "/",
+        "/auth/kakao/**",
+        "/auth/login/**",
+        "/api-docs",
+        "/v3/api-docs",
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html"
     };
     public static final String REISSUE_URL = "/auth/reissue";
 
