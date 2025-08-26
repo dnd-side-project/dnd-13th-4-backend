@@ -9,23 +9,23 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NoteCustomRepository {
-    Optional<Note> findFullNoteById(Long noteId);
+    Optional<Note> findFullNote(Long noteId);
 
     List<Note> findLatestNotes();
 
     List<Note> findSavedNotes();
 
-    ActionChange findMostIncreasedPositiveActionChangeByMemberId(Long memberId);
+    ActionChange findMostIncreasedPositiveActionChange(Long memberId);
 
-    ActionChange findMostDecreasedNegativeActionChangeByMemberId(Long memberId);
+    ActionChange findMostDecreasedNegativeActionChange(Long memberId);
 
-    ActionCategory findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(Long memberId, EmotionType emotionType);
+    ActionCategory findTopActionCategoryInLast30Days(Long memberId, EmotionType emotionType);
 
-    List<WeeklyNoteCount> getWeeklyPositiveNoteCountsByMemberId(Long memberId);
+    List<WeeklyNoteCount> getWeeklyPositiveNoteCounts(Long memberId);
 
     Long countTodayNotes();
 
-    Long countNotesSentThisWeekByMemberId(Long memberId);
+    Long countNotesSentThisWeek(Long memberId);
 
-    Long countNotesReceivedThisWeekByMemberId(Long memberId);
+    Long countNotesReceivedThisWeek(Long memberId);
 }

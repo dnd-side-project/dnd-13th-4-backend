@@ -29,7 +29,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<Note> findFullNoteById(Long noteId) {
+    public Optional<Note> findFullNote(Long noteId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(note)
                 .join(note.emotion)
@@ -48,7 +48,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
 
     @Override
     public List<Note> findLatestNotes() {
-        return queryFactory.selectFrom(note).where(isLatest()).fetch();
+        return queryFactory.selectFrom(note).where(isCreatedLatest()).fetch();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public ActionChange findMostIncreasedPositiveActionChangeByMemberId(Long memberId) {
+    public ActionChange findMostIncreasedPositiveActionChange(Long memberId) {
         LocalDate today = LocalDate.now();
         NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
@@ -75,7 +75,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public ActionChange findMostDecreasedNegativeActionChangeByMemberId(Long memberId) {
+    public ActionChange findMostDecreasedNegativeActionChange(Long memberId) {
         LocalDate today = LocalDate.now();
         NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
@@ -93,8 +93,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public ActionCategory findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(
-            Long memberId, EmotionType emotionType) {
+    public ActionCategory findTopActionCategoryInLast30Days(Long memberId, EmotionType emotionType) {
         return queryFactory
                 .select(actionCategory)
                 .from(note)
@@ -109,7 +108,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public List<WeeklyNoteCount> getWeeklyPositiveNoteCountsByMemberId(Long memberId) {
+    public List<WeeklyNoteCount> getWeeklyPositiveNoteCounts(Long memberId) {
         List<WeeklyNoteCount> results = new ArrayList<>();
 
         LocalDate today = LocalDate.now();
@@ -137,24 +136,28 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
 
     @Override
     public Long countTodayNotes() {
-        return queryFactory.select(note.count()).from(note).where(isToday()).fetchFirst();
-    }
-
-    @Override
-    public Long countNotesSentThisWeekByMemberId(Long memberId) {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isThisWeek().and(isSender(memberId)))
+                .where(isCreatedToday())
                 .fetchFirst();
     }
 
     @Override
-    public Long countNotesReceivedThisWeekByMemberId(Long memberId) {
+    public Long countNotesSentThisWeek(Long memberId) {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isThisWeek().and(isReceiver(memberId)))
+                .where(isCreatedThisWeek().and(isSender(memberId)))
+                .fetchFirst();
+    }
+
+    @Override
+    public Long countNotesReceivedThisWeek(Long memberId) {
+        return queryFactory
+                .select(note.count())
+                .from(note)
+                .where(isCreatedThisWeek().and(isReceiver(memberId)))
                 .fetchFirst();
     }
 
@@ -186,11 +189,11 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .sum();
     }
 
-    private BooleanExpression isLatest() {
+    private BooleanExpression isCreatedLatest() {
         return note.createdAt.after(LocalDateTime.now().minusHours(24));
     }
 
-    private BooleanExpression isToday() {
+    private BooleanExpression isCreatedToday() {
         LocalDate today = LocalDate.now();
 
         LocalDateTime startOfToday = today.atStartOfDay();
@@ -199,7 +202,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         return note.createdAt.goe(startOfToday).and(note.createdAt.lt(startOfTomorrow));
     }
 
-    private BooleanExpression isThisWeek() {
+    private BooleanExpression isCreatedThisWeek() {
         LocalDate today = LocalDate.now();
 
         LocalDateTime startOfWeek =
