@@ -16,15 +16,20 @@ public class Action extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "action_category_id")
+    private ActionCategory actionCategory;
+
     @Column(length = 30, nullable = false)
     private String text;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Action(String text) {
+    private Action(ActionCategory actionCategory, String text) {
+        this.actionCategory = actionCategory;
         this.text = text;
     }
 
-    public static Action create(String text) {
-        return Action.builder().text(text).build();
+    public static Action create(ActionCategory actionCategory, String text) {
+        return Action.builder().actionCategory(actionCategory).text(text).build();
     }
 }
