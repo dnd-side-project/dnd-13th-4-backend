@@ -4,15 +4,21 @@ import static com.example.wini.domain.note.domain.QNote.note;
 import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
+import com.example.wini.domain.log.dto.response.ActionChange;
+import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +29,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<Note> findFullNoteById(Long noteId) {
+    public Optional<Note> findFullNote(Long noteId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(note)
                 .join(note.emotion)
@@ -42,7 +48,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
 
     @Override
     public List<Note> findLatestNotes() {
-        return queryFactory.selectFrom(note).where(isLatest()).fetch();
+        return queryFactory.selectFrom(note).where(isCreatedLatest()).fetch();
     }
 
     @Override
@@ -51,8 +57,43 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public ActionCategory findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(
-            Long memberId, EmotionType emotionType) {
+    public ActionChange findMostIncreasedPositiveActionChange(Long memberId) {
+        LocalDate today = LocalDate.now();
+        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
+        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
+        NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
+
+        return queryFactory
+                .select(Projections.constructor(ActionChange.class, action, increaseCount))
+                .from(note)
+                .join(note.action, action)
+                .join(action.actionCategory, actionCategory)
+                .where(isReceiver(memberId).and(actionCategory.emotionType.eq(EmotionType.POSITIVE)))
+                .groupBy(action)
+                .orderBy(increaseCount.desc())
+                .fetchFirst();
+    }
+
+    @Override
+    public ActionChange findMostDecreasedNegativeActionChange(Long memberId) {
+        LocalDate today = LocalDate.now();
+        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
+        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
+        NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
+
+        return queryFactory
+                .select(Projections.constructor(ActionChange.class, action, decreaseCount))
+                .from(note)
+                .join(note.action, action)
+                .join(action.actionCategory, actionCategory)
+                .where(isReceiver(memberId).and(actionCategory.emotionType.eq(EmotionType.NEGATIVE)))
+                .groupBy(action)
+                .orderBy(decreaseCount.asc())
+                .fetchFirst();
+    }
+
+    @Override
+    public ActionCategory findTopActionCategoryInLast30Days(Long memberId, EmotionType emotionType) {
         return queryFactory
                 .select(actionCategory)
                 .from(note)
@@ -61,52 +102,121 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .where(isReceiver(memberId)
                         .and(isCreatedInLast30Days())
                         .and(actionCategory.emotionType.eq(emotionType)))
-                .groupBy(actionCategory.id)
+                .groupBy(actionCategory)
                 .orderBy(actionCategory.id.count().desc(), note.createdAt.max().desc())
-                .limit(1)
-                .fetchOne();
+                .fetchFirst();
+    }
+
+    @Override
+    public List<WeeklyNoteCount> getWeeklyPositiveNoteCounts(Long memberId) {
+        List<WeeklyNoteCount> results = new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime endDateTime = today.plusDays(1).atStartOfDay();
+
+        int weeksAgo = 0;
+        while (weeksAgo <= 8) {
+            Long weeklyCount = queryFactory
+                    .select(note.count())
+                    .from(note)
+                    .join(note.action, action)
+                    .join(action.actionCategory, actionCategory)
+                    .where(isReceiver(memberId)
+                            .and(actionCategory.emotionType.eq(EmotionType.POSITIVE))
+                            .and(isCreatedInLast7Days(endDateTime)))
+                    .fetchOne();
+
+            results.add(WeeklyNoteCount.of(weeksAgo, weeklyCount));
+            endDateTime = endDateTime.minusDays(1);
+            weeksAgo++;
+        }
+
+        return results;
     }
 
     @Override
     public Long countTodayNotes() {
-        return queryFactory.select(note.count()).from(note).where(isToday()).fetchFirst();
-    }
-
-    @Override
-    public Long countNotesSentThisWeekByMemberId(Long memberId) {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isThisWeek().and(isSender(memberId)))
+                .where(isCreatedToday())
                 .fetchFirst();
     }
 
     @Override
-    public Long countNotesReceivedThisWeekByMemberId(Long memberId) {
+    public Long countNotesSentThisWeek(Long memberId) {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isThisWeek().and(isReceiver(memberId)))
+                .where(isCreatedThisWeek().and(isSender(memberId)))
                 .fetchFirst();
     }
 
-    private BooleanExpression isLatest() {
+    @Override
+    public Long countNotesReceivedThisWeek(Long memberId) {
+        return queryFactory
+                .select(note.count())
+                .from(note)
+                .where(isCreatedThisWeek().and(isReceiver(memberId)))
+                .fetchFirst();
+    }
+
+    private NumberExpression<Long> countThisMonthNotes(LocalDate today) {
+        LocalDateTime startOfThisMonth = today.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfThisMonth = today.plusDays(1).atStartOfDay();
+
+        return new CaseBuilder()
+                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
+                .then(1L)
+                .otherwise(0L)
+                .sum();
+    }
+
+    private NumberExpression<Long> countLastMonthNotes(LocalDate today) {
+        LocalDate lastMonthOfToday = today.minusMonths(1);
+
+        LocalDateTime startOfLastMonth = lastMonthOfToday.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfLastMonth = lastMonthOfToday.plusDays(1).atStartOfDay();
+        if (today.getDayOfMonth() == today.lengthOfMonth()) {
+            endOfLastMonth =
+                    lastMonthOfToday.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay();
+        }
+
+        return new CaseBuilder()
+                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
+                .then(1L)
+                .otherwise(0L)
+                .sum();
+    }
+
+    private BooleanExpression isCreatedLatest() {
         return note.createdAt.after(LocalDateTime.now().minusHours(24));
     }
 
-    private BooleanExpression isToday() {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = LocalDate.now().plusDays(1).atStartOfDay();
-        return note.createdAt.goe(start).and(note.createdAt.lt(end));
+    private BooleanExpression isCreatedToday() {
+        LocalDate today = LocalDate.now();
+
+        LocalDateTime startOfToday = today.atStartOfDay();
+        LocalDateTime startOfTomorrow = today.plusDays(1).atStartOfDay();
+
+        return note.createdAt.goe(startOfToday).and(note.createdAt.lt(startOfTomorrow));
     }
 
-    private BooleanExpression isThisWeek() {
-        LocalDateTime startOfWeek = LocalDate.now()
-                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                .atStartOfDay();
+    private BooleanExpression isCreatedThisWeek() {
+        LocalDate today = LocalDate.now();
+
+        LocalDateTime startOfWeek =
+                today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay();
+
         LocalDateTime startOfNextWeek =
-                LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay();
+                today.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay();
+
         return note.createdAt.goe(startOfWeek).and(note.createdAt.lt(startOfNextWeek));
+    }
+
+    private BooleanExpression isCreatedInLast7Days(LocalDateTime endDateTime) {
+        LocalDateTime startDateTime = endDateTime.minusWeeks(1);
+        return note.createdAt.goe(startDateTime).and(note.createdAt.lt(endDateTime));
     }
 
     private BooleanExpression isCreatedInLast30Days() {

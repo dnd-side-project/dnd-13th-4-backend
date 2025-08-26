@@ -33,7 +33,7 @@ public class NoteService {
 
     @Transactional(readOnly = true)
     public NoteResponse findNoteById(Long noteId) {
-        Note note = noteRepository.findFullNoteById(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
+        Note note = noteRepository.findFullNote(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
         // TODO : 인가받은 사용자 확인 후 읽음 처리 필요
         return NoteResponse.from(note);
     }
