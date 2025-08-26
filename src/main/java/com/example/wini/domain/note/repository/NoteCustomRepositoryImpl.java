@@ -162,17 +162,23 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     private BooleanExpression isToday() {
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end = LocalDate.now().plusDays(1).atStartOfDay();
-        return note.createdAt.goe(start).and(note.createdAt.lt(end));
+        LocalDate today = LocalDate.now();
+
+        LocalDateTime startOfToday = today.atStartOfDay();
+        LocalDateTime startOfTomorrow = today.plusDays(1).atStartOfDay();
+
+        return note.createdAt.goe(startOfToday).and(note.createdAt.lt(startOfTomorrow));
     }
 
     private BooleanExpression isThisWeek() {
-        LocalDateTime startOfWeek = LocalDate.now()
-                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                .atStartOfDay();
+        LocalDate today = LocalDate.now();
+
+        LocalDateTime startOfWeek =
+                today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atStartOfDay();
+
         LocalDateTime startOfNextWeek =
-                LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay();
+                today.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay();
+
         return note.createdAt.goe(startOfWeek).and(note.createdAt.lt(startOfNextWeek));
     }
 
