@@ -18,7 +18,7 @@ public class AuthService {
 
     private final KakaoClient kakaoClient;
     private final MemberRepository memberRepository;
-    private final RefreshTokenService refreshTokenService;
+    private final TokenService tokenService;
 
     @Transactional(readOnly = true)
     public String getKakaoLoginForm() {
@@ -37,6 +37,6 @@ public class AuthService {
             return memberRepository.save(newMember);
         });
 
-        return refreshTokenService.generateTokens(member);
+        return tokenService.generateTokens(member);
     }
 }
