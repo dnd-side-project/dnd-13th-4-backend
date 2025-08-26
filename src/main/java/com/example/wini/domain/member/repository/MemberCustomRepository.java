@@ -12,4 +12,6 @@ public interface MemberCustomRepository {
     Optional<Member> findRoommateByMemberId(Long memberId);
 
     Optional<MateInfoQuery> findRoommateWithJoinedAtByMemberId(Long memberId);
+
+    boolean existsRoommate(Long memberId);
 }

@@ -84,4 +84,23 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
 
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public boolean existsRoommate(Long memberId) {
+        QMemberRoom myMemberRoom = new QMemberRoom("mr1");
+        QMemberRoom mateMemberRoom = new QMemberRoom("mr2");
+
+        Integer exists = queryFactory
+                .selectOne()
+                .from(myMemberRoom)
+                .join(mateMemberRoom)
+                .on(myMemberRoom.room.eq(mateMemberRoom.room))
+                .where(
+                        myMemberRoom.member.id.eq(memberId),
+                        mateMemberRoom.member.id.ne(memberId),
+                        myMemberRoom.room.isClosed.isFalse())
+                .fetchFirst();
+
+        return exists != null;
+    }
 }
