@@ -1,5 +1,6 @@
 package com.example.wini.domain.member.domain;
 
+import com.example.wini.domain.auth.dto.common.OauthMemberInfo;
 import com.example.wini.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,7 +34,7 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "status_id")
     private Status status;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
     @Column(length = 10, nullable = false)
@@ -50,6 +52,23 @@ public class Member extends BaseEntity {
     private LocalDateTime statusStartedAt;
 
     private Long statusDuration;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Member(String name, String image, String oauthId, OauthProvider oauthProvider) {
+        this.name = name;
+        this.image = image;
+        this.oauthId = oauthId;
+        this.oauthProvider = oauthProvider;
+    }
+
+    public static Member create(OauthMemberInfo oauthMemberInfo, OauthProvider oauthProvider) {
+        return Member.builder()
+                .name(oauthMemberInfo.name())
+                .image(oauthMemberInfo.imageUrl())
+                .oauthId(oauthMemberInfo.providerId())
+                .oauthProvider(oauthProvider)
+                .build();
+    }
 
     public void updateStatus(Status status, LocalDateTime statusStartedAt, Long statusDuration) {
         this.status = status;
