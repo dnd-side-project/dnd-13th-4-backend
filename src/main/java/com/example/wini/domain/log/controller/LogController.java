@@ -1,5 +1,6 @@
 package com.example.wini.domain.log.controller;
 
+import com.example.wini.domain.log.dto.response.KeywordResponse;
 import com.example.wini.domain.log.dto.response.StatisticsResponse;
 import com.example.wini.domain.log.service.LogService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,5 +22,11 @@ public class LogController {
     @Operation(summary = "주간 통계 조회", description = "주간 통계 결과를 반환합니다.")
     public StatisticsResponse getStatistics() {
         return logService.getWeeklyStatistics();
+    }
+
+    @GetMapping("/keywords")
+    @Operation(summary = "나를 대표하는 키워드", description = "최근 30일간 가장 많이 받은 긍정과 부정 카테고리를 반환합니다.")
+    public KeywordResponse getKeywords() {
+        return logService.getMyKeywords();
     }
 }
