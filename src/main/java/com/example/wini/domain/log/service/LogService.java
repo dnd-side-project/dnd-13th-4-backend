@@ -2,7 +2,7 @@ package com.example.wini.domain.log.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.*;
 
-import com.example.wini.domain.log.dto.response.LogSimpleResponse;
+import com.example.wini.domain.log.dto.response.StatisticsResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
 import com.example.wini.domain.room.entity.Room;
 import com.example.wini.domain.room.repository.RoomRepository;
@@ -21,12 +21,12 @@ public class LogService {
     private final RoomRepository roomRepository;
 
     @Transactional(readOnly = true)
-    public LogSimpleResponse generateSimpleLog() {
+    public StatisticsResponse getWeeklyStatistics() {
         // TODO : 인가받은 사용자의 노트로 필터링 필요
         Long notesSentThisWeek = noteRepository.countNotesSentThisWeekByMemberId(1L);
         Long notesReceivedThisWeek = noteRepository.countNotesReceivedThisWeekByMemberId(1L);
         Room room = roomRepository.findOpenRoomByMemberId(1L).orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
 
-        return LogSimpleResponse.of(notesSentThisWeek, notesReceivedThisWeek, room.getCreatedAt());
+        return StatisticsResponse.of(notesSentThisWeek, notesReceivedThisWeek, room.getCreatedAt());
     }
 }
