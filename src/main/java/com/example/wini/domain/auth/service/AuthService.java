@@ -37,6 +37,6 @@ public class AuthService {
             return memberRepository.save(newMember);
         });
 
-        return refreshTokenService.generateToken(member);
+        return refreshTokenService.generateTokens(member);
     }
 }
