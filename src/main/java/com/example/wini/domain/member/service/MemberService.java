@@ -103,7 +103,8 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponse getMyInfo() {
         Member member = memberUtil.getCurrentMember();
-        return MemberResponse.from(member);
+        boolean isMatched = memberRepository.existsRoommate(member.getId());
+        return MemberResponse.from(member, isMatched);
     }
 
     @Transactional(readOnly = true)
