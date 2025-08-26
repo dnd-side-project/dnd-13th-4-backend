@@ -28,9 +28,9 @@ public class RefreshTokenService {
         String refreshToken = jwtProvider.substringToken(refreshTokenHeader);
         validateRefreshToken(refreshToken);
 
-        Long userId = jwtProvider.getMemberId(refreshToken, REFRESH_TOKEN);
+        Long memberId = jwtProvider.getMemberId(refreshToken, REFRESH_TOKEN);
 
-        Member member = memberRepository.findById(userId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
         refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new CustomException(INVALID_REFRESH_TOKEN));
 
         return tokenService.upsertTokens(member);
