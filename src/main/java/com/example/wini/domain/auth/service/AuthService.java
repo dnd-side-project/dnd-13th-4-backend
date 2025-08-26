@@ -37,6 +37,6 @@ public class AuthService {
             return memberRepository.save(newMember);
         });
 
-        return tokenService.generateTokens(member);
+        return tokenService.upsertTokens(member);
     }
 }

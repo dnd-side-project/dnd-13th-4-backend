@@ -1,7 +1,7 @@
 package com.example.wini.domain.auth.controller;
 
 import com.example.wini.domain.auth.dto.response.TokenResponse;
-import com.example.wini.domain.auth.service.TokenService;
+import com.example.wini.domain.auth.service.RefreshTokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RefreshTokenController {
 
-    private final TokenService tokenService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/reissue")
     @Operation(summary = "토큰 재발급", description = "유효한 토큰을 반환합니다.")
     public TokenResponse reissueToken(@RequestHeader("Authorization") String refreshTokenHeader) {
-        return tokenService.reissueToken(refreshTokenHeader);
+        return refreshTokenService.reissueToken(refreshTokenHeader);
     }
 }
