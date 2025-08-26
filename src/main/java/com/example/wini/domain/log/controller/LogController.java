@@ -1,5 +1,6 @@
 package com.example.wini.domain.log.controller;
 
+import com.example.wini.domain.log.dto.response.GrowthResponse;
 import com.example.wini.domain.log.dto.response.KeywordResponse;
 import com.example.wini.domain.log.dto.response.StatisticsResponse;
 import com.example.wini.domain.log.service.LogService;
@@ -28,5 +29,11 @@ public class LogController {
     @Operation(summary = "나를 대표하는 키워드", description = "최근 30일간 가장 많이 받은 긍정과 부정 카테고리를 반환합니다.")
     public KeywordResponse getKeywords() {
         return logService.getTopActionCategoriesInLast30Days();
+    }
+
+    @GetMapping("/growth")
+    @Operation(summary = "나의 성장", description = "가장 많이 변화한 긍정 및 부정 액션과 횟수를 반환합니다.")
+    public GrowthResponse getGrowth() {
+        return logService.getActionTrends();
     }
 }
