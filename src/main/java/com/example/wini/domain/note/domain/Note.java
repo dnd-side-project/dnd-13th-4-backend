@@ -17,12 +17,15 @@ public class Note extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO : 인증인가 후 MemberRoom 연결
+    // TODO : 인증인가 후 멤버 연결하기
     @Column(nullable = false)
-    private Long memberRoomSenderId;
+    private Long senderId;
 
     @Column(nullable = false)
-    private Long memberRoomReceiverId;
+    private Long receiverId;
+
+    @Column(nullable = false)
+    private Long roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "emotion_id")
@@ -55,16 +58,18 @@ public class Note extends BaseEntity {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Note(
-            Long memberRoomSenderId,
-            Long memberRoomReceiverId,
+            Long senderId,
+            Long receiverId,
+            Long roomId,
             Emotion emotion,
             Action action,
             Situation situation,
             Promise promise,
             Closing closing,
             int sequence) {
-        this.memberRoomSenderId = memberRoomSenderId;
-        this.memberRoomReceiverId = memberRoomReceiverId;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.roomId = roomId;
         this.emotion = emotion;
         this.action = action;
         this.situation = situation;
@@ -76,8 +81,9 @@ public class Note extends BaseEntity {
     }
 
     public static Note create(
-            Long memberRoomSenderId,
-            Long memberRoomReceiverId,
+            Long senderId,
+            Long receiverId,
+            Long roomId,
             Emotion emotion,
             Action action,
             Situation situation,
@@ -85,8 +91,9 @@ public class Note extends BaseEntity {
             Closing closing,
             int sequence) {
         return Note.builder()
-                .memberRoomSenderId(memberRoomSenderId)
-                .memberRoomReceiverId(memberRoomReceiverId)
+                .senderId(senderId)
+                .receiverId(receiverId)
+                .roomId(roomId)
                 .emotion(emotion)
                 .action(action)
                 .situation(situation)
