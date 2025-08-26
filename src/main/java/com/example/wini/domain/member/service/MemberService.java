@@ -1,9 +1,9 @@
 package com.example.wini.domain.member.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.MATE_NOT_FOUND;
-import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.STATUS_NOT_FOUND;
 
+import com.example.wini.domain.common.util.MemberUtil;
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.domain.Status;
 import com.example.wini.domain.member.dto.common.ReservedTimeInfo;
@@ -16,6 +16,7 @@ import com.example.wini.domain.notification.domain.NotificationType;
 import com.example.wini.domain.notification.event.NotificationEvent;
 import com.example.wini.domain.room.repository.RoomRepository;
 import com.example.wini.global.error.exception.CustomException;
+import com.example.wini.global.security.AuthMember;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +32,11 @@ public class MemberService {
     private final RoomRepository roomRepository;
     private final StatusRepository statusRepository;
     private final ApplicationEventPublisher eventPublisher;
-
-    private static final Long MEMBER_ID = 1L;
+    private final MemberUtil memberUtil;
 
     @Transactional(readOnly = true)
-    public MemberStatusResponse searchMyStatus() {
-        Member member = memberRepository
-                .findWithStatusByMemberId(MEMBER_ID)
-                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
-
+    public MemberStatusResponse searchMyStatus(AuthMember authMember) {
+        Member member = memberUtil.getMember(authMember);
         if (!isStatusValid(member)) {
             return MemberStatusResponse.empty();
         }
@@ -50,9 +47,10 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberStatusResponse searchMateStatus() {
+    public MemberStatusResponse searchMateStatus(AuthMember authMember) {
+        Long myMemberId = authMember.memberId();
         Member mate = memberRepository
-                .findRoommateWithStatusByMemberId(MEMBER_ID)
+                .findRoommateWithStatusByMemberId(myMemberId)
                 .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
 
         if (!isStatusValid(mate)) {
@@ -78,8 +76,8 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberStatusResponse updateStatus(MemberStatusUpdateRequest request) {
-        Member member = memberRepository.findById(MEMBER_ID).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+    public MemberStatusResponse updateStatus(AuthMember authMember, MemberStatusUpdateRequest request) {
+        Member member = memberUtil.getMember(authMember);
 
         Status status =
                 statusRepository.findById(request.statusId()).orElseThrow(() -> new CustomException(STATUS_NOT_FOUND));
@@ -88,7 +86,7 @@ public class MemberService {
         Long statusDurationSeconds = statusDuration.getSeconds();
 
         member.updateStatus(status, request.startedAt(), statusDurationSeconds);
-        notifyRoommateOfStatusUpdate(MEMBER_ID);
+        notifyRoommateOfStatusUpdate(member.getId());
 
         return MemberStatusResponse.from(member, request.reservedTimeInfo());
     }
@@ -102,8 +100,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponse getMyInfo() {
-        Member member = memberRepository.findById(MEMBER_ID).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+    public MemberResponse getMyInfo(AuthMember authMember) {
+        Member member = memberUtil.getMember(authMember);
         return MemberResponse.from(member);
     }
 }
