@@ -3,7 +3,7 @@ package com.example.wini.domain.template.service;
 import com.example.wini.domain.template.domain.Action;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
-import com.example.wini.domain.template.dto.response.ActionCategoryResponse;
+import com.example.wini.domain.template.dto.response.ActionCategoryWithActionsResponse;
 import com.example.wini.domain.template.repository.action.ActionRepository;
 import java.util.Comparator;
 import java.util.List;
@@ -21,12 +21,12 @@ public class ActionService {
     private final ActionRepository actionRepository;
 
     @Transactional(readOnly = true)
-    public List<ActionCategoryResponse> findAllActionsGroupedByCategoryByEmotionType(String emotionType) {
+    public List<ActionCategoryWithActionsResponse> findAllActionsGroupedByCategoryByEmotionType(String emotionType) {
         EmotionType type = EmotionType.from(emotionType);
         Map<ActionCategory, List<Action>> actionsMap = actionRepository.findActionsGroupedByCategoryByEmotionType(type);
         return actionsMap.entrySet().stream()
                 .sorted(Comparator.comparing(entry -> entry.getKey().getId()))
-                .map(entry -> ActionCategoryResponse.from(entry.getKey(), entry.getValue()))
+                .map(entry -> ActionCategoryWithActionsResponse.from(entry.getKey(), entry.getValue()))
                 .toList();
     }
 }
