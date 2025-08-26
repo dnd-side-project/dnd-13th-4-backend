@@ -2,12 +2,15 @@ package com.example.wini.infra.kakao.client;
 
 import static com.example.wini.global.common.constant.OauthConstants.KAKAO_BASE_URL;
 import static com.example.wini.global.error.exception.ErrorCode.KAKAO_TOKEN_ISSUANCE_FAILED;
+import static com.example.wini.global.error.exception.ErrorCode.KAKAO_USERINFO_FETCH_FAILED;
 
 import com.example.wini.domain.auth.dto.common.OauthMemberInfo;
 import com.example.wini.global.error.exception.CustomException;
 import com.example.wini.infra.kakao.dto.KakaoTokenResponse;
 import com.example.wini.infra.kakao.dto.KakaoUser;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -17,6 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoClient {
@@ -73,8 +77,12 @@ public class KakaoClient {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new RuntimeException(
-                            "[KakaoClient] 카카오 사용자 정보 요청에 실패하였습니다. HTTP Status: " + res.getStatusCode());
+                    String errorMessage = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
+                    log.error(
+                            "[KakaoClient] 카카오 사용자 정보 요청에 실패하였습니다. HTTP Status: {}, Body: {}",
+                            res.getStatusCode(),
+                            errorMessage);
+                    throw new CustomException(KAKAO_USERINFO_FETCH_FAILED);
                 })
                 .body(KakaoUser.class);
 

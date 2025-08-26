@@ -30,6 +30,7 @@ public enum ErrorCode {
     TOKEN_VERIFICATION_FAILED(HttpStatus.BAD_REQUEST, "토큰 검증에 실패했습니다."),
     BLACKLISTED_TOKEN(HttpStatus.UNAUTHORIZED, "로그아웃 처리된 토큰입니다."),
     KAKAO_TOKEN_ISSUANCE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 액세스 토큰 발급에 실패했습니다."),
+    KAKAO_USERINFO_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 사용자 정보 조회에 실패했습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
