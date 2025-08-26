@@ -20,7 +20,7 @@ public class Action extends BaseEntity {
     @JoinColumn(name = "action_category_id")
     private ActionCategory actionCategory;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 50, nullable = false)
     private String text;
 
     @Builder(access = AccessLevel.PRIVATE)
