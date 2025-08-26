@@ -32,8 +32,8 @@ public class LogController {
     }
 
     @GetMapping("/growth")
-    @Operation(summary = "나의 성장", description = "가장 많이 변화한 긍정 및 부정 액션과 횟수를 반환합니다.")
+    @Operation(summary = "나의 성장", description = "가장 많이 변화한 액션 횟수와 주차별 받은 긍정 쪽지 개수를 반환합니다.")
     public GrowthResponse getGrowth() {
-        return logService.getActionTrends();
+        return logService.getActionTrendsAndWeeklyPositiveNoteCounts();
     }
 }
