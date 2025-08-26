@@ -61,10 +61,9 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .where(isReceiver(memberId)
                         .and(isCreatedInLast30Days())
                         .and(actionCategory.emotionType.eq(emotionType)))
-                .groupBy(actionCategory.id)
+                .groupBy(actionCategory)
                 .orderBy(actionCategory.id.count().desc(), note.createdAt.max().desc())
-                .limit(1)
-                .fetchOne();
+                .fetchFirst();
     }
 
     @Override
