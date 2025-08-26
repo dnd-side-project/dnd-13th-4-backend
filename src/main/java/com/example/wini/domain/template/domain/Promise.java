@@ -20,7 +20,7 @@ public class Promise extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EmotionType emotionType;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 50, nullable = false)
     private String text;
 
     @Builder(access = AccessLevel.PRIVATE)
