@@ -2,6 +2,8 @@ package com.example.wini.domain.log.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.*;
 
+import com.example.wini.domain.log.dto.response.ActionAndCount;
+import com.example.wini.domain.log.dto.response.GrowthResponse;
 import com.example.wini.domain.log.dto.response.KeywordResponse;
 import com.example.wini.domain.log.dto.response.StatisticsResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
@@ -42,5 +44,14 @@ public class LogService {
                 noteRepository.findTopActionCategoryInLast30DaysByMemberIdAndEmotionType(1L, EmotionType.NEGATIVE);
 
         return KeywordResponse.from(positive, negative);
+    }
+
+    @Transactional(readOnly = true)
+    public GrowthResponse getActionTrends() {
+        // TODO : 인가받은 사용자의 노트로 필터링 필요
+        ActionAndCount increasedPositiveAction = noteRepository.findMostIncreasedPositiveActionAndCountByMemberId(1L);
+        ActionAndCount decreasedNegativeAction = noteRepository.findMostDecreasedNegativeActionAndCountByMemberId(1L);
+
+        return GrowthResponse.from(increasedPositiveAction, decreasedNegativeAction);
     }
 }
