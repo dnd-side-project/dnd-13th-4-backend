@@ -9,7 +9,6 @@ import com.example.wini.infra.kakao.dto.KakaoTokenResponse;
 import com.example.wini.infra.kakao.dto.KakaoUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -18,7 +17,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-@Profile("!test")
 @Component
 @RequiredArgsConstructor
 public class KakaoClient {
