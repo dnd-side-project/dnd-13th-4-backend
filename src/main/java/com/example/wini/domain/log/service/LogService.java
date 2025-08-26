@@ -25,7 +25,7 @@ public class LogService {
         // TODO : 인가받은 사용자의 노트로 필터링 필요
         Long notesSentThisWeek = noteRepository.countNotesSentThisWeekByMemberId(1L);
         Long notesReceivedThisWeek = noteRepository.countNotesReceivedThisWeekByMemberId(1L);
-        Room room = roomRepository.findOpenRoomIdByMemberId(1L).orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        Room room = roomRepository.findOpenRoomByMemberId(1L).orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
 
         return LogSimpleResponse.of(notesSentThisWeek, notesReceivedThisWeek, room.getCreatedAt());
     }
