@@ -5,6 +5,10 @@ spring:
       test: "h2"
     include:
       - swagger
+      - oauth
+      - jwt
 
   application:
     name: wini
+  config:
+    import: optional:file:.env[.properties]
