@@ -21,6 +21,15 @@ public enum ErrorCode {
     // Authentication
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 거부되었습니다."),
+    TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "토큰이 필요합니다."),
+    INVALID_TOKEN_SIGNATURE(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰 서명입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
+    UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "지원하지 않는 토큰 형식입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh 토큰입니다."),
+    MALFORMED_TOKEN(HttpStatus.BAD_REQUEST, "올바르지 않은 형식의 토큰입니다."),
+    TOKEN_VERIFICATION_FAILED(HttpStatus.BAD_REQUEST, "토큰 검증에 실패했습니다."),
+    BLACKLISTED_TOKEN(HttpStatus.UNAUTHORIZED, "로그아웃 처리된 토큰입니다."),
+    KAKAO_TOKEN_ISSUANCE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 액세스 토큰 발급에 실패했습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
