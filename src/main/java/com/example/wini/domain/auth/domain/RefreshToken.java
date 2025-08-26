@@ -39,4 +39,8 @@ public class RefreshToken {
     public static RefreshToken create(Member member, String token) {
         return RefreshToken.builder().member(member).token(token).build();
     }
+
+    public void updateToken(String newToken) {
+        this.token = newToken;
+    }
 }
