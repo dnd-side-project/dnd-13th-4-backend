@@ -15,5 +15,7 @@ public class SecurityConstants {
 
     public static final String JWT_TYPE = "JWT";
 
+    public static final String TOKEN_BLACKLIST_CACHE_NAME = "blacklistedTokens";
+
     private SecurityConstants() {}
 }
