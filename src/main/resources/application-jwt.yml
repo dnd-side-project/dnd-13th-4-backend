@@ -10,3 +10,6 @@ jwt:
   refreshToken:
     secret-key: ${JWT_REFRESH_TOKEN_SECRET_KEY}
     expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
+
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS}
