@@ -36,7 +36,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberStatusResponse searchMyStatus(AuthMember authMember) {
-        Member member = memberUtil.getMember(authMember);
+        Member member = memberUtil.getCurrentMember(authMember);
         if (!isStatusValid(member)) {
             return MemberStatusResponse.empty();
         }
@@ -77,7 +77,7 @@ public class MemberService {
 
     @Transactional
     public MemberStatusResponse updateStatus(AuthMember authMember, MemberStatusUpdateRequest request) {
-        Member member = memberUtil.getMember(authMember);
+        Member member = memberUtil.getCurrentMember(authMember);
 
         Status status =
                 statusRepository.findById(request.statusId()).orElseThrow(() -> new CustomException(STATUS_NOT_FOUND));
@@ -101,7 +101,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberResponse getMyInfo(AuthMember authMember) {
-        Member member = memberUtil.getMember(authMember);
+        Member member = memberUtil.getCurrentMember(authMember);
         return MemberResponse.from(member);
     }
 }

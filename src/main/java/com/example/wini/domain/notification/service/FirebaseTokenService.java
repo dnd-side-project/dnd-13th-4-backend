@@ -19,7 +19,7 @@ public class FirebaseTokenService {
 
     @Transactional
     public void saveFirebaseToken(AuthMember authMember, FirebaseTokenSaveRequest request) {
-        Member member = memberUtil.getMember(authMember);
+        Member member = memberUtil.getCurrentMember(authMember);
         String token = request.token();
 
         firebaseTokenRepository.deleteByToken(token);

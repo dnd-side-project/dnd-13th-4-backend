@@ -17,7 +17,7 @@ public class MemberUtil {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public Member getMember(AuthMember authMember) {
+    public Member getCurrentMember(AuthMember authMember) {
         return memberRepository
                 .findById(authMember.memberId())
                 .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));

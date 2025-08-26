@@ -39,7 +39,7 @@ public class RoomService {
 
     @Transactional
     public RoomResponse createRoom(AuthMember authMember) {
-        Member member = memberUtil.getMember(authMember);
+        Member member = memberUtil.getCurrentMember(authMember);
         validateMemberCanJoinRoom(member.getId());
 
         String roomCode = generateUniqueRoomCode();
@@ -75,7 +75,7 @@ public class RoomService {
 
     @Transactional
     public RoomResponse joinRoom(AuthMember authMember, RoomJoinRequest request) {
-        Member member = memberUtil.getMember(authMember);
+        Member member = memberUtil.getCurrentMember(authMember);
         validateMemberCanJoinRoom(member.getId());
 
         Room room = roomRepository

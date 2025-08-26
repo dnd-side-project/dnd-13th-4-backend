@@ -43,7 +43,7 @@ public class TokenService {
 
     @Transactional
     public void deleteToken(String accessToken, AuthMember authMember) {
-        Member member = memberUtil.getMember(authMember);
+        Member member = memberUtil.getCurrentMember(authMember);
         addAccessTokenToBlacklist(accessToken);
         refreshTokenRepository.deleteByMember(member);
     }
