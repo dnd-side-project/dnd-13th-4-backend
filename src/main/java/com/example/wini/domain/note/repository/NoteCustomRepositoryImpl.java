@@ -5,8 +5,10 @@ import static com.example.wini.domain.note.domain.QNote.note;
 import com.example.wini.domain.note.domain.Note;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +51,24 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         return queryFactory.select(note.count()).from(note).where(isToday()).fetchFirst();
     }
 
+    @Override
+    public Long countNotesSentThisWeekByMemberId(Long memberId) {
+        return queryFactory
+                .select(note.count())
+                .from(note)
+                .where(isThisWeek().and(isSender(memberId)))
+                .fetchFirst();
+    }
+
+    @Override
+    public Long countNotesReceivedThisWeekByMemberId(Long memberId) {
+        return queryFactory
+                .select(note.count())
+                .from(note)
+                .where(isThisWeek().and(isReceiver(memberId)))
+                .fetchFirst();
+    }
+
     private BooleanExpression isLatest() {
         return note.createdAt.after(LocalDateTime.now().minusHours(24));
     }
@@ -57,5 +77,22 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = LocalDate.now().plusDays(1).atStartOfDay();
         return note.createdAt.goe(start).and(note.createdAt.lt(end));
+    }
+
+    private BooleanExpression isThisWeek() {
+        LocalDateTime startOfWeek = LocalDate.now()
+                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .atStartOfDay();
+        LocalDateTime startOfNextWeek =
+                LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY)).atStartOfDay();
+        return note.createdAt.goe(startOfWeek).and(note.createdAt.lt(startOfNextWeek));
+    }
+
+    private BooleanExpression isSender(Long memberId) {
+        return note.senderId.eq(memberId);
+    }
+
+    private BooleanExpression isReceiver(Long memberId) {
+        return note.receiverId.eq(memberId);
     }
 }

@@ -12,4 +12,8 @@ public interface NoteCustomRepository {
     List<Note> findSavedNotes();
 
     Long countTodayNotes();
+
+    Long countNotesSentThisWeekByMemberId(Long memberId);
+
+    Long countNotesReceivedThisWeekByMemberId(Long memberId);
 }
