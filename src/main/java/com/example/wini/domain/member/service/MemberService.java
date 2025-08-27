@@ -108,9 +108,10 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MateResponse getMateInfo(AuthMember authMember) {
+    public MateResponse getMateInfo() {
+        Long myMemberId = memberUtil.getCurrentMemberId();
         MateInfoQuery query = memberRepository
-                .findRoommateWithJoinedAtByMemberId(authMember.memberId())
+                .findRoommateWithJoinedAtByMemberId(myMemberId)
                 .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
 
         return MateResponse.from(query);

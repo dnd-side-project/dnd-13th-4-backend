@@ -47,7 +47,7 @@ public class MemberController {
 
     @GetMapping("/mate")
     @Operation(summary = "룸메 정보 조회", description = "룸메 정보를 반환합니다.")
-    public MateResponse getMateInfo(@Auth AuthMember authMember) {
-        return memberService.getMateInfo(authMember);
+    public MateResponse getMateInfo() {
+        return memberService.getMateInfo();
     }
 }
