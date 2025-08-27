@@ -30,7 +30,8 @@ public class AuthService {
         String kakaoAccessToken = kakaoClient.getAccessToken(authCode);
         OauthMemberInfo oauthMemberInfo = kakaoClient.getMemberInfo(kakaoAccessToken);
 
-        Optional<Member> optionalMember = memberRepository.findByOauthId(oauthMemberInfo.providerId());
+        Optional<Member> optionalMember =
+                memberRepository.findByOauthIdAndOauthProvider(oauthMemberInfo.providerId(), KAKAO);
 
         Member member = optionalMember.orElseGet(() -> {
             Member newMember = Member.create(oauthMemberInfo, KAKAO);
