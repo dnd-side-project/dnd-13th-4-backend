@@ -5,8 +5,6 @@ import static com.example.wini.global.common.constant.SecurityConstants.BEARER_T
 import com.example.wini.domain.auth.dto.response.TokenResponse;
 import com.example.wini.domain.auth.service.AuthService;
 import com.example.wini.domain.auth.service.TokenService;
-import com.example.wini.domain.common.annotation.Auth;
-import com.example.wini.global.security.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,8 +44,8 @@ public class AuthController {
 
     @PostMapping("logout")
     @Operation(summary = "로그아웃", description = "토큰을 무효화시킵니다.")
-    public void logout(@RequestHeader("Authorization") String header, @Auth AuthMember authMember) {
+    public void logout(@RequestHeader("Authorization") String header) {
         String accessToken = header.substring(BEARER_TOKEN_PREFIX.length());
-        tokenService.deleteToken(accessToken, authMember);
+        tokenService.deleteToken(accessToken);
     }
 }

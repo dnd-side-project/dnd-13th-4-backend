@@ -5,7 +5,6 @@ import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.notification.domain.FirebaseToken;
 import com.example.wini.domain.notification.dto.request.FirebaseTokenSaveRequest;
 import com.example.wini.domain.notification.repository.FirebaseTokenRepository;
-import com.example.wini.global.security.AuthMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +17,8 @@ public class FirebaseTokenService {
     private final MemberUtil memberUtil;
 
     @Transactional
-    public void saveFirebaseToken(AuthMember authMember, FirebaseTokenSaveRequest request) {
-        Member member = memberUtil.getCurrentMember(authMember);
+    public void saveFirebaseToken(FirebaseTokenSaveRequest request) {
+        Member member = memberUtil.getCurrentMember();
         String token = request.token();
 
         firebaseTokenRepository.deleteByToken(token);

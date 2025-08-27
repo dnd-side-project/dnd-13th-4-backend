@@ -1,9 +1,7 @@
 package com.example.wini.domain.notification.controller;
 
-import com.example.wini.domain.common.annotation.Auth;
 import com.example.wini.domain.notification.dto.request.FirebaseTokenSaveRequest;
 import com.example.wini.domain.notification.service.FirebaseTokenService;
-import com.example.wini.global.security.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,7 +24,7 @@ public class FirebaseTokenController {
     @PostMapping("/tokens")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "알림 토큰 저장", description = "FCM 토큰을 저장합니다.")
-    public void saveFirebaseToken(@Auth AuthMember authMember, @Valid @RequestBody FirebaseTokenSaveRequest request) {
-        firebaseTokenService.saveFirebaseToken(authMember, request);
+    public void saveFirebaseToken(@Valid @RequestBody FirebaseTokenSaveRequest request) {
+        firebaseTokenService.saveFirebaseToken(request);
     }
 }

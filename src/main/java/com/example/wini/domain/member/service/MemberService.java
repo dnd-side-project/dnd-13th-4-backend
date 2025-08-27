@@ -16,7 +16,6 @@ import com.example.wini.domain.notification.domain.NotificationType;
 import com.example.wini.domain.notification.event.NotificationEvent;
 import com.example.wini.domain.room.repository.RoomRepository;
 import com.example.wini.global.error.exception.CustomException;
-import com.example.wini.global.security.AuthMember;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +34,8 @@ public class MemberService {
     private final MemberUtil memberUtil;
 
     @Transactional(readOnly = true)
-    public MemberStatusResponse searchMyStatus(AuthMember authMember) {
-        Member member = memberUtil.getCurrentMember(authMember);
+    public MemberStatusResponse searchMyStatus() {
+        Member member = memberUtil.getCurrentMember();
         if (!isStatusValid(member)) {
             return MemberStatusResponse.empty();
         }
@@ -47,8 +46,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberStatusResponse searchMateStatus(AuthMember authMember) {
-        Long myMemberId = authMember.memberId();
+    public MemberStatusResponse searchMateStatus() {
+        Long myMemberId = memberUtil.getCurrentMemberId();
         Member mate = memberRepository
                 .findRoommateWithStatusByMemberId(myMemberId)
                 .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
@@ -76,8 +75,8 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberStatusResponse updateStatus(AuthMember authMember, MemberStatusUpdateRequest request) {
-        Member member = memberUtil.getCurrentMember(authMember);
+    public MemberStatusResponse updateStatus(MemberStatusUpdateRequest request) {
+        Member member = memberUtil.getCurrentMember();
 
         Status status =
                 statusRepository.findById(request.statusId()).orElseThrow(() -> new CustomException(STATUS_NOT_FOUND));
@@ -100,8 +99,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponse getMyInfo(AuthMember authMember) {
-        Member member = memberUtil.getCurrentMember(authMember);
+    public MemberResponse getMyInfo() {
+        Member member = memberUtil.getCurrentMember();
         return MemberResponse.from(member);
     }
 }

@@ -20,7 +20,6 @@ import com.example.wini.domain.room.entity.Room;
 import com.example.wini.domain.room.repository.MemberRoomRepository;
 import com.example.wini.domain.room.repository.RoomRepository;
 import com.example.wini.global.error.exception.CustomException;
-import com.example.wini.global.security.AuthMember;
 import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -38,8 +37,8 @@ public class RoomService {
     private final MemberUtil memberUtil;
 
     @Transactional
-    public RoomResponse createRoom(AuthMember authMember) {
-        Member member = memberUtil.getCurrentMember(authMember);
+    public RoomResponse createRoom() {
+        Member member = memberUtil.getCurrentMember();
         validateMemberCanJoinRoom(member.getId());
 
         String roomCode = generateUniqueRoomCode();
@@ -74,8 +73,8 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomResponse joinRoom(AuthMember authMember, RoomJoinRequest request) {
-        Member member = memberUtil.getCurrentMember(authMember);
+    public RoomResponse joinRoom(RoomJoinRequest request) {
+        Member member = memberUtil.getCurrentMember();
         validateMemberCanJoinRoom(member.getId());
 
         Room room = roomRepository

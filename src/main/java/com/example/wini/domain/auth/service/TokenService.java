@@ -7,7 +7,6 @@ import com.example.wini.domain.auth.dto.response.TokenResponse;
 import com.example.wini.domain.auth.repository.RefreshTokenRepository;
 import com.example.wini.domain.common.util.MemberUtil;
 import com.example.wini.domain.member.domain.Member;
-import com.example.wini.global.security.AuthMember;
 import com.example.wini.global.security.JwtProvider;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +41,8 @@ public class TokenService {
     }
 
     @Transactional
-    public void deleteToken(String accessToken, AuthMember authMember) {
-        Member member = memberUtil.getCurrentMember(authMember);
+    public void deleteToken(String accessToken) {
+        Member member = memberUtil.getCurrentMember();
         addAccessTokenToBlacklist(accessToken);
         refreshTokenRepository.deleteByMember(member);
     }
