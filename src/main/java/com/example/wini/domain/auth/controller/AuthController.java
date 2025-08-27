@@ -10,6 +10,8 @@ import com.example.wini.global.security.AuthMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,14 +31,15 @@ public class AuthController {
 
     @GetMapping("/login/kakao")
     @SecurityRequirements(value = {})
-    @Operation(summary = "카카오 로그인 페이지", description = "카카오 로그인 페이지 주소를 반환합니다.")
-    public String kakaoLoginForm() {
-        return authService.getKakaoLoginForm();
+    @Operation(summary = "카카오 로그인", description = "카카오 로그인 페이지로 리다이렉트 됩니다.")
+    public void kakaoLoginForm(HttpServletResponse response) throws IOException {
+        String redirectUrl = authService.getKakaoLoginForm();
+        response.sendRedirect(redirectUrl);
     }
 
     @GetMapping("/kakao/callback")
     @SecurityRequirements(value = {})
-    @Operation(summary = "카카오 로그인", description = "토큰을 반환합니다.")
+    @Operation(summary = "카카오 로그인 콜백", description = "카카오 로그인 후 토큰을 반환합니다.")
     public TokenResponse kakaoLogin(@RequestParam("code") String authCode) {
         return authService.kakaoLogin(authCode);
     }
