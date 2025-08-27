@@ -19,16 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class FirebaseTokenController {
 
-    private static final long MEMBER_ID = 1L;
-
     private final FirebaseTokenService firebaseTokenService;
 
     @PostMapping("/tokens")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "알림 토큰 저장", description = "FCM 토큰을 저장합니다.")
-    public void saveFirebaseToken(
-            // TODO: 사용자 정보
-            @Valid @RequestBody FirebaseTokenSaveRequest request) {
-        firebaseTokenService.saveFirebaseToken(MEMBER_ID, request);
+    public void saveFirebaseToken(@Valid @RequestBody FirebaseTokenSaveRequest request) {
+        firebaseTokenService.saveFirebaseToken(request);
     }
 }

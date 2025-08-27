@@ -22,33 +22,25 @@ public class MemberController {
 
     @GetMapping("/me/status")
     @Operation(summary = "현재 내 상태", description = "현재 내 상태를 반환합니다. 현재 상태가 없을 시에는 각 필드가 Null로 반환됩니다.")
-    public MemberStatusResponse getMyStatus(
-            // TODO: 토큰이 생기면 사용자 정보 추출하기
-            ) {
+    public MemberStatusResponse getMyStatus() {
         return memberService.searchMyStatus();
     }
 
     @GetMapping("/mate/status")
     @Operation(summary = "현재 룸메 상태", description = "현재 룸메 상태를 반환합니다. 현재 상태가 없을 시에는 각 필드가 Null로 반환됩니다.")
-    public MemberStatusResponse getMateStatus(
-            // TODO: 토큰이 생기면 사용자 정보 추출하기
-            ) {
+    public MemberStatusResponse getMateStatus() {
         return memberService.searchMateStatus();
     }
 
     @PutMapping("/me/status")
     @Operation(summary = "내 상태 수정", description = "수정한 상태를 반환합니다. '계속 유지'의 경우 시간과 분은 -1로 입력해주세요.")
-    public MemberStatusResponse putStatus(
-            // TODO: 토큰이 생기면 사용자 정보 추출하기
-            @Valid @RequestBody MemberStatusUpdateRequest request) {
+    public MemberStatusResponse putStatus(@Valid @RequestBody MemberStatusUpdateRequest request) {
         return memberService.updateStatus(request);
     }
 
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "내 정보를 반환합니다.")
-    public MemberResponse getMyInfo(
-            // TODO: 토큰이 생기면 사용자 정보 추출하기
-            ) {
+    public MemberResponse getMyInfo() {
         return memberService.getMyInfo();
     }
 }

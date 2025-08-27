@@ -5,10 +5,10 @@ import static com.example.wini.global.common.constant.RoomConstants.ROOM_CODE_LE
 import static com.example.wini.global.common.constant.RoomConstants.ROOM_MEMBER_MAX_COUNT;
 import static com.example.wini.global.error.exception.ErrorCode.ALREADY_JOIN_ROOM;
 import static com.example.wini.global.error.exception.ErrorCode.MATE_NOT_FOUND;
-import static com.example.wini.global.error.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.ROOM_IS_FULL;
 import static com.example.wini.global.error.exception.ErrorCode.ROOM_NOT_FOUND;
 
+import com.example.wini.domain.common.util.MemberUtil;
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.domain.notification.domain.NotificationType;
@@ -34,11 +34,12 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final MemberRoomRepository memberRoomRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final MemberUtil memberUtil;
 
     @Transactional
-    public RoomResponse createRoom(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
-        validateMemberCanJoinRoom(memberId);
+    public RoomResponse createRoom() {
+        Member member = memberUtil.getCurrentMember();
+        validateMemberCanJoinRoom(member.getId());
 
         String roomCode = generateUniqueRoomCode();
 
@@ -72,10 +73,9 @@ public class RoomService {
     }
 
     @Transactional
-    public RoomResponse joinRoom(Long memberId, RoomJoinRequest request) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
-
-        validateMemberCanJoinRoom(memberId);
+    public RoomResponse joinRoom(RoomJoinRequest request) {
+        Member member = memberUtil.getCurrentMember();
+        validateMemberCanJoinRoom(member.getId());
 
         Room room = roomRepository
                 .findOpenRoomByRoomCode(request.roomCode())
@@ -85,7 +85,7 @@ public class RoomService {
 
         MemberRoom memberRoom = MemberRoom.create(member, room);
         memberRoomRepository.save(memberRoom);
-        notifyRoommateOfNewJoiner(memberId);
+        notifyRoommateOfNewJoiner(member.getId());
 
         return RoomResponse.from(room);
     }

@@ -1,0 +1,14 @@
+kakao:
+  client-id: "test-kakao-client-id"
+  redirect-uri: "http://localhost:8080/test/callback"
+jwt:
+  issuer: test-issure
+  accessToken:
+    secret-key: aaaassssbbbbcccceeeeffffggggqqqqrrrrccccaaaa
+    expiration-time: 3400
+  refreshToken:
+    secret-key: aaaassssbbbbcccceeeeffffggggqqqqrrrrccccaaaa
+    expiration-time: 16000
+
+cors:
+  allowed-origins: http://localhost:8080
