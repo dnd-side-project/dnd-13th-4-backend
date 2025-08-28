@@ -115,7 +115,7 @@ public class NoteService {
     }
 
     private void notifyRoommateOfNewNote(Long mateMemberId) {
-        NotificationEvent event = NotificationEvent.from(mateMemberId, NotificationType.NEW_ROOMMATE);
+        NotificationEvent event = NotificationEvent.from(mateMemberId, NotificationType.NEW_NOTE);
         eventPublisher.publishEvent(event);
     }
 }
