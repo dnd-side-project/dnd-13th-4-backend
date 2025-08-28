@@ -1,6 +1,6 @@
 package com.example.wini.domain.notification.sender;
 
-import com.example.wini.domain.notification.domain.NotificationType;
+import com.example.wini.domain.notification.event.NotificationEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class TestNotificationSender implements NotificationSender {
 
     @Override
-    public void send(Long recipientId, NotificationType notificationType) {
+    public void send(NotificationEvent event) {
         log.info("Test Event Listener 동작 성공");
     }
 }

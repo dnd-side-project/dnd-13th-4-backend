@@ -1,7 +1,7 @@
 package com.example.wini.infra.fcm.client;
 
 import com.example.wini.domain.notification.domain.FirebaseToken;
-import com.example.wini.domain.notification.domain.NotificationType;
+import com.example.wini.domain.notification.event.NotificationEvent;
 import com.example.wini.domain.notification.repository.FirebaseTokenRepository;
 import com.example.wini.domain.notification.sender.NotificationSender;
 import com.example.wini.infra.fcm.converter.FcmMessageConverter;
@@ -29,19 +29,20 @@ public class FcmClient implements NotificationSender {
 
     @Override
     @Transactional
-    public void send(Long recipientId, NotificationType notificationType) {
-        List<FirebaseToken> firebaseTokens = firebaseTokenRepository.findAllByMember_Id(recipientId);
+    public void send(NotificationEvent event) {
+        List<FirebaseToken> firebaseTokens = firebaseTokenRepository.findAllByMember_Id(event.recipientId());
 
         if (firebaseTokens.isEmpty()) {
-            log.info("[FcmClient] 알림 발송 대상 없음 - memberId: {}", recipientId);
+            log.info("[FcmClient] 알림 발송 대상 없음 - memberId: {}", event.recipientId());
             return;
         }
 
-        firebaseTokens.forEach(firebaseToken -> pushNotification(firebaseToken, notificationType));
+        firebaseTokens.forEach(firebaseToken -> pushNotification(firebaseToken, event));
     }
 
-    private void pushNotification(FirebaseToken firebaseToken, NotificationType notificationType) {
-        FcmMessageRequest request = FcmMessageRequest.from(firebaseToken.getToken(), notificationType);
+    private void pushNotification(FirebaseToken firebaseToken, NotificationEvent event) {
+        FcmMessageRequest request =
+                FcmMessageRequest.from(firebaseToken.getToken(), event.notificationType(), event.entityId());
         Message message = fcmMessageConverter.convert(request);
         try {
             firebaseMessaging.send(message);
