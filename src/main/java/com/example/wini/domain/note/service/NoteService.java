@@ -2,10 +2,17 @@ package com.example.wini.domain.note.service;
 
 import static com.example.wini.global.error.exception.ErrorCode.*;
 
+import com.example.wini.domain.common.util.MemberUtil;
+import com.example.wini.domain.member.domain.Member;
+import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.dto.request.NoteCreateRequest;
 import com.example.wini.domain.note.dto.response.NoteResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
+import com.example.wini.domain.notification.domain.NotificationType;
+import com.example.wini.domain.notification.event.NotificationEvent;
+import com.example.wini.domain.room.entity.Room;
+import com.example.wini.domain.room.repository.RoomRepository;
 import com.example.wini.domain.template.domain.*;
 import com.example.wini.domain.template.repository.action.ActionRepository;
 import com.example.wini.domain.template.repository.closing.ClosingRepository;
@@ -16,6 +23,7 @@ import com.example.wini.global.error.exception.CustomException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +38,10 @@ public class NoteService {
     private final SituationRepository situationRepository;
     private final PromiseRepository promiseRepository;
     private final ClosingRepository closingRepository;
+    private final MemberRepository memberRepository;
+    private final RoomRepository roomRepository;
+    private final MemberUtil memberUtil;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     public NoteResponse findNoteById(Long noteId) {
@@ -54,8 +66,14 @@ public class NoteService {
 
     @Transactional(readOnly = false)
     public NoteResponse createNote(NoteCreateRequest request) {
-        Note note = buildNewNote(request);
+        Member me = memberUtil.getCurrentMember();
+        Member mate = memberRepository
+                .findRoommateByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
+
+        Note note = buildNewNote(request, me, mate);
         noteRepository.save(note);
+        notifyRoommateOfNewNote(mate.getId());
         return NoteResponse.from(note);
     }
 
@@ -67,8 +85,10 @@ public class NoteService {
         return NoteResponse.from(note);
     }
 
-    private Note buildNewNote(NoteCreateRequest request) {
-        // TODO : 인가받은 사용자로 송신자, 수신자 판단
+    private Note buildNewNote(NoteCreateRequest request, Member me, Member mate) {
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
         Emotion emotion = emotionRepository
                 .findById(request.emotionId())
                 .orElseThrow(() -> new CustomException(EMOTION_NOT_FOUND));
@@ -85,11 +105,17 @@ public class NoteService {
                 .orElseThrow(() -> new CustomException(CLOSING_NOT_FOUND));
         int nextSequence = getNextSequence();
 
-        return Note.create(1L, 2L, 1L, emotion, action, situation, promise, closing, nextSequence);
+        return Note.create(
+                me.getId(), mate.getId(), room.getId(), emotion, action, situation, promise, closing, nextSequence);
     }
 
     private int getNextSequence() {
         // TODO : 인가받은 사용자의 노트로 필터링 필요
         return noteRepository.countTodayNotes().intValue() + 1;
+    }
+
+    private void notifyRoommateOfNewNote(Long mateMemberId) {
+        NotificationEvent event = NotificationEvent.from(mateMemberId, NotificationType.NEW_NOTE);
+        eventPublisher.publishEvent(event);
     }
 }

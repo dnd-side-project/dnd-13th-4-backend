@@ -17,6 +17,6 @@ public class NotificationEventListener {
     @TransactionalEventListener
     @Async("notificationExecutor")
     public void handleNotificationEvent(NotificationEvent event) {
-        notificationSender.send(event.recipientId(), event.notificationType());
+        notificationSender.send(event);
     }
 }
