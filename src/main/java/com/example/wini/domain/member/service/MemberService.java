@@ -7,7 +7,9 @@ import com.example.wini.domain.common.util.MemberUtil;
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.domain.Status;
 import com.example.wini.domain.member.dto.common.ReservedTimeInfo;
+import com.example.wini.domain.member.dto.query.MateInfoQuery;
 import com.example.wini.domain.member.dto.request.MemberStatusUpdateRequest;
+import com.example.wini.domain.member.dto.response.MateResponse;
 import com.example.wini.domain.member.dto.response.MemberResponse;
 import com.example.wini.domain.member.dto.response.MemberStatusResponse;
 import com.example.wini.domain.member.repository.MemberRepository;
@@ -101,6 +103,17 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberResponse getMyInfo() {
         Member member = memberUtil.getCurrentMember();
-        return MemberResponse.from(member);
+        boolean isMatched = memberRepository.existsRoommate(member.getId());
+        return MemberResponse.from(member, isMatched);
+    }
+
+    @Transactional(readOnly = true)
+    public MateResponse getMateInfo() {
+        Long myMemberId = memberUtil.getCurrentMemberId();
+        MateInfoQuery query = memberRepository
+                .findRoommateWithJoinedAtByMemberId(myMemberId)
+                .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
+
+        return MateResponse.from(query);
     }
 }

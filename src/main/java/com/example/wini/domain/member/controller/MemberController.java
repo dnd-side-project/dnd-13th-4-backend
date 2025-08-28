@@ -1,6 +1,7 @@
 package com.example.wini.domain.member.controller;
 
 import com.example.wini.domain.member.dto.request.MemberStatusUpdateRequest;
+import com.example.wini.domain.member.dto.response.MateResponse;
 import com.example.wini.domain.member.dto.response.MemberResponse;
 import com.example.wini.domain.member.dto.response.MemberStatusResponse;
 import com.example.wini.domain.member.service.MemberService;
@@ -42,5 +43,11 @@ public class MemberController {
     @Operation(summary = "내 정보 조회", description = "내 정보를 반환합니다.")
     public MemberResponse getMyInfo() {
         return memberService.getMyInfo();
+    }
+
+    @GetMapping("/mate")
+    @Operation(summary = "룸메 정보 조회", description = "룸메 정보를 반환합니다.")
+    public MateResponse getMateInfo() {
+        return memberService.getMateInfo();
     }
 }

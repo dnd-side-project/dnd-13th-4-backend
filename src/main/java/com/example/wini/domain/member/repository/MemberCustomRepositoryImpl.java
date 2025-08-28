@@ -3,7 +3,9 @@ package com.example.wini.domain.member.repository;
 import static com.example.wini.domain.member.domain.QMember.member;
 
 import com.example.wini.domain.member.domain.Member;
+import com.example.wini.domain.member.dto.query.MateInfoQuery;
 import com.example.wini.domain.room.entity.QMemberRoom;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +59,48 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                         mateMemberRoom.member.id.ne(memberId),
                         myMemberRoom.room.isClosed.isFalse())
                 .fetchOne());
+    }
+
+    @Override
+    public Optional<MateInfoQuery> findRoommateWithJoinedAtByMemberId(Long memberId) {
+        QMemberRoom myMemberRoom = new QMemberRoom("mr1");
+        QMemberRoom mateMemberRoom = new QMemberRoom("mr2");
+
+        MateInfoQuery result = queryFactory
+                .select(Projections.constructor(
+                        MateInfoQuery.class,
+                        mateMemberRoom.member.id,
+                        mateMemberRoom.member.name,
+                        mateMemberRoom.member.image,
+                        mateMemberRoom.createdAt))
+                .from(myMemberRoom)
+                .join(mateMemberRoom)
+                .on(myMemberRoom.room.eq(mateMemberRoom.room))
+                .where(
+                        myMemberRoom.member.id.eq(memberId),
+                        mateMemberRoom.member.id.ne(memberId),
+                        myMemberRoom.room.isClosed.isFalse())
+                .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public boolean existsRoommate(Long memberId) {
+        QMemberRoom myMemberRoom = new QMemberRoom("mr1");
+        QMemberRoom mateMemberRoom = new QMemberRoom("mr2");
+
+        Integer exists = queryFactory
+                .selectOne()
+                .from(myMemberRoom)
+                .join(mateMemberRoom)
+                .on(myMemberRoom.room.eq(mateMemberRoom.room))
+                .where(
+                        myMemberRoom.member.id.eq(memberId),
+                        mateMemberRoom.member.id.ne(memberId),
+                        myMemberRoom.room.isClosed.isFalse())
+                .fetchFirst();
+
+        return exists != null;
     }
 }
