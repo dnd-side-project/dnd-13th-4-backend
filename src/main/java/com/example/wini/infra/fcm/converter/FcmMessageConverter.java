@@ -13,13 +13,18 @@ import org.springframework.stereotype.Component;
 public class FcmMessageConverter {
 
     public Message convert(FcmMessageRequest request) {
-        return Message.builder()
+        var messageBuilder = Message.builder()
                 .setNotification(createNotification(request))
                 .setToken(request.token())
                 .setApnsConfig(createApnsConfig())
                 .setAndroidConfig(createAndroidConfig())
-                .putData("type", request.type())
-                .build();
+                .putData("type", request.type());
+
+        if (request.entityId().isPresent()) {
+            messageBuilder.putData("id", String.valueOf(request.entityId().get()));
+        }
+
+        return messageBuilder.build();
     }
 
     private Notification createNotification(FcmMessageRequest request) {
