@@ -40,7 +40,7 @@ public class NoteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "쪽지 생성", description = "사용자가 쪽지를 생성합니다.")
-    public NoteResponse createNote(@Valid @ModelAttribute NoteCreateRequest request) {
+    public NoteResponse createNote(@Valid @RequestBody NoteCreateRequest request) {
         return noteService.createNote(request);
     }
 
