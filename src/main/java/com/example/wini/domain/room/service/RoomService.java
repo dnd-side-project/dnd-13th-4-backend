@@ -112,4 +112,12 @@ public class RoomService {
         NotificationEvent event = NotificationEvent.from(mate.getId(), NotificationType.NEW_ROOMMATE);
         eventPublisher.publishEvent(event);
     }
+
+    public RoomResponse searchRoom() {
+        Long memberId = memberUtil.getCurrentMemberId();
+        Room room =
+                roomRepository.findOpenRoomByMemberId(memberId).orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+
+        return RoomResponse.from(room);
+    }
 }
