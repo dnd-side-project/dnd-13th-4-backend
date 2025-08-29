@@ -15,6 +15,7 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
@@ -204,9 +205,13 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         LocalDateTime endOfLastMonth = firstDayOfThisMonth.atStartOfDay();
 
         return new CaseBuilder()
-                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
+                .when(note.createdAt
+                        .goe(Expressions.asDateTime(startOfThisMonth))
+                        .and(note.createdAt.lt(Expressions.asDateTime(endOfThisMonth))))
                 .then(1L)
-                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
+                .when(note.createdAt
+                        .goe(Expressions.asDateTime(startOfLastMonth))
+                        .and(note.createdAt.lt(Expressions.asDateTime(endOfLastMonth))))
                 .then(-1L)
                 .otherwise(0L)
                 .sum();
