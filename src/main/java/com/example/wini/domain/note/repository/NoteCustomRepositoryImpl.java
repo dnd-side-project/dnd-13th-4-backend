@@ -145,7 +145,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isCreatedToday().and(isSender(memberId)))
+                .where(isSender(memberId).and(isCreatedToday()))
                 .fetchFirst();
     }
 
@@ -154,7 +154,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isCreatedThisWeek().and(isSender(memberId)))
+                .where(isSender(memberId).and(isCreatedThisWeek()))
                 .fetchFirst();
     }
 
@@ -163,7 +163,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isCreatedThisWeek().and(isReceiver(memberId)))
+                .where(isReceiver(memberId).and(isCreatedThisWeek()))
                 .fetchFirst();
     }
 
