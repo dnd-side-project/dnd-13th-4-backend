@@ -133,7 +133,7 @@ public class NoteService {
     private void validateNoteReceiver(Note note) {
         Member me = memberUtil.getCurrentMember();
         if (!note.getReceiver().equals(me)) {
-            throw new CustomException(NOTE_SENDER_MISMATCH);
+            throw new CustomException(NOTE_RECEIVER_MISMATCH);
         }
     }
 }
