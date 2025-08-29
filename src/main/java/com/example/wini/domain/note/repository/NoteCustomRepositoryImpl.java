@@ -15,6 +15,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -73,18 +74,15 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
+        NumberExpression<Integer> monthlyChange = new CaseBuilder()
+                .when(isCreatedThisMonth(today))
+                .then(1)
+                .when(isCreatedLastMonth(today))
+                .then(-1)
+                .otherwise(0);
 
         List<ActionChange> results = queryFactory
-                .select(Projections.constructor(
-                        ActionChange.class,
-                        action,
-                        new CaseBuilder()
-                                .when(isCreatedThisMonth(today))
-                                .then(1)
-                                .when(isCreatedLastMonth(today))
-                                .then(-1)
-                                .otherwise(0)
-                                .sum()))
+                .select(Projections.constructor(ActionChange.class, action, monthlyChange.sum()))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -102,18 +100,15 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
+        NumberExpression<Integer> monthlyChange = new CaseBuilder()
+                .when(isCreatedThisMonth(today))
+                .then(1)
+                .when(isCreatedLastMonth(today))
+                .then(-1)
+                .otherwise(0);
 
         List<ActionChange> results = queryFactory
-                .select(Projections.constructor(
-                        ActionChange.class,
-                        action,
-                        new CaseBuilder()
-                                .when(isCreatedThisMonth(today))
-                                .then(1)
-                                .when(isCreatedLastMonth(today))
-                                .then(-1)
-                                .otherwise(0)
-                                .sum()))
+                .select(Projections.constructor(ActionChange.class, action, monthlyChange.sum()))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
