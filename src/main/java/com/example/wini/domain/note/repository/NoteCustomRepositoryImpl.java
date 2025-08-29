@@ -230,16 +230,14 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     private NumberExpression<Long> calculateMonthlyChange(LocalDate today) {
-        LocalDateTime startOfThisMonth = today.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endOfThisMonth = today.plusDays(1).atStartOfDay();
+        LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
+        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
 
-        LocalDate lastMonthOfToday = today.minusMonths(1);
-        LocalDateTime startOfLastMonth = lastMonthOfToday.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endOfLastMonth = lastMonthOfToday.plusDays(1).atStartOfDay();
-        if (today.getDayOfMonth() == today.lengthOfMonth()) {
-            endOfLastMonth =
-                    lastMonthOfToday.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay();
-        }
+        LocalDateTime startOfThisMonth = firstDayOfThisMonth.atStartOfDay();
+        LocalDateTime endOfThisMonth = firstDayOfThisMonth.plusMonths(1).atStartOfDay();
+
+        LocalDateTime startOfLastMonth = firstDayOfLastMonth.atStartOfDay();
+        LocalDateTime endOfLastMonth = firstDayOfThisMonth.atStartOfDay();
 
         return new CaseBuilder()
                 .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
