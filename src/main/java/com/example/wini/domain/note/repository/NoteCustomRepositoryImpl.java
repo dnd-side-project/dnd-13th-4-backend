@@ -75,7 +75,22 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        NumberExpression<Long> increaseCount = calculateMonthlyChange(today);
+        LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
+        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
+
+        // 모든 계산 로직을 쿼리 내부에 직접 작성
+        NumberExpression<Long> increaseCount = new CaseBuilder()
+                .when(note.createdAt
+                        .goe(Expressions.asDateTime(firstDayOfThisMonth.atStartOfDay()))
+                        .and(note.createdAt.lt(Expressions.asDateTime(
+                                firstDayOfThisMonth.plusMonths(1).atStartOfDay()))))
+                .then(1L)
+                .when(note.createdAt
+                        .goe(Expressions.asDateTime(firstDayOfLastMonth.atStartOfDay()))
+                        .and(note.createdAt.lt(Expressions.asDateTime(firstDayOfThisMonth.atStartOfDay()))))
+                .then(-1L)
+                .otherwise(0L)
+                .sum();
 
         List<ActionChange> results = queryFactory
                 .select(new QActionChange(action, increaseCount))
@@ -96,7 +111,22 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        NumberExpression<Long> decreaseCount = calculateMonthlyChange(today);
+        LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
+        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
+
+        // 모든 계산 로직을 쿼리 내부에 직접 작성
+        NumberExpression<Long> decreaseCount = new CaseBuilder()
+                .when(note.createdAt
+                        .goe(Expressions.asDateTime(firstDayOfThisMonth.atStartOfDay()))
+                        .and(note.createdAt.lt(Expressions.asDateTime(
+                                firstDayOfThisMonth.plusMonths(1).atStartOfDay()))))
+                .then(1L)
+                .when(note.createdAt
+                        .goe(Expressions.asDateTime(firstDayOfLastMonth.atStartOfDay()))
+                        .and(note.createdAt.lt(Expressions.asDateTime(firstDayOfThisMonth.atStartOfDay()))))
+                .then(-1L)
+                .otherwise(0L)
+                .sum();
 
         List<ActionChange> results = queryFactory
                 .select(new QActionChange(action, decreaseCount))
@@ -105,7 +135,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .join(action.actionCategory, actionCategory)
                 .where(isThisRoom(roomId)
                         .and(isReceiver(memberId))
-                        .and(actionCategory.emotionType.eq(EmotionType.NEGATIVE)))
+                        .and(actionCategory.emotionType.eq(EmotionType.NEGATIVE))) // emotionType을 NEGATIVE로 변경
                 .groupBy(action)
                 .fetch();
 
