@@ -201,33 +201,33 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetchFirst();
     }
 
-    private NumberExpression<Long> countThisMonthNotes(LocalDate today) {
-        LocalDateTime startOfThisMonth = today.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endOfThisMonth = today.plusDays(1).atStartOfDay();
+    //    private NumberExpression<Long> countThisMonthNotes(LocalDate today) {
+    //        LocalDateTime startOfThisMonth = today.withDayOfMonth(1).atStartOfDay();
+    //        LocalDateTime endOfThisMonth = today.plusDays(1).atStartOfDay();
+    //
+    //        return new CaseBuilder()
+    //                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
+    //                .then(1L)
+    //                .otherwise(0L)
+    //                .sum();
+    //    }
 
-        return new CaseBuilder()
-                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
-                .then(1L)
-                .otherwise(0L)
-                .sum();
-    }
-
-    private NumberExpression<Long> countLastMonthNotes(LocalDate today) {
-        LocalDate lastMonthOfToday = today.minusMonths(1);
-
-        LocalDateTime startOfLastMonth = lastMonthOfToday.withDayOfMonth(1).atStartOfDay();
-        LocalDateTime endOfLastMonth = lastMonthOfToday.plusDays(1).atStartOfDay();
-        if (today.getDayOfMonth() == today.lengthOfMonth()) {
-            endOfLastMonth =
-                    lastMonthOfToday.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay();
-        }
-
-        return new CaseBuilder()
-                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
-                .then(1L)
-                .otherwise(0L)
-                .sum();
-    }
+    //    private NumberExpression<Long> countLastMonthNotes(LocalDate today) {
+    //        LocalDate lastMonthOfToday = today.minusMonths(1);
+    //
+    //        LocalDateTime startOfLastMonth = lastMonthOfToday.withDayOfMonth(1).atStartOfDay();
+    //        LocalDateTime endOfLastMonth = lastMonthOfToday.plusDays(1).atStartOfDay();
+    //        if (today.getDayOfMonth() == today.lengthOfMonth()) {
+    //            endOfLastMonth =
+    //                    lastMonthOfToday.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay();
+    //        }
+    //
+    //        return new CaseBuilder()
+    //                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
+    //                .then(1L)
+    //                .otherwise(0L)
+    //                .sum();
+    //    }
 
     private NumberExpression<Long> calculateMonthlyChange(LocalDate today) {
         LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);

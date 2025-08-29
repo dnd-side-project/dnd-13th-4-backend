@@ -1,7 +1,6 @@
 package com.example.wini.domain.log.dto.response;
 
 import com.example.wini.domain.template.domain.Action;
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 @Getter
@@ -10,7 +9,7 @@ public class ActionChange {
     private Action action;
     private Long change;
 
-    @QueryProjection
+    //    @QueryProjection
     public ActionChange(Action action, Long change) {
         this.action = action;
         this.change = change;
