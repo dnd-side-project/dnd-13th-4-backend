@@ -141,11 +141,11 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public Long countTodayNotes() {
+    public Long countNotesSentToday(Long memberId) {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isCreatedToday())
+                .where(isCreatedToday().and(isSender(memberId)))
                 .fetchFirst();
     }
 

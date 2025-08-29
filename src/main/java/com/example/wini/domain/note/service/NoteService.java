@@ -112,8 +112,8 @@ public class NoteService {
     }
 
     private int getNextSequence() {
-        // TODO : 인가받은 사용자의 노트로 필터링 필요
-        return noteRepository.countTodayNotes().intValue() + 1;
+        Member me = memberUtil.getCurrentMember();
+        return noteRepository.countNotesSentToday(me.getId()).intValue() + 1;
     }
 
     private void notifyRoommateOfNewNote(Long mateMemberId) {

@@ -23,7 +23,7 @@ public interface NoteCustomRepository {
 
     List<WeeklyNoteCount> getWeeklyPositiveNoteCounts(Long memberId);
 
-    Long countTodayNotes();
+    Long countNotesSentToday(Long memberId);
 
     Long countNotesSentThisWeek(Long memberId);
 
