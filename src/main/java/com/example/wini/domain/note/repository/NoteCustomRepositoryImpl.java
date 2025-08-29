@@ -15,7 +15,6 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -74,10 +73,21 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        NumberExpression<Long> increaseCount = calculateMonthlyChange(today);
 
         List<ActionChange> results = queryFactory
-                .select(Projections.constructor(ActionChange.class, action, increaseCount))
+                .select(Projections.constructor(
+                        ActionChange.class,
+                        action,
+                        new CaseBuilder()
+                                .when(isCreatedThisMonth(today))
+                                .then(1)
+                                .otherwise(0)
+                                .sum(),
+                        new CaseBuilder()
+                                .when(isCreatedLastMonth(today))
+                                .then(1)
+                                .otherwise(0)
+                                .sum()))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -87,16 +97,29 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .groupBy(action.id)
                 .fetch();
 
-        return results.stream().max(Comparator.comparing(ActionChange::change)).orElse(null);
+        return results.stream()
+                .max(Comparator.comparing(ac -> ac.thisMonthCount() - ac.lastMonthCount()))
+                .orElse(null);
     }
 
     @Override
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        NumberExpression<Long> decreaseCount = calculateMonthlyChange(today);
 
         List<ActionChange> results = queryFactory
-                .select(Projections.constructor(ActionChange.class, action, decreaseCount))
+                .select(Projections.constructor(
+                        ActionChange.class,
+                        action,
+                        new CaseBuilder()
+                                .when(isCreatedThisMonth(today))
+                                .then(1)
+                                .otherwise(0)
+                                .sum(),
+                        new CaseBuilder()
+                                .when(isCreatedLastMonth(today))
+                                .then(1)
+                                .otherwise(0)
+                                .sum()))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -106,7 +129,9 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .groupBy(action.id)
                 .fetch();
 
-        return results.stream().min(Comparator.comparing(ActionChange::change)).orElse(null);
+        return results.stream()
+                .min(Comparator.comparing(ac -> ac.thisMonthCount() - ac.lastMonthCount()))
+                .orElse(null);
     }
 
     @Override
@@ -189,24 +214,43 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetchFirst();
     }
 
-    private NumberExpression<Long> calculateMonthlyChange(LocalDate today) {
+    private BooleanExpression isCreatedThisMonth(LocalDate today) {
         LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
-        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
 
         LocalDateTime startOfThisMonth = firstDayOfThisMonth.atStartOfDay();
         LocalDateTime endOfThisMonth = firstDayOfThisMonth.plusMonths(1).atStartOfDay();
 
+        return note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth));
+    }
+
+    private BooleanExpression isCreatedLastMonth(LocalDate today) {
+        LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
+        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
+
         LocalDateTime startOfLastMonth = firstDayOfLastMonth.atStartOfDay();
         LocalDateTime endOfLastMonth = firstDayOfThisMonth.atStartOfDay();
 
-        return new CaseBuilder()
-                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
-                .then(1L)
-                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
-                .then(-1L)
-                .otherwise(0L)
-                .sum();
+        return note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth));
     }
+
+    //    private NumberExpression<Long> calculateMonthlyChange(LocalDate today) {
+    //        LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
+    //        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
+    //
+    //        LocalDateTime startOfThisMonth = firstDayOfThisMonth.atStartOfDay();
+    //        LocalDateTime endOfThisMonth = firstDayOfThisMonth.plusMonths(1).atStartOfDay();
+    //
+    //        LocalDateTime startOfLastMonth = firstDayOfLastMonth.atStartOfDay();
+    //        LocalDateTime endOfLastMonth = firstDayOfThisMonth.atStartOfDay();
+    //
+    //        return new CaseBuilder()
+    //                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
+    //                .then(1L)
+    //                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
+    //                .then(-1L)
+    //                .otherwise(0L)
+    //                .sum();
+    //    }
 
     private BooleanExpression isCreatedLatest() {
         return note.createdAt.after(LocalDateTime.now().minusHours(24));
