@@ -78,7 +78,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
         return queryFactory
-                .select(new QActionChange(action, increaseCount))
+                .select(new QActionChange(action, increaseCount.longValue()))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -98,7 +98,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
         return queryFactory
-                .select(new QActionChange(action, decreaseCount))
+                .select(new QActionChange(action, decreaseCount.longValue()))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
