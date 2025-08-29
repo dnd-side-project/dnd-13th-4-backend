@@ -41,8 +41,8 @@ public class FcmClient implements NotificationSender {
     }
 
     private void pushNotification(FirebaseToken firebaseToken, NotificationEvent event) {
-        FcmMessageRequest request =
-                FcmMessageRequest.from(firebaseToken.getToken(), event.notificationType(), event.entityId());
+        FcmMessageRequest request = FcmMessageRequest.from(
+                firebaseToken.getToken(), event.notificationType(), event.bodyArg(), event.entityId());
         Message message = fcmMessageConverter.convert(request);
         try {
             firebaseMessaging.send(message);
