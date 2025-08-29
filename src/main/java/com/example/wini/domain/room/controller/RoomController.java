@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +35,11 @@ public class RoomController {
     @Operation(summary = "초대코드 입력", description = "초대코드와 연결된 방 정보를 반환합니다.")
     public RoomResponse joinRoom(@Valid @RequestBody RoomJoinRequest request) {
         return roomService.joinRoom(request);
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "방 정보 조회", description = "방 정보를 반환합니다.")
+    public RoomResponse getRoom() {
+        return roomService.searchRoom();
     }
 }
