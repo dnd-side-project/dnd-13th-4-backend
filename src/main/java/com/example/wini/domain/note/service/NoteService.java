@@ -82,8 +82,8 @@ public class NoteService {
 
     @Transactional(readOnly = false)
     public NoteResponse saveNote(Long noteId) {
-        // TODO : 인가받은 사용자로 저장 가능한지 판단
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
+        validateNoteSender(note);
         note.markAsSaved();
         return NoteResponse.from(note);
     }
@@ -119,5 +119,12 @@ public class NoteService {
     private void notifyRoommateOfNewNote(Long mateMemberId) {
         NotificationEvent event = NotificationEvent.from(mateMemberId, NotificationType.NEW_NOTE);
         eventPublisher.publishEvent(event);
+    }
+
+    private void validateNoteSender(Note note) {
+        Member me = memberUtil.getCurrentMember();
+        if (!note.getSender().equals(me)) {
+            throw new CustomException(NOTE_SENDER_MISMATCH);
+        }
     }
 }
