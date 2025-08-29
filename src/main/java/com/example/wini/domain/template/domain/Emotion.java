@@ -24,20 +24,47 @@ public class Emotion extends BaseEntity {
     private String text;
 
     @Column(nullable = false)
-    private String graphicUrl;
+    private String selectionImageUrl;
+
+    @Column(nullable = false)
+    private String previewImageUrl;
+
+    @Column(nullable = false)
+    private String archiveImageUrl;
+
+    @Column(nullable = false)
+    private String homeThumbnailUrl;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Emotion(EmotionType emotionType, String text, String graphicUrl) {
+    private Emotion(
+            EmotionType emotionType,
+            String text,
+            String selectionImageUrl,
+            String previewImageUrl,
+            String archiveImageUrl,
+            String homeThumbnailUrl) {
         this.emotionType = emotionType;
         this.text = text;
-        this.graphicUrl = graphicUrl;
+        this.selectionImageUrl = selectionImageUrl;
+        this.previewImageUrl = previewImageUrl;
+        this.archiveImageUrl = archiveImageUrl;
+        this.homeThumbnailUrl = homeThumbnailUrl;
     }
 
-    public static Emotion create(EmotionType emotionType, String text, String graphicUrl) {
+    public static Emotion create(
+            EmotionType emotionType,
+            String text,
+            String selectionImageUrl,
+            String previewImageUrl,
+            String archiveImageUrl,
+            String homeThumbnailUrl) {
         return Emotion.builder()
                 .emotionType(emotionType)
                 .text(text)
-                .graphicUrl(graphicUrl)
+                .selectionImageUrl(selectionImageUrl)
+                .previewImageUrl(previewImageUrl)
+                .archiveImageUrl(archiveImageUrl)
+                .homeThumbnailUrl(homeThumbnailUrl)
                 .build();
     }
 }

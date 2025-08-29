@@ -12,6 +12,7 @@ import lombok.Getter;
 public enum EmotionType {
     POSITIVE("positive"),
     NEGATIVE("negative"),
+    NONE("none"),
     ;
 
     private final String value;
