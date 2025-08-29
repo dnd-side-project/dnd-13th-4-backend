@@ -74,12 +74,12 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        NumberExpression<Integer> monthlyChange = new CaseBuilder()
+        NumberExpression<Long> monthlyChange = new CaseBuilder()
                 .when(isCreatedThisMonth(today))
-                .then(1)
+                .then(1L)
                 .when(isCreatedLastMonth(today))
-                .then(-1)
-                .otherwise(0);
+                .then(-1L)
+                .otherwise(0L);
 
         List<ActionChange> results = queryFactory
                 .select(Projections.constructor(ActionChange.class, action, monthlyChange.sum()))
@@ -100,12 +100,12 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        NumberExpression<Integer> monthlyChange = new CaseBuilder()
+        NumberExpression<Long> monthlyChange = new CaseBuilder()
                 .when(isCreatedThisMonth(today))
-                .then(1)
+                .then(1L)
                 .when(isCreatedLastMonth(today))
-                .then(-1)
-                .otherwise(0);
+                .then(-1L)
+                .otherwise(0L);
 
         List<ActionChange> results = queryFactory
                 .select(Projections.constructor(ActionChange.class, action, monthlyChange.sum()))
