@@ -43,7 +43,7 @@ public class NoteService {
     private final MemberUtil memberUtil;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public NoteResponse findNoteById(Long noteId) {
         Note note = noteRepository.findFullNote(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
         Member me = memberUtil.getCurrentMember();
