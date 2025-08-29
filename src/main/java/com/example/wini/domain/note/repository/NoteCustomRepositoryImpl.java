@@ -7,8 +7,11 @@ import static com.example.wini.domain.template.domain.QActionCategory.actionCate
 import com.example.wini.domain.log.dto.response.ActionChange;
 import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
+import com.example.wini.domain.note.domain.SortOrder;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -47,18 +50,23 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public List<Note> findLatestNotes(Long memberId, Long roomId) {
+    public List<Note> findLatestNotesSortedByCreatedAtDesc(Long memberId, Long roomId) {
         return queryFactory
                 .selectFrom(note)
                 .where(isThisRoom(roomId).and(isReceiver(memberId)).and(isCreatedLatest()))
+                .orderBy(note.createdAt.desc())
                 .fetch();
     }
 
     @Override
-    public List<Note> findSavedNotes(Long memberId, Long roomId) {
+    public List<Note> findSavedNotesSortedByCreatedAt(Long memberId, Long roomId, SortOrder sortOrder) {
+        Order order = sortOrder == SortOrder.ASC ? Order.ASC : Order.DESC;
+        OrderSpecifier<?> orderSpecifier = new OrderSpecifier<>(order, note.createdAt);
+
         return queryFactory
                 .selectFrom(note)
                 .where(isThisRoom(roomId).and(isReceiver(memberId)).and(isSaved()))
+                .orderBy(orderSpecifier)
                 .fetch();
     }
 

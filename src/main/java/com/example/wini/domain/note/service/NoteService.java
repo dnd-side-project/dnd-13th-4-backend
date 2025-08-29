@@ -6,8 +6,10 @@ import com.example.wini.domain.common.util.MemberUtil;
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.domain.note.domain.Note;
+import com.example.wini.domain.note.domain.SortOrder;
 import com.example.wini.domain.note.dto.request.NoteCreateRequest;
 import com.example.wini.domain.note.dto.response.NoteResponse;
+import com.example.wini.domain.note.dto.response.SimpleNoteResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
 import com.example.wini.domain.notification.domain.NotificationType;
 import com.example.wini.domain.notification.event.NotificationEvent;
@@ -54,23 +56,24 @@ public class NoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<NoteResponse> findLatestNotes() {
+    public List<SimpleNoteResponse> findLatestNotesSorted() {
         Member me = memberUtil.getCurrentMember();
         Room room = roomRepository
                 .findOpenRoomByMemberId(me.getId())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
-        List<Note> notes = noteRepository.findLatestNotes(me.getId(), room.getId());
-        return notes.stream().map(NoteResponse::from).toList();
+        List<Note> notes = noteRepository.findLatestNotesSortedByCreatedAtDesc(me.getId(), room.getId());
+        return notes.stream().map(SimpleNoteResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
-    public List<NoteResponse> findSavedNotes() {
+    public List<SimpleNoteResponse> findSavedNotesSorted(String sort) {
         Member me = memberUtil.getCurrentMember();
         Room room = roomRepository
                 .findOpenRoomByMemberId(me.getId())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
-        List<Note> notes = noteRepository.findSavedNotes(me.getId(), room.getId());
-        return notes.stream().map(NoteResponse::from).toList();
+        SortOrder sortOrder = SortOrder.from(sort);
+        List<Note> notes = noteRepository.findSavedNotesSortedByCreatedAt(me.getId(), room.getId(), sortOrder);
+        return notes.stream().map(SimpleNoteResponse::from).toList();
     }
 
     @Transactional(readOnly = false)
