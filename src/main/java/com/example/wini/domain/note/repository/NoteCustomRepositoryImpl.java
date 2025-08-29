@@ -173,6 +173,15 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetchFirst();
     }
 
+    @Override
+    public Long countTotalNotesExchanged(Long roomId) {
+        return queryFactory
+                .select(note.count())
+                .from(note)
+                .where(isThisRoom(roomId))
+                .fetchFirst();
+    }
+
     private NumberExpression<Long> countThisMonthNotes(LocalDate today) {
         LocalDateTime startOfThisMonth = today.withDayOfMonth(1).atStartOfDay();
         LocalDateTime endOfThisMonth = today.plusDays(1).atStartOfDay();

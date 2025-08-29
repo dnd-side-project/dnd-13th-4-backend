@@ -27,15 +27,17 @@ public class LogService {
     private final MemberUtil memberUtil;
 
     @Transactional(readOnly = true)
-    public StatisticsResponse getWeeklyStatistics() {
+    public StatisticsResponse generateStatistics() {
         Member me = memberUtil.getCurrentMember();
         Room room = roomRepository
                 .findOpenRoomByMemberId(me.getId())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
         Long notesSentThisWeek = noteRepository.countNotesSentThisWeek(me.getId(), room.getId());
         Long notesReceivedThisWeek = noteRepository.countNotesReceivedThisWeek(me.getId(), room.getId());
+        Long totalNotesExchanged = noteRepository.countTotalNotesExchanged(room.getId());
 
-        return StatisticsResponse.of(notesSentThisWeek, notesReceivedThisWeek, room.getCreatedAt());
+        return StatisticsResponse.of(
+                notesSentThisWeek, notesReceivedThisWeek, totalNotesExchanged, room.getCreatedAt());
     }
 
     @Transactional(readOnly = true)

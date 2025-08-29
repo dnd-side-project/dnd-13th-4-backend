@@ -28,4 +28,6 @@ public interface NoteCustomRepository {
     Long countNotesSentThisWeek(Long memberId, Long roomId);
 
     Long countNotesReceivedThisWeek(Long memberId, Long roomId);
+
+    Long countTotalNotesExchanged(Long roomId);
 }
