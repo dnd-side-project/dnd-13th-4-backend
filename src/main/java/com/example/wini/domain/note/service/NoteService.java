@@ -89,7 +89,7 @@ public class NoteService {
     @Transactional(readOnly = false)
     public NoteResponse saveNote(Long noteId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
-        validateNoteSender(note);
+        validateNoteReceiver(note);
         note.markAsSaved();
         return NoteResponse.from(note);
     }
@@ -130,9 +130,9 @@ public class NoteService {
         eventPublisher.publishEvent(event);
     }
 
-    private void validateNoteSender(Note note) {
+    private void validateNoteReceiver(Note note) {
         Member me = memberUtil.getCurrentMember();
-        if (!note.getSender().equals(me)) {
+        if (!note.getReceiver().equals(me)) {
             throw new CustomException(NOTE_SENDER_MISMATCH);
         }
     }
