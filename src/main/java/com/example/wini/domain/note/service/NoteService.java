@@ -55,8 +55,8 @@ public class NoteService {
 
     @Transactional(readOnly = true)
     public List<NoteResponse> findLatestNotes() {
-        // TODO : 인가받은 사용자의 노트로 필터링 필요
-        List<Note> notes = noteRepository.findLatestNotes();
+        Member me = memberUtil.getCurrentMember();
+        List<Note> notes = noteRepository.findLatestNotes(me.getId());
         return notes.stream().map(NoteResponse::from).toList();
     }
 

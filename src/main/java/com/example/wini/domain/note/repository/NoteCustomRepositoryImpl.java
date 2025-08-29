@@ -47,8 +47,11 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public List<Note> findLatestNotes() {
-        return queryFactory.selectFrom(note).where(isCreatedLatest()).fetch();
+    public List<Note> findLatestNotes(Long memberId) {
+        return queryFactory
+                .selectFrom(note)
+                .where(isReceiver(memberId).and(isCreatedLatest()))
+                .fetch();
     }
 
     @Override

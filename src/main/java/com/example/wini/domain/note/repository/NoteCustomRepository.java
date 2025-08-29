@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface NoteCustomRepository {
     Optional<Note> findFullNote(Long noteId);
 
-    List<Note> findLatestNotes();
+    List<Note> findLatestNotes(Long memberId);
 
     List<Note> findSavedNotes();
 
