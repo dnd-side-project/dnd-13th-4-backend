@@ -74,9 +74,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
-        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
-        NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
+        //        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
+        //        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
+        //        NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
+        NumberExpression<Long> increaseCount = calculateMonthlyChange(today);
 
         List<Tuple> resultsTuple = queryFactory
                 .select(action, increaseCount)
@@ -98,9 +99,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
-        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
-        NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
+        //        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
+        //        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
+        //        NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
+        NumberExpression<Long> decreaseCount = calculateMonthlyChange(today);
 
         List<Tuple> resultsTuple = queryFactory
                 .select(action, decreaseCount)
@@ -223,6 +225,27 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         return new CaseBuilder()
                 .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
                 .then(1L)
+                .otherwise(0L)
+                .sum();
+    }
+
+    private NumberExpression<Long> calculateMonthlyChange(LocalDate today) {
+        LocalDateTime startOfThisMonth = today.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfThisMonth = today.plusDays(1).atStartOfDay();
+
+        LocalDate lastMonthOfToday = today.minusMonths(1);
+        LocalDateTime startOfLastMonth = lastMonthOfToday.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endOfLastMonth = lastMonthOfToday.plusDays(1).atStartOfDay();
+        if (today.getDayOfMonth() == today.lengthOfMonth()) {
+            endOfLastMonth =
+                    lastMonthOfToday.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay();
+        }
+
+        return new CaseBuilder()
+                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
+                .then(1L)
+                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
+                .then(-1L)
                 .otherwise(0L)
                 .sum();
     }
