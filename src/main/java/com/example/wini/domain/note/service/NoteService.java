@@ -6,6 +6,7 @@ import com.example.wini.domain.common.util.MemberUtil;
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.domain.note.domain.Note;
+import com.example.wini.domain.note.domain.SortOrder;
 import com.example.wini.domain.note.dto.request.NoteCreateRequest;
 import com.example.wini.domain.note.dto.response.NoteResponse;
 import com.example.wini.domain.note.repository.NoteRepository;
@@ -64,12 +65,13 @@ public class NoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<NoteResponse> findSavedNotes() {
+    public List<NoteResponse> findSavedNotesSorted(String sort) {
         Member me = memberUtil.getCurrentMember();
         Room room = roomRepository
                 .findOpenRoomByMemberId(me.getId())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
-        List<Note> notes = noteRepository.findSavedNotes(me.getId(), room.getId());
+        SortOrder sortOrder = SortOrder.from(sort);
+        List<Note> notes = noteRepository.findSavedNotesSortedByCreatedAt(me.getId(), room.getId(), sortOrder);
         return notes.stream().map(NoteResponse::from).toList();
     }
 

@@ -32,9 +32,11 @@ public class NoteController {
     }
 
     @GetMapping("/saved")
-    @Operation(summary = "보관된 쪽지 리스트 조회", description = "사용자가 저장한 쪽지 목록을 반환합니다.")
-    public List<NoteResponse> getSavedNotes() {
-        return noteService.findSavedNotes();
+    @Operation(summary = "보관된 쪽지 리스트 조회", description = "사용자가 저장한 쪽지 목록을 생성일시를 기준으로 정렬하여 반환합니다.")
+    public List<NoteResponse> getSavedNotes(
+            @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort) {
+        // TODO : 페이징 추가 시 Pageable로 수정
+        return noteService.findSavedNotesSorted(sort);
     }
 
     @PostMapping
