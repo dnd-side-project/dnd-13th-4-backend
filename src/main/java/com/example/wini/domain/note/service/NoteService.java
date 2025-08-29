@@ -43,24 +43,33 @@ public class NoteService {
     private final MemberUtil memberUtil;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public NoteResponse findNoteById(Long noteId) {
         Note note = noteRepository.findFullNote(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
-        // TODO : 인가받은 사용자 확인 후 읽음 처리 필요
+        Member me = memberUtil.getCurrentMember();
+        if (note.getReceiver().equals(me)) {
+            note.markAsRead();
+        }
         return NoteResponse.from(note);
     }
 
     @Transactional(readOnly = true)
     public List<NoteResponse> findLatestNotes() {
-        // TODO : 인가받은 사용자의 노트로 필터링 필요
-        List<Note> notes = noteRepository.findLatestNotes();
+        Member me = memberUtil.getCurrentMember();
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        List<Note> notes = noteRepository.findLatestNotes(me.getId(), room.getId());
         return notes.stream().map(NoteResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
     public List<NoteResponse> findSavedNotes() {
-        // TODO : 인가받은 사용자의 노트로 필터링 필요
-        List<Note> notes = noteRepository.findSavedNotes();
+        Member me = memberUtil.getCurrentMember();
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        List<Note> notes = noteRepository.findSavedNotes(me.getId(), room.getId());
         return notes.stream().map(NoteResponse::from).toList();
     }
 
@@ -79,8 +88,8 @@ public class NoteService {
 
     @Transactional(readOnly = false)
     public NoteResponse saveNote(Long noteId) {
-        // TODO : 인가받은 사용자로 저장 가능한지 판단
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
+        validateNoteReceiver(note);
         note.markAsSaved();
         return NoteResponse.from(note);
     }
@@ -105,17 +114,26 @@ public class NoteService {
                 .orElseThrow(() -> new CustomException(CLOSING_NOT_FOUND));
         int nextSequence = getNextSequence();
 
-        return Note.create(
-                me.getId(), mate.getId(), room.getId(), emotion, action, situation, promise, closing, nextSequence);
+        return Note.create(me, mate, room, emotion, action, situation, promise, closing, nextSequence);
     }
 
     private int getNextSequence() {
-        // TODO : 인가받은 사용자의 노트로 필터링 필요
-        return noteRepository.countTodayNotes().intValue() + 1;
+        Member me = memberUtil.getCurrentMember();
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        return noteRepository.countNotesSentToday(me.getId(), room.getId()).intValue() + 1;
     }
 
     private void notifyRoommateOfNewNote(Long mateMemberId) {
         NotificationEvent event = NotificationEvent.from(mateMemberId, NotificationType.NEW_NOTE);
         eventPublisher.publishEvent(event);
+    }
+
+    private void validateNoteReceiver(Note note) {
+        Member me = memberUtil.getCurrentMember();
+        if (!note.getReceiver().equals(me)) {
+            throw new CustomException(NOTE_RECEIVER_MISMATCH);
+        }
     }
 }

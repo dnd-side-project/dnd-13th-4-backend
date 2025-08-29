@@ -21,9 +21,9 @@ public record NoteResponse(
     public static NoteResponse from(Note note) {
         return new NoteResponse(
                 note.getId(),
-                note.getSenderId(),
-                note.getReceiverId(),
-                note.getRoomId(),
+                note.getSender().getId(),
+                note.getReceiver().getId(),
+                note.getRoom().getId(),
                 EmotionResponse.from(note.getEmotion()),
                 ActionResponse.from(note.getAction()),
                 SituationResponse.from(note.getSituation()),
