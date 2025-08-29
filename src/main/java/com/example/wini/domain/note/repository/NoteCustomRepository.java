@@ -13,7 +13,7 @@ public interface NoteCustomRepository {
 
     List<Note> findLatestNotes(Long memberId);
 
-    List<Note> findSavedNotes();
+    List<Note> findSavedNotes(Long memberId);
 
     ActionChange findMostIncreasedPositiveActionChange(Long memberId);
 

@@ -55,8 +55,11 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public List<Note> findSavedNotes() {
-        return queryFactory.selectFrom(note).where(note.isSaved.eq(true)).fetch();
+    public List<Note> findSavedNotes(Long memberId) {
+        return queryFactory
+                .selectFrom(note)
+                .where(isReceiver(memberId).and(isSaved()))
+                .fetch();
     }
 
     @Override
@@ -232,5 +235,9 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
 
     private BooleanExpression isReceiver(Long memberId) {
         return note.receiver.id.eq(memberId);
+    }
+
+    private BooleanExpression isSaved() {
+        return note.isSaved.eq(true);
     }
 }
