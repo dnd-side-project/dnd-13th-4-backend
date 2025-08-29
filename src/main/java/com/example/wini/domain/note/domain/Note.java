@@ -2,6 +2,7 @@ package com.example.wini.domain.note.domain;
 
 import com.example.wini.domain.common.BaseEntity;
 import com.example.wini.domain.member.domain.Member;
+import com.example.wini.domain.room.entity.Room;
 import com.example.wini.domain.template.domain.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -26,8 +27,9 @@ public class Note extends BaseEntity {
     @JoinColumn(name = "receiver_id")
     private Member receiver;
 
-    @Column(nullable = false)
-    private Long roomId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "emotion_id")
@@ -62,7 +64,7 @@ public class Note extends BaseEntity {
     private Note(
             Member sender,
             Member receiver,
-            Long roomId,
+            Room room,
             Emotion emotion,
             Action action,
             Situation situation,
@@ -71,7 +73,7 @@ public class Note extends BaseEntity {
             int sequence) {
         this.sender = sender;
         this.receiver = receiver;
-        this.roomId = roomId;
+        this.room = room;
         this.emotion = emotion;
         this.action = action;
         this.situation = situation;
@@ -85,7 +87,7 @@ public class Note extends BaseEntity {
     public static Note create(
             Member sender,
             Member receiver,
-            Long roomId,
+            Room room,
             Emotion emotion,
             Action action,
             Situation situation,
@@ -95,7 +97,7 @@ public class Note extends BaseEntity {
         return Note.builder()
                 .sender(sender)
                 .receiver(receiver)
-                .roomId(roomId)
+                .room(room)
                 .emotion(emotion)
                 .action(action)
                 .situation(situation)

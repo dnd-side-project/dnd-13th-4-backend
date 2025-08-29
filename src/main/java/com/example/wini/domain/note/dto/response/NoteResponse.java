@@ -23,7 +23,7 @@ public record NoteResponse(
                 note.getId(),
                 note.getSender().getId(),
                 note.getReceiver().getId(),
-                note.getRoomId(),
+                note.getRoom().getId(),
                 EmotionResponse.from(note.getEmotion()),
                 ActionResponse.from(note.getAction()),
                 SituationResponse.from(note.getSituation()),

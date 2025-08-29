@@ -108,7 +108,7 @@ public class NoteService {
                 .orElseThrow(() -> new CustomException(CLOSING_NOT_FOUND));
         int nextSequence = getNextSequence();
 
-        return Note.create(me, mate, room.getId(), emotion, action, situation, promise, closing, nextSequence);
+        return Note.create(me, mate, room, emotion, action, situation, promise, closing, nextSequence);
     }
 
     private int getNextSequence() {
