@@ -75,7 +75,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         LocalDate today = LocalDate.now();
         NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
-        NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
+        NumberExpression<Long> increaseCount =
+                thisMonthNotes.subtract(lastMonthNotes).as("increaseCount");
 
         return queryFactory
                 .select(new QActionChange(action, increaseCount.longValue()))
@@ -95,7 +96,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         LocalDate today = LocalDate.now();
         NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
-        NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
+        NumberExpression<Long> decreaseCount =
+                thisMonthNotes.subtract(lastMonthNotes).as("decreaseCount");
 
         return queryFactory
                 .select(new QActionChange(action, decreaseCount.longValue()))
