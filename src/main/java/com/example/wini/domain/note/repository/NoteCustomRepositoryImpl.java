@@ -5,12 +5,12 @@ import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
 import com.example.wini.domain.log.dto.response.ActionChange;
+import com.example.wini.domain.log.dto.response.QActionChange;
 import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.domain.SortOrder;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -74,13 +74,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        //        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
-        //        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
-        //        NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
         NumberExpression<Long> increaseCount = calculateMonthlyChange(today);
 
-        List<Tuple> resultsTuple = queryFactory
-                .select(action, increaseCount)
+        List<ActionChange> results = queryFactory
+                .select(new QActionChange(action, increaseCount))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -90,8 +87,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .groupBy(action)
                 .fetch();
 
-        return resultsTuple.stream()
-                .map(tuple -> new ActionChange(tuple.get(action), tuple.get(increaseCount)))
+        return results.stream()
                 .max(Comparator.comparing(ActionChange::getChange))
                 .orElse(null);
     }
@@ -99,13 +95,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        //        NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
-        //        NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
-        //        NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
         NumberExpression<Long> decreaseCount = calculateMonthlyChange(today);
 
-        List<Tuple> resultsTuple = queryFactory
-                .select(action, decreaseCount)
+        List<ActionChange> results = queryFactory
+                .select(new QActionChange(action, decreaseCount))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -115,8 +108,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .groupBy(action)
                 .fetch();
 
-        return resultsTuple.stream()
-                .map(tuple -> new ActionChange(tuple.get(action), tuple.get(decreaseCount)))
+        return results.stream()
                 .min(Comparator.comparing(ActionChange::getChange))
                 .orElse(null);
     }
@@ -200,34 +192,6 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .where(isThisRoom(roomId))
                 .fetchFirst();
     }
-
-    //    private NumberExpression<Long> countThisMonthNotes(LocalDate today) {
-    //        LocalDateTime startOfThisMonth = today.withDayOfMonth(1).atStartOfDay();
-    //        LocalDateTime endOfThisMonth = today.plusDays(1).atStartOfDay();
-    //
-    //        return new CaseBuilder()
-    //                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
-    //                .then(1L)
-    //                .otherwise(0L)
-    //                .sum();
-    //    }
-
-    //    private NumberExpression<Long> countLastMonthNotes(LocalDate today) {
-    //        LocalDate lastMonthOfToday = today.minusMonths(1);
-    //
-    //        LocalDateTime startOfLastMonth = lastMonthOfToday.withDayOfMonth(1).atStartOfDay();
-    //        LocalDateTime endOfLastMonth = lastMonthOfToday.plusDays(1).atStartOfDay();
-    //        if (today.getDayOfMonth() == today.lengthOfMonth()) {
-    //            endOfLastMonth =
-    //                    lastMonthOfToday.with(TemporalAdjusters.lastDayOfMonth()).atStartOfDay();
-    //        }
-    //
-    //        return new CaseBuilder()
-    //                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
-    //                .then(1L)
-    //                .otherwise(0L)
-    //                .sum();
-    //    }
 
     private NumberExpression<Long> calculateMonthlyChange(LocalDate today) {
         LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
