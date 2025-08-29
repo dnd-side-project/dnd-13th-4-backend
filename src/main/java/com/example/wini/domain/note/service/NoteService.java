@@ -46,7 +46,10 @@ public class NoteService {
     @Transactional(readOnly = true)
     public NoteResponse findNoteById(Long noteId) {
         Note note = noteRepository.findFullNote(noteId).orElseThrow(() -> new CustomException(NOTE_NOT_FOUND));
-        // TODO : 인가받은 사용자 확인 후 읽음 처리 필요
+        Member me = memberUtil.getCurrentMember();
+        if (note.getReceiver().equals(me)) {
+            note.markAsRead();
+        }
         return NoteResponse.from(note);
     }
 

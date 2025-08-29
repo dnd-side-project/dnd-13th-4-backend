@@ -105,6 +105,10 @@ public class Note extends BaseEntity {
                 .build();
     }
 
+    public void markAsRead() {
+        isSaved = true;
+    }
+
     public void markAsSaved() {
         isSaved = true;
     }
