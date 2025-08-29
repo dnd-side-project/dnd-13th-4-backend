@@ -22,6 +22,7 @@ public class FirebaseTokenService {
         String token = request.token();
 
         firebaseTokenRepository.deleteByToken(token);
+        firebaseTokenRepository.flush();
 
         FirebaseToken firebaseToken = FirebaseToken.create(member, token);
         firebaseTokenRepository.save(firebaseToken);
