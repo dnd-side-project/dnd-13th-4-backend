@@ -20,9 +20,9 @@ public class LogController {
     private final LogService logService;
 
     @GetMapping("/statistics")
-    @Operation(summary = "주간 통계 조회", description = "주간 통계 결과를 반환합니다.")
+    @Operation(summary = "통계 조회", description = "이번주에 주고받은 쪽지 개수, 룸메와 총 교환한 쪽지 개수, 룸메와 총 지낸 기간을 반환합니다.")
     public StatisticsResponse getStatistics() {
-        return logService.getWeeklyStatistics();
+        return logService.generateStatistics();
     }
 
     @GetMapping("/keywords")
