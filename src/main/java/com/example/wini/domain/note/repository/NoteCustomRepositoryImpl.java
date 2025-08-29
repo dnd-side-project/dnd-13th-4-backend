@@ -5,7 +5,6 @@ import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
 import com.example.wini.domain.log.dto.response.ActionChange;
-import com.example.wini.domain.log.dto.response.QActionChange;
 import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.domain.SortOrder;
@@ -13,6 +12,7 @@ import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -93,7 +93,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .sum();
 
         List<ActionChange> results = queryFactory
-                .select(new QActionChange(action, increaseCount))
+                .select(Projections.constructor(ActionChange.class, action, increaseCount.as("change")))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -103,9 +103,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .groupBy(action)
                 .fetch();
 
-        return results.stream()
-                .max(Comparator.comparing(ActionChange::getChange))
-                .orElse(null);
+        return results.stream().max(Comparator.comparing(ActionChange::change)).orElse(null);
     }
 
     @Override
@@ -129,19 +127,17 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .sum();
 
         List<ActionChange> results = queryFactory
-                .select(new QActionChange(action, decreaseCount))
+                .select(Projections.constructor(ActionChange.class, action, decreaseCount.as("change")))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
                 .where(isThisRoom(roomId)
                         .and(isReceiver(memberId))
-                        .and(actionCategory.emotionType.eq(EmotionType.NEGATIVE))) // emotionType을 NEGATIVE로 변경
+                        .and(actionCategory.emotionType.eq(EmotionType.NEGATIVE)))
                 .groupBy(action)
                 .fetch();
 
-        return results.stream()
-                .min(Comparator.comparing(ActionChange::getChange))
-                .orElse(null);
+        return results.stream().min(Comparator.comparing(ActionChange::change)).orElse(null);
     }
 
     @Override
