@@ -15,6 +15,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
@@ -82,7 +83,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .otherwise(0L);
 
         List<ActionChange> results = queryFactory
-                .select(Projections.constructor(ActionChange.class, action, monthlyChange.sum()))
+                .select(Projections.constructor(
+                        ActionChange.class, action, Expressions.numberTemplate(Long.class, "sum({0})", monthlyChange)))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -108,7 +110,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .otherwise(0L);
 
         List<ActionChange> results = queryFactory
-                .select(Projections.constructor(ActionChange.class, action, monthlyChange.sum()))
+                .select(Projections.constructor(
+                        ActionChange.class, action, Expressions.numberTemplate(Long.class, "sum({0})", monthlyChange)))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
