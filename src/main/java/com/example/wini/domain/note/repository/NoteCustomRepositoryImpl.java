@@ -82,8 +82,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .then(-1L)
                 .otherwise(0L);
 
+        NumberExpression<Long> monthlyChangeSum = monthlyChange.sum().coalesce(0L);
+
         List<Tuple> results = queryFactory
-                .select(action, monthlyChange.sum())
+                .select(action, monthlyChangeSum)
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -94,7 +96,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetch();
 
         return results.stream()
-                .map(t -> new ActionChange(t.get(action), t.get(monthlyChange.sum())))
+                .map(t -> new ActionChange(t.get(action), t.get(monthlyChangeSum)))
                 .max(Comparator.comparing(ActionChange::monthlyChange))
                 .orElse(null);
     }
@@ -110,8 +112,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .then(-1L)
                 .otherwise(0L);
 
+        NumberExpression<Long> monthlyChangeSum = monthlyChange.sum().coalesce(0L);
+
         List<Tuple> results = queryFactory
-                .select(action, monthlyChange.sum())
+                .select(action, monthlyChangeSum)
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -122,7 +126,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetch();
 
         return results.stream()
-                .map(t -> new ActionChange(t.get(action), t.get(monthlyChange.sum())))
+                .map(t -> new ActionChange(t.get(action), t.get(monthlyChangeSum)))
                 .min(Comparator.comparing(ActionChange::monthlyChange))
                 .orElse(null);
     }
