@@ -29,11 +29,11 @@ public class LogService {
     @Transactional(readOnly = true)
     public StatisticsResponse getWeeklyStatistics() {
         Member me = memberUtil.getCurrentMember();
-        Long notesSentThisWeek = noteRepository.countNotesSentThisWeek(me.getId());
-        Long notesReceivedThisWeek = noteRepository.countNotesReceivedThisWeek(me.getId());
         Room room = roomRepository
                 .findOpenRoomByMemberId(me.getId())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        Long notesSentThisWeek = noteRepository.countNotesSentThisWeek(me.getId(), room.getId());
+        Long notesReceivedThisWeek = noteRepository.countNotesReceivedThisWeek(me.getId(), room.getId());
 
         return StatisticsResponse.of(notesSentThisWeek, notesReceivedThisWeek, room.getCreatedAt());
     }
@@ -41,8 +41,13 @@ public class LogService {
     @Transactional(readOnly = true)
     public KeywordResponse getTopActionCategoriesInLast30Days() {
         Member me = memberUtil.getCurrentMember();
-        ActionCategory positive = noteRepository.findTopActionCategoryInLast30Days(me.getId(), EmotionType.POSITIVE);
-        ActionCategory negative = noteRepository.findTopActionCategoryInLast30Days(me.getId(), EmotionType.NEGATIVE);
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        ActionCategory positive =
+                noteRepository.findTopActionCategoryInLast30Days(me.getId(), room.getId(), EmotionType.POSITIVE);
+        ActionCategory negative =
+                noteRepository.findTopActionCategoryInLast30Days(me.getId(), room.getId(), EmotionType.NEGATIVE);
 
         return KeywordResponse.from(positive, negative);
     }
@@ -50,9 +55,15 @@ public class LogService {
     @Transactional(readOnly = true)
     public GrowthResponse getActionTrendsAndWeeklyPositiveNoteCounts() {
         Member me = memberUtil.getCurrentMember();
-        ActionChange increasedPositiveAction = noteRepository.findMostIncreasedPositiveActionChange(me.getId());
-        ActionChange decreasedNegativeAction = noteRepository.findMostDecreasedNegativeActionChange(me.getId());
-        List<WeeklyNoteCount> weeklyPositiveNoteCounts = noteRepository.getWeeklyPositiveNoteCounts(me.getId());
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        ActionChange increasedPositiveAction =
+                noteRepository.findMostIncreasedPositiveActionChange(me.getId(), room.getId());
+        ActionChange decreasedNegativeAction =
+                noteRepository.findMostDecreasedNegativeActionChange(me.getId(), room.getId());
+        List<WeeklyNoteCount> weeklyPositiveNoteCounts =
+                noteRepository.getWeeklyPositiveNoteCounts(me.getId(), room.getId());
 
         return GrowthResponse.from(increasedPositiveAction, decreasedNegativeAction, weeklyPositiveNoteCounts);
     }

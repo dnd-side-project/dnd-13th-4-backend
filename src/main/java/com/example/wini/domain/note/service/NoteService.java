@@ -56,14 +56,20 @@ public class NoteService {
     @Transactional(readOnly = true)
     public List<NoteResponse> findLatestNotes() {
         Member me = memberUtil.getCurrentMember();
-        List<Note> notes = noteRepository.findLatestNotes(me.getId());
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        List<Note> notes = noteRepository.findLatestNotes(me.getId(), room.getId());
         return notes.stream().map(NoteResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
     public List<NoteResponse> findSavedNotes() {
         Member me = memberUtil.getCurrentMember();
-        List<Note> notes = noteRepository.findSavedNotes(me.getId());
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        List<Note> notes = noteRepository.findSavedNotes(me.getId(), room.getId());
         return notes.stream().map(NoteResponse::from).toList();
     }
 
@@ -113,7 +119,10 @@ public class NoteService {
 
     private int getNextSequence() {
         Member me = memberUtil.getCurrentMember();
-        return noteRepository.countNotesSentToday(me.getId()).intValue() + 1;
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+        return noteRepository.countNotesSentToday(me.getId(), room.getId()).intValue() + 1;
     }
 
     private void notifyRoommateOfNewNote(Long mateMemberId) {

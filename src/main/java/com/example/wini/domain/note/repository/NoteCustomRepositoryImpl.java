@@ -47,23 +47,23 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public List<Note> findLatestNotes(Long memberId) {
+    public List<Note> findLatestNotes(Long memberId, Long roomId) {
         return queryFactory
                 .selectFrom(note)
-                .where(isReceiver(memberId).and(isCreatedLatest()))
+                .where(isThisRoom(roomId).and(isReceiver(memberId)).and(isCreatedLatest()))
                 .fetch();
     }
 
     @Override
-    public List<Note> findSavedNotes(Long memberId) {
+    public List<Note> findSavedNotes(Long memberId, Long roomId) {
         return queryFactory
                 .selectFrom(note)
-                .where(isReceiver(memberId).and(isSaved()))
+                .where(isThisRoom(roomId).and(isReceiver(memberId)).and(isSaved()))
                 .fetch();
     }
 
     @Override
-    public ActionChange findMostIncreasedPositiveActionChange(Long memberId) {
+    public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
         NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
@@ -74,14 +74,16 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
-                .where(isReceiver(memberId).and(actionCategory.emotionType.eq(EmotionType.POSITIVE)))
+                .where(isThisRoom(roomId)
+                        .and(isReceiver(memberId))
+                        .and(actionCategory.emotionType.eq(EmotionType.POSITIVE)))
                 .groupBy(action)
                 .orderBy(increaseCount.desc())
                 .fetchFirst();
     }
 
     @Override
-    public ActionChange findMostDecreasedNegativeActionChange(Long memberId) {
+    public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
         NumberExpression<Long> thisMonthNotes = countThisMonthNotes(today);
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
@@ -92,20 +94,23 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
-                .where(isReceiver(memberId).and(actionCategory.emotionType.eq(EmotionType.NEGATIVE)))
+                .where(isThisRoom(roomId)
+                        .and(isReceiver(memberId))
+                        .and(actionCategory.emotionType.eq(EmotionType.NEGATIVE)))
                 .groupBy(action)
                 .orderBy(decreaseCount.asc())
                 .fetchFirst();
     }
 
     @Override
-    public ActionCategory findTopActionCategoryInLast30Days(Long memberId, EmotionType emotionType) {
+    public ActionCategory findTopActionCategoryInLast30Days(Long memberId, Long roomId, EmotionType emotionType) {
         return queryFactory
                 .select(actionCategory)
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
-                .where(isReceiver(memberId)
+                .where(isThisRoom(roomId)
+                        .and(isReceiver(memberId))
                         .and(isCreatedInLast30Days())
                         .and(actionCategory.emotionType.eq(emotionType)))
                 .groupBy(actionCategory)
@@ -114,7 +119,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public List<WeeklyNoteCount> getWeeklyPositiveNoteCounts(Long memberId) {
+    public List<WeeklyNoteCount> getWeeklyPositiveNoteCounts(Long memberId, Long roomId) {
         List<WeeklyNoteCount> results = new ArrayList<>();
 
         LocalDate today = LocalDate.now();
@@ -127,7 +132,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                     .from(note)
                     .join(note.action, action)
                     .join(action.actionCategory, actionCategory)
-                    .where(isReceiver(memberId)
+                    .where(isThisRoom(roomId)
+                            .and(isReceiver(memberId))
                             .and(actionCategory.emotionType.eq(EmotionType.POSITIVE))
                             .and(isCreatedInLast7Days(endDateTime)))
                     .fetchOne();
@@ -141,29 +147,29 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public Long countNotesSentToday(Long memberId) {
+    public Long countNotesSentToday(Long memberId, Long roomId) {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isSender(memberId).and(isCreatedToday()))
+                .where(isThisRoom(roomId).and(isSender(memberId)).and(isCreatedToday()))
                 .fetchFirst();
     }
 
     @Override
-    public Long countNotesSentThisWeek(Long memberId) {
+    public Long countNotesSentThisWeek(Long memberId, Long roomId) {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isSender(memberId).and(isCreatedThisWeek()))
+                .where(isThisRoom(roomId).and(isSender(memberId)).and(isCreatedThisWeek()))
                 .fetchFirst();
     }
 
     @Override
-    public Long countNotesReceivedThisWeek(Long memberId) {
+    public Long countNotesReceivedThisWeek(Long memberId, Long roomId) {
         return queryFactory
                 .select(note.count())
                 .from(note)
-                .where(isReceiver(memberId).and(isCreatedThisWeek()))
+                .where(isThisRoom(roomId).and(isReceiver(memberId)).and(isCreatedThisWeek()))
                 .fetchFirst();
     }
 
@@ -227,6 +233,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
 
     private BooleanExpression isCreatedInLast30Days() {
         return note.createdAt.goe(LocalDateTime.now().minusDays(30));
+    }
+
+    private BooleanExpression isThisRoom(Long roomId) {
+        return note.room.id.eq(roomId);
     }
 
     private BooleanExpression isSender(Long memberId) {
