@@ -15,7 +15,6 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
@@ -75,32 +74,17 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
-        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
-
-        // 모든 계산 로직을 쿼리 내부에 직접 작성
-        NumberExpression<Long> increaseCount = new CaseBuilder()
-                .when(note.createdAt
-                        .goe(Expressions.asDateTime(firstDayOfThisMonth.atStartOfDay()))
-                        .and(note.createdAt.lt(Expressions.asDateTime(
-                                firstDayOfThisMonth.plusMonths(1).atStartOfDay()))))
-                .then(1L)
-                .when(note.createdAt
-                        .goe(Expressions.asDateTime(firstDayOfLastMonth.atStartOfDay()))
-                        .and(note.createdAt.lt(Expressions.asDateTime(firstDayOfThisMonth.atStartOfDay()))))
-                .then(-1L)
-                .otherwise(0L)
-                .sum();
+        NumberExpression<Long> increaseCount = calculateMonthlyChange(today);
 
         List<ActionChange> results = queryFactory
-                .select(Projections.constructor(ActionChange.class, action, increaseCount.as("change")))
+                .select(Projections.constructor(ActionChange.class, action, increaseCount))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
                 .where(isThisRoom(roomId)
                         .and(isReceiver(memberId))
                         .and(actionCategory.emotionType.eq(EmotionType.POSITIVE)))
-                .groupBy(action)
+                .groupBy(action.id)
                 .fetch();
 
         return results.stream().max(Comparator.comparing(ActionChange::change)).orElse(null);
@@ -109,32 +93,17 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
-        LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
-        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
-
-        // 모든 계산 로직을 쿼리 내부에 직접 작성
-        NumberExpression<Long> decreaseCount = new CaseBuilder()
-                .when(note.createdAt
-                        .goe(Expressions.asDateTime(firstDayOfThisMonth.atStartOfDay()))
-                        .and(note.createdAt.lt(Expressions.asDateTime(
-                                firstDayOfThisMonth.plusMonths(1).atStartOfDay()))))
-                .then(1L)
-                .when(note.createdAt
-                        .goe(Expressions.asDateTime(firstDayOfLastMonth.atStartOfDay()))
-                        .and(note.createdAt.lt(Expressions.asDateTime(firstDayOfThisMonth.atStartOfDay()))))
-                .then(-1L)
-                .otherwise(0L)
-                .sum();
+        NumberExpression<Long> decreaseCount = calculateMonthlyChange(today);
 
         List<ActionChange> results = queryFactory
-                .select(Projections.constructor(ActionChange.class, action, decreaseCount.as("change")))
+                .select(Projections.constructor(ActionChange.class, action, decreaseCount))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
                 .where(isThisRoom(roomId)
                         .and(isReceiver(memberId))
                         .and(actionCategory.emotionType.eq(EmotionType.NEGATIVE)))
-                .groupBy(action)
+                .groupBy(action.id)
                 .fetch();
 
         return results.stream().min(Comparator.comparing(ActionChange::change)).orElse(null);
@@ -231,13 +200,9 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         LocalDateTime endOfLastMonth = firstDayOfThisMonth.atStartOfDay();
 
         return new CaseBuilder()
-                .when(note.createdAt
-                        .goe(Expressions.asDateTime(startOfThisMonth))
-                        .and(note.createdAt.lt(Expressions.asDateTime(endOfThisMonth))))
+                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
                 .then(1L)
-                .when(note.createdAt
-                        .goe(Expressions.asDateTime(startOfLastMonth))
-                        .and(note.createdAt.lt(Expressions.asDateTime(endOfLastMonth))))
+                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
                 .then(-1L)
                 .otherwise(0L)
                 .sum();
