@@ -25,10 +25,9 @@ public class TemplateController {
     private final ClosingService closingService;
 
     @GetMapping("/emotions")
-    @Operation(summary = "감정 리스트 조회", description = "감정 유형을 쿼리로 받아 감정 목록을 반환합니다.")
-    public List<EmotionResponse> getEmotionsByEmotionType(
-            @RequestParam(value = "emotionType") @NotBlank String emotionType) {
-        return emotionService.findAllEmotionsByEmotionType(emotionType);
+    @Operation(summary = "감정 리스트 조회", description = "감정 목록을 반환합니다.")
+    public List<EmotionResponse> getEmotions() {
+        return emotionService.findAllEmotions();
     }
 
     @GetMapping("/actions")
