@@ -5,12 +5,12 @@ import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
 import com.example.wini.domain.log.dto.response.ActionChange;
-import com.example.wini.domain.log.dto.response.QActionChange;
 import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.domain.SortOrder;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -78,8 +78,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
         NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
-        List<ActionChange> results = queryFactory
-                .select(new QActionChange(action, increaseCount.longValue()))
+        List<Tuple> resultsTuple = queryFactory
+                .select(action, increaseCount)
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -89,9 +89,9 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .groupBy(action)
                 .fetch();
 
-        return results.stream()
-                .sorted(Comparator.comparing(ActionChange::getChange).reversed())
-                .findFirst()
+        return resultsTuple.stream()
+                .map(tuple -> new ActionChange(tuple.get(action), tuple.get(increaseCount)))
+                .max(Comparator.comparing(ActionChange::getChange))
                 .orElse(null);
     }
 
@@ -102,8 +102,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
         NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
-        List<ActionChange> results = queryFactory
-                .select(new QActionChange(action, decreaseCount.longValue()))
+        List<Tuple> resultsTuple = queryFactory
+                .select(action, decreaseCount)
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -113,9 +113,9 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .groupBy(action)
                 .fetch();
 
-        return results.stream()
-                .sorted(Comparator.comparing(ActionChange::getChange))
-                .findFirst()
+        return resultsTuple.stream()
+                .map(tuple -> new ActionChange(tuple.get(action), tuple.get(decreaseCount)))
+                .min(Comparator.comparing(ActionChange::getChange))
                 .orElse(null);
     }
 
