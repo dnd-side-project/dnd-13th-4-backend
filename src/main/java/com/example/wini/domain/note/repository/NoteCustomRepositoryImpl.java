@@ -13,9 +13,7 @@ import com.example.wini.domain.template.domain.EmotionType;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -82,8 +80,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .then(-1L)
                 .otherwise(0L);
 
-        NumberExpression<Long> monthlyChangeSum =
-                monthlyChange.sum().coalesce(0L).longValue();
+        NumberExpression<Long> monthlyChangeSum = Expressions.numberTemplate(Long.class, "sum({0})", monthlyChange)
+                .coalesce(0L);
 
         List<Tuple> results = queryFactory
                 .select(action, monthlyChangeSum)
@@ -113,8 +111,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .then(-1L)
                 .otherwise(0L);
 
-        NumberExpression<Long> monthlyChangeSum =
-                monthlyChange.sum().coalesce(0L).longValue();
+        NumberExpression<Long> monthlyChangeSum = Expressions.numberTemplate(Long.class, "sum({0})", monthlyChange)
+                .coalesce(0L);
 
         List<Tuple> results = queryFactory
                 .select(action, monthlyChangeSum)
