@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface NoteCustomRepository {
     Optional<Note> findFullNote(Long noteId);
 
-    List<Note> findLatestNotes(Long memberId, Long roomId);
+    List<Note> findLatestNotesSortedByCreatedAtDesc(Long memberId, Long roomId);
 
     List<Note> findSavedNotesSortedByCreatedAt(Long memberId, Long roomId, SortOrder sortOrder);
 

@@ -56,12 +56,12 @@ public class NoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<SimpleNoteResponse> findLatestNotes() {
+    public List<SimpleNoteResponse> findLatestNotesSorted() {
         Member me = memberUtil.getCurrentMember();
         Room room = roomRepository
                 .findOpenRoomByMemberId(me.getId())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
-        List<Note> notes = noteRepository.findLatestNotes(me.getId(), room.getId());
+        List<Note> notes = noteRepository.findLatestNotesSortedByCreatedAtDesc(me.getId(), room.getId());
         return notes.stream().map(SimpleNoteResponse::from).toList();
     }
 

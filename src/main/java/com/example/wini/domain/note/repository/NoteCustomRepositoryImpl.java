@@ -50,10 +50,11 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public List<Note> findLatestNotes(Long memberId, Long roomId) {
+    public List<Note> findLatestNotesSortedByCreatedAtDesc(Long memberId, Long roomId) {
         return queryFactory
                 .selectFrom(note)
                 .where(isThisRoom(roomId).and(isReceiver(memberId)).and(isCreatedLatest()))
+                .orderBy(note.createdAt.desc())
                 .fetch();
     }
 

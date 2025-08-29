@@ -27,9 +27,9 @@ public class NoteController {
     }
 
     @GetMapping("/latest")
-    @Operation(summary = "최근 받은 쪽지 리스트 조회", description = "24시간 내 받은 쪽지 목록을 반환합니다.")
+    @Operation(summary = "최근 받은 쪽지 리스트 조회", description = "24시간 내 받은 쪽지 목록을 최신순 정렬하여 반환합니다.")
     public List<SimpleNoteResponse> getLatestNotes() {
-        return noteService.findLatestNotes();
+        return noteService.findLatestNotesSorted();
     }
 
     @GetMapping("/saved")
