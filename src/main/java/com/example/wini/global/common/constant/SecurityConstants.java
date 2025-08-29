@@ -10,6 +10,7 @@ public class SecurityConstants {
 
     public static final String[] PUBLIC_URLS = {
         "/",
+        "/health",
         "/auth/kakao/**",
         "/auth/login/**",
         "/api-docs",
