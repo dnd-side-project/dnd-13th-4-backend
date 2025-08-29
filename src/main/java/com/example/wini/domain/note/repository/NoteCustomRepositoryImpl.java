@@ -224,10 +224,10 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     private BooleanExpression isSender(Long memberId) {
-        return note.senderId.eq(memberId);
+        return note.sender.id.eq(memberId);
     }
 
     private BooleanExpression isReceiver(Long memberId) {
-        return note.receiverId.eq(memberId);
+        return note.receiver.id.eq(memberId);
     }
 }

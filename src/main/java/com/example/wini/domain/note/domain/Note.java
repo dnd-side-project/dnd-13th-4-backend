@@ -1,6 +1,7 @@
 package com.example.wini.domain.note.domain;
 
 import com.example.wini.domain.common.BaseEntity;
+import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.template.domain.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -17,12 +18,13 @@ public class Note extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO : 인증인가 후 멤버 연결하기
-    @Column(nullable = false)
-    private Long senderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    private Member sender;
 
-    @Column(nullable = false)
-    private Long receiverId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id")
+    private Member receiver;
 
     @Column(nullable = false)
     private Long roomId;
@@ -58,8 +60,8 @@ public class Note extends BaseEntity {
 
     @Builder(access = AccessLevel.PRIVATE)
     private Note(
-            Long senderId,
-            Long receiverId,
+            Member sender,
+            Member receiver,
             Long roomId,
             Emotion emotion,
             Action action,
@@ -67,8 +69,8 @@ public class Note extends BaseEntity {
             Promise promise,
             Closing closing,
             int sequence) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
+        this.sender = sender;
+        this.receiver = receiver;
         this.roomId = roomId;
         this.emotion = emotion;
         this.action = action;
@@ -81,8 +83,8 @@ public class Note extends BaseEntity {
     }
 
     public static Note create(
-            Long senderId,
-            Long receiverId,
+            Member sender,
+            Member receiver,
             Long roomId,
             Emotion emotion,
             Action action,
@@ -91,8 +93,8 @@ public class Note extends BaseEntity {
             Closing closing,
             int sequence) {
         return Note.builder()
-                .senderId(senderId)
-                .receiverId(receiverId)
+                .sender(sender)
+                .receiver(receiver)
                 .roomId(roomId)
                 .emotion(emotion)
                 .action(action)
