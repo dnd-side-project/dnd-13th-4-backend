@@ -82,7 +82,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .then(-1L)
                 .otherwise(0L);
 
-        NumberExpression<Long> monthlyChangeSum = monthlyChange.sum().coalesce(0L);
+        NumberExpression<Long> monthlyChangeSum =
+                monthlyChange.sum().coalesce(0L).longValue();
 
         List<Tuple> results = queryFactory
                 .select(action, monthlyChangeSum)
@@ -112,7 +113,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .then(-1L)
                 .otherwise(0L);
 
-        NumberExpression<Long> monthlyChangeSum = monthlyChange.sum().coalesce(0L);
+        NumberExpression<Long> monthlyChangeSum =
+                monthlyChange.sum().coalesce(0L).longValue();
 
         List<Tuple> results = queryFactory
                 .select(action, monthlyChangeSum)
