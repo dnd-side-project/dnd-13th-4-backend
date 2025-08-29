@@ -81,11 +81,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                         new CaseBuilder()
                                 .when(isCreatedThisMonth(today))
                                 .then(1)
-                                .otherwise(0)
-                                .sum(),
-                        new CaseBuilder()
                                 .when(isCreatedLastMonth(today))
-                                .then(1)
+                                .then(-1)
                                 .otherwise(0)
                                 .sum()))
                 .from(note)
@@ -98,7 +95,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetch();
 
         return results.stream()
-                .max(Comparator.comparing(ac -> ac.thisMonthCount() - ac.lastMonthCount()))
+                .max(Comparator.comparing(ActionChange::monthlyChange))
                 .orElse(null);
     }
 
@@ -113,11 +110,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                         new CaseBuilder()
                                 .when(isCreatedThisMonth(today))
                                 .then(1)
-                                .otherwise(0)
-                                .sum(),
-                        new CaseBuilder()
                                 .when(isCreatedLastMonth(today))
-                                .then(1)
+                                .then(-1)
                                 .otherwise(0)
                                 .sum()))
                 .from(note)
@@ -130,7 +124,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetch();
 
         return results.stream()
-                .min(Comparator.comparing(ac -> ac.thisMonthCount() - ac.lastMonthCount()))
+                .min(Comparator.comparing(ActionChange::monthlyChange))
                 .orElse(null);
     }
 
@@ -232,25 +226,6 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
 
         return note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth));
     }
-
-    //    private NumberExpression<Long> calculateMonthlyChange(LocalDate today) {
-    //        LocalDate firstDayOfThisMonth = today.withDayOfMonth(1);
-    //        LocalDate firstDayOfLastMonth = firstDayOfThisMonth.minusMonths(1);
-    //
-    //        LocalDateTime startOfThisMonth = firstDayOfThisMonth.atStartOfDay();
-    //        LocalDateTime endOfThisMonth = firstDayOfThisMonth.plusMonths(1).atStartOfDay();
-    //
-    //        LocalDateTime startOfLastMonth = firstDayOfLastMonth.atStartOfDay();
-    //        LocalDateTime endOfLastMonth = firstDayOfThisMonth.atStartOfDay();
-    //
-    //        return new CaseBuilder()
-    //                .when(note.createdAt.goe(startOfThisMonth).and(note.createdAt.lt(endOfThisMonth)))
-    //                .then(1L)
-    //                .when(note.createdAt.goe(startOfLastMonth).and(note.createdAt.lt(endOfLastMonth)))
-    //                .then(-1L)
-    //                .otherwise(0L)
-    //                .sum();
-    //    }
 
     private BooleanExpression isCreatedLatest() {
         return note.createdAt.after(LocalDateTime.now().minusHours(24));
