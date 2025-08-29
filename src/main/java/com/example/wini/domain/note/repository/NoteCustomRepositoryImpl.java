@@ -10,12 +10,11 @@ import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.domain.SortOrder;
 import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.DayOfWeek;
@@ -75,6 +74,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
+
         NumberExpression<Long> monthlyChange = new CaseBuilder()
                 .when(isCreatedThisMonth(today))
                 .then(1L)
@@ -82,9 +82,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .then(-1L)
                 .otherwise(0L);
 
-        List<ActionChange> results = queryFactory
-                .select(Projections.constructor(
-                        ActionChange.class, action, Expressions.numberTemplate(Long.class, "sum({0})", monthlyChange)))
+        List<Tuple> results = queryFactory
+                .select(action, monthlyChange.sum())
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -95,6 +94,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetch();
 
         return results.stream()
+                .map(t -> new ActionChange(t.get(action), t.get(monthlyChange.sum())))
                 .max(Comparator.comparing(ActionChange::monthlyChange))
                 .orElse(null);
     }
@@ -102,6 +102,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     @Override
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
+
         NumberExpression<Long> monthlyChange = new CaseBuilder()
                 .when(isCreatedThisMonth(today))
                 .then(1L)
@@ -109,9 +110,8 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .then(-1L)
                 .otherwise(0L);
 
-        List<ActionChange> results = queryFactory
-                .select(Projections.constructor(
-                        ActionChange.class, action, Expressions.numberTemplate(Long.class, "sum({0})", monthlyChange)))
+        List<Tuple> results = queryFactory
+                .select(action, monthlyChange.sum())
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -122,6 +122,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                 .fetch();
 
         return results.stream()
+                .map(t -> new ActionChange(t.get(action), t.get(monthlyChange.sum())))
                 .min(Comparator.comparing(ActionChange::monthlyChange))
                 .orElse(null);
     }
