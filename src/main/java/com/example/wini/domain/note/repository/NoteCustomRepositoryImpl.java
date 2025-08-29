@@ -73,14 +73,15 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     public ActionChange findMostIncreasedPositiveActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
 
-        NumberExpression<Long> monthlyChange = new CaseBuilder()
+        NumberExpression<Integer> rawChange = new CaseBuilder()
                 .when(isCreatedThisMonth(today))
-                .then(1L)
+                .then(1)
                 .when(isCreatedLastMonth(today))
-                .then(-1L)
-                .otherwise(0L);
+                .then(-1)
+                .otherwise(0);
 
-        NumberExpression<Long> monthlyChangeSum = monthlyChange.sum().coalesce(0L);
+        NumberExpression<Long> monthlyChange = rawChange.castToNum(Long.class);
+        NumberExpression<Long> monthlyChangeSum = monthlyChange.sumLong().coalesce(0L);
 
         List<Tuple> results = queryFactory
                 .select(action, monthlyChangeSum)
@@ -103,14 +104,15 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     public ActionChange findMostDecreasedNegativeActionChange(Long memberId, Long roomId) {
         LocalDate today = LocalDate.now();
 
-        NumberExpression<Long> monthlyChange = new CaseBuilder()
+        NumberExpression<Integer> rawChange = new CaseBuilder()
                 .when(isCreatedThisMonth(today))
-                .then(1L)
+                .then(1)
                 .when(isCreatedLastMonth(today))
-                .then(-1L)
-                .otherwise(0L);
+                .then(-1)
+                .otherwise(0);
 
-        NumberExpression<Long> monthlyChangeSum = monthlyChange.sum().coalesce(0L);
+        NumberExpression<Long> monthlyChange = rawChange.castToNum(Long.class);
+        NumberExpression<Long> monthlyChangeSum = monthlyChange.sumLong().coalesce(0L);
 
         List<Tuple> results = queryFactory
                 .select(action, monthlyChangeSum)
