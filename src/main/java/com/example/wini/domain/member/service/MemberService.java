@@ -1,5 +1,8 @@
 package com.example.wini.domain.member.service;
 
+import static com.example.wini.global.common.constant.StatusReserveTimeConstants.INDEFINITE_HOUR;
+import static com.example.wini.global.common.constant.StatusReserveTimeConstants.INDEFINITE_MINUTE;
+import static com.example.wini.global.common.constant.StatusReserveTimeConstants.INDEFINITE_SECONDS;
 import static com.example.wini.global.error.exception.ErrorCode.MATE_NOT_FOUND;
 import static com.example.wini.global.error.exception.ErrorCode.STATUS_NOT_FOUND;
 
@@ -72,6 +75,10 @@ public class MemberService {
     }
 
     private ReservedTimeInfo createReservedTimeInfo(long durationSeconds) {
+        if (durationSeconds == INDEFINITE_SECONDS) {
+            return ReservedTimeInfo.of(INDEFINITE_HOUR, INDEFINITE_MINUTE);
+        }
+
         Duration duration = Duration.ofSeconds(durationSeconds);
         return ReservedTimeInfo.of(duration.toHours(), duration.toMinutes() % 60);
     }
@@ -83,8 +90,7 @@ public class MemberService {
         Status status =
                 statusRepository.findById(request.statusId()).orElseThrow(() -> new CustomException(STATUS_NOT_FOUND));
 
-        Duration statusDuration = request.reservedTimeInfo().toDuration();
-        Long statusDurationSeconds = statusDuration.getSeconds();
+        Long statusDurationSeconds = request.reservedTimeInfo().toSeconds();
 
         member.updateStatus(status, request.startedAt(), statusDurationSeconds);
         notifyRoommateOfStatusUpdate(member.getId());
