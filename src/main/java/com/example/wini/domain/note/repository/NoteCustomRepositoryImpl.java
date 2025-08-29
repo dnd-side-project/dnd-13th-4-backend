@@ -5,6 +5,7 @@ import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
 
 import com.example.wini.domain.log.dto.response.ActionChange;
+import com.example.wini.domain.log.dto.response.QActionChange;
 import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.domain.SortOrder;
@@ -12,7 +13,6 @@ import com.example.wini.domain.template.domain.ActionCategory;
 import com.example.wini.domain.template.domain.EmotionType;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -78,7 +78,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
         return queryFactory
-                .select(Projections.constructor(ActionChange.class, action, increaseCount))
+                .select(new QActionChange(action, increaseCount))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
@@ -98,7 +98,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
         return queryFactory
-                .select(Projections.constructor(ActionChange.class, action, decreaseCount))
+                .select(new QActionChange(action, decreaseCount))
                 .from(note)
                 .join(note.action, action)
                 .join(action.actionCategory, actionCategory)
