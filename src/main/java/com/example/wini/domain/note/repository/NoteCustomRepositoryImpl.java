@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
         NumberExpression<Long> increaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
-        return queryFactory
+        List<ActionChange> results = queryFactory
                 .select(new QActionChange(action, increaseCount.longValue()))
                 .from(note)
                 .join(note.action, action)
@@ -86,8 +87,12 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                         .and(isReceiver(memberId))
                         .and(actionCategory.emotionType.eq(EmotionType.POSITIVE)))
                 .groupBy(action)
-                .orderBy(increaseCount.desc())
-                .fetchFirst();
+                .fetch();
+
+        return results.stream()
+                .sorted(Comparator.comparing(ActionChange::getChange).reversed())
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -97,7 +102,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         NumberExpression<Long> lastMonthNotes = countLastMonthNotes(today);
         NumberExpression<Long> decreaseCount = thisMonthNotes.subtract(lastMonthNotes);
 
-        return queryFactory
+        List<ActionChange> results = queryFactory
                 .select(new QActionChange(action, decreaseCount.longValue()))
                 .from(note)
                 .join(note.action, action)
@@ -106,8 +111,12 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                         .and(isReceiver(memberId))
                         .and(actionCategory.emotionType.eq(EmotionType.NEGATIVE)))
                 .groupBy(action)
-                .orderBy(decreaseCount.asc())
-                .fetchFirst();
+                .fetch();
+
+        return results.stream()
+                .sorted(Comparator.comparing(ActionChange::getChange))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
