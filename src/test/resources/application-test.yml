@@ -1,6 +1,8 @@
 kakao:
   client-id: "test-kakao-client-id"
   redirect-uri: "http://localhost:8080/test/callback"
+apple:
+  client-id: "test-apple-client-id"
 jwt:
   issuer: test-issure
   accessToken:
