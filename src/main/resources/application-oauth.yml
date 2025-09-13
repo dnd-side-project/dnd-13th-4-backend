@@ -7,3 +7,6 @@ kakao:
   client-id: ${KAKAO_CLIENT_ID}
   client-key: ${KAKAO_CLIENT_KEY}
   redirect-uri: ${KAKAO_REDIRECT_URI}
+
+apple:
+  client-id: ${APPLE_CLIENT_ID}
