@@ -10,4 +10,8 @@ public record OauthMemberInfo(String providerId, String name, String imageUrl) {
                 kakaoUser.kakaoAccount().profile().nickname(),
                 kakaoUser.kakaoAccount().profile().profileImageUrl());
     }
+
+    public static OauthMemberInfo of(String providerId, String name) {
+        return new OauthMemberInfo(providerId, name, null);
+    }
 }
