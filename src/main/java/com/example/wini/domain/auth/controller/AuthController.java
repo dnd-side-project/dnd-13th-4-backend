@@ -2,10 +2,12 @@ package com.example.wini.domain.auth.controller;
 
 import static com.example.wini.global.common.constant.SecurityConstants.BEARER_TOKEN_PREFIX;
 
+import com.example.wini.domain.auth.dto.request.IdTokenRequest;
 import com.example.wini.domain.auth.dto.response.TokenResponse;
 import com.example.wini.domain.auth.service.AuthService;
 import com.example.wini.domain.auth.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,6 +42,12 @@ public class AuthController {
     @Operation(summary = "카카오 로그인 콜백", description = "카카오 로그인 후 토큰을 반환합니다.")
     public TokenResponse kakaoLogin(@RequestParam("code") String authCode) {
         return authService.kakaoLogin(authCode);
+    }
+
+    @PostMapping("/login/apple")
+    @Operation(summary = "애플 로그인", description = "idToken으로 유저 정보 추출 후 토큰을 반환합니다.")
+    public TokenResponse appleLogin(@RequestBody IdTokenRequest request) {
+        return authService.appleLogin(request);
     }
 
     @PostMapping("logout")

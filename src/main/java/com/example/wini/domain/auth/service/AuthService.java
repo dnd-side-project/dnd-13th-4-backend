@@ -1,13 +1,16 @@
 package com.example.wini.domain.auth.service;
 
+import static com.example.wini.domain.member.domain.OauthProvider.APPLE;
 import static com.example.wini.domain.member.domain.OauthProvider.KAKAO;
 
 import com.example.wini.domain.auth.dto.common.OauthMemberInfo;
+import com.example.wini.domain.auth.dto.request.IdTokenRequest;
 import com.example.wini.domain.auth.dto.response.TokenResponse;
 import com.example.wini.domain.member.domain.Member;
+import com.example.wini.domain.member.domain.OauthProvider;
 import com.example.wini.domain.member.repository.MemberRepository;
+import com.example.wini.infra.apple.service.AppleOauthService;
 import com.example.wini.infra.kakao.client.KakaoClient;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final KakaoClient kakaoClient;
+    private final AppleOauthService appleOauthService;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
 
@@ -29,14 +33,20 @@ public class AuthService {
     public TokenResponse kakaoLogin(String authCode) {
         String kakaoAccessToken = kakaoClient.getAccessToken(authCode);
         OauthMemberInfo oauthMemberInfo = kakaoClient.getMemberInfo(kakaoAccessToken);
+        return loginOrRegister(oauthMemberInfo, KAKAO);
+    }
 
-        Optional<Member> optionalMember =
-                memberRepository.findByOauthIdAndOauthProvider(oauthMemberInfo.providerId(), KAKAO);
+    @Transactional
+    public TokenResponse appleLogin(IdTokenRequest request) {
+        String idToken = request.idToken();
+        OauthMemberInfo oauthMemberInfo = appleOauthService.parseMemberInfo(idToken);
+        return loginOrRegister(oauthMemberInfo, APPLE);
+    }
 
-        Member member = optionalMember.orElseGet(() -> {
-            Member newMember = Member.create(oauthMemberInfo, KAKAO);
-            return memberRepository.save(newMember);
-        });
+    private TokenResponse loginOrRegister(OauthMemberInfo oauthMemberInfo, OauthProvider provider) {
+        Member member = memberRepository
+                .findByOauthIdAndOauthProvider(oauthMemberInfo.providerId(), provider)
+                .orElseGet(() -> memberRepository.save(Member.create(oauthMemberInfo, provider)));
 
         return tokenService.upsertTokens(member);
     }

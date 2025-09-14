@@ -31,6 +31,8 @@ public enum ErrorCode {
     BLACKLISTED_TOKEN(HttpStatus.UNAUTHORIZED, "로그아웃 처리된 토큰입니다."),
     KAKAO_TOKEN_ISSUANCE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 액세스 토큰 발급에 실패했습니다."),
     KAKAO_USERINFO_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 사용자 정보 조회에 실패했습니다."),
+    APPLE_PUBLIC_KEY_NOT_FOUND(HttpStatus.BAD_REQUEST, "일치하는 애플 공개키를 찾을 수 없습니다."),
+    INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 ID 토큰입니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다."),
