@@ -1,5 +1,6 @@
 package com.example.wini.domain.note.service;
 
+import static com.example.wini.global.common.constant.NoteConstants.DAILY_NOTE_LIMIT;
 import static com.example.wini.global.error.exception.ErrorCode.*;
 
 import com.example.wini.domain.common.util.MemberUtil;
@@ -117,6 +118,8 @@ public class NoteService {
                 .orElseThrow(() -> new CustomException(CLOSING_NOT_FOUND));
         int nextSequence = getNextSequence();
 
+        checkDailyLimit(nextSequence);
+
         return Note.create(me, mate, room, emotion, action, situation, promise, closing, nextSequence);
     }
 
@@ -137,6 +140,12 @@ public class NoteService {
         Member me = memberUtil.getCurrentMember();
         if (!note.getReceiver().equals(me)) {
             throw new CustomException(NOTE_RECEIVER_MISMATCH);
+        }
+    }
+
+    private void checkDailyLimit(int nextSequence) {
+        if (nextSequence > DAILY_NOTE_LIMIT) {
+            throw new CustomException(NOTE_LIMIT_EXCEEDED);
         }
     }
 }
