@@ -122,4 +122,10 @@ public class MemberService {
 
         return MateResponse.from(query);
     }
+
+    @Transactional(readOnly = false)
+    public void withdrawMember() {
+        Member member = memberUtil.getCurrentMember();
+        memberRepository.delete(member);
+    }
 }
