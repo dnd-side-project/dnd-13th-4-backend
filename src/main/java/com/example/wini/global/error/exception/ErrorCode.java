@@ -50,6 +50,7 @@ public enum ErrorCode {
     NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 마음쪽지입니다."),
     NOTE_RECEIVER_MISMATCH(HttpStatus.BAD_REQUEST, "마음쪽지의 수신자가 아닙니다."),
     SORT_ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "잘못된 정렬 순서입니다."),
+    NOTE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "하루 쪽지 개수 제한을 초과하였습니다."),
 
     // Template
     EMOTION_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "잘못된 감정 분류입니다."),
