@@ -11,6 +11,8 @@ import com.example.wini.domain.member.domain.OauthProvider;
 import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.infra.apple.service.AppleOauthService;
 import com.example.wini.infra.kakao.client.KakaoClient;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +32,17 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse kakaoLogin(String authCode) {
+    public String kakaoLogin(String authCode) {
         String kakaoAccessToken = kakaoClient.getAccessToken(authCode);
         OauthMemberInfo oauthMemberInfo = kakaoClient.getMemberInfo(kakaoAccessToken);
-        return loginOrRegister(oauthMemberInfo, KAKAO);
+        TokenResponse tokenResponse = loginOrRegister(oauthMemberInfo, KAKAO);
+
+        String redirectUrl = String.format(
+                "winiapp://auth/callback?accessToken=%s&refreshToken=%s",
+                URLEncoder.encode(tokenResponse.accessToken(), StandardCharsets.UTF_8),
+                URLEncoder.encode(tokenResponse.refreshToken(), StandardCharsets.UTF_8));
+
+        return redirectUrl;
     }
 
     @Transactional
