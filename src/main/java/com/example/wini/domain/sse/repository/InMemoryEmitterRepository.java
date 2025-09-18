@@ -9,12 +9,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Repository
 public class InMemoryEmitterRepository implements EmitterRepository {
 
-    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
     private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
     @Override
     public SseEmitter save(String emitterId, SseEmitter sseEmitter) {
-        emitters.put(emitterId, sseEmitter);
+        emitterMap.put(emitterId, sseEmitter);
         return sseEmitter;
     }
 
@@ -25,12 +25,12 @@ public class InMemoryEmitterRepository implements EmitterRepository {
 
     @Override
     public void deleteById(String emitterId) {
-        emitters.remove(emitterId);
+        emitterMap.remove(emitterId);
     }
 
     @Override
     public Map<String, SseEmitter> findAllStartWithMemberId(String memberId) {
-        return emitters.entrySet().stream()
+        return emitterMap.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(memberId))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
