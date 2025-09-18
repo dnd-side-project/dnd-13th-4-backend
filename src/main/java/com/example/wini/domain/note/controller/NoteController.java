@@ -1,5 +1,7 @@
 package com.example.wini.domain.note.controller;
 
+import com.example.wini.domain.common.util.MemberUtil;
+import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.note.dto.request.NoteCreateRequest;
 import com.example.wini.domain.note.dto.response.NoteResponse;
 import com.example.wini.domain.note.dto.response.SimpleNoteResponse;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class NoteController {
 
     private final NoteService noteService;
+    private final MemberUtil memberUtil;
 
     @GetMapping("/{noteId}")
     @Operation(summary = "단일 쪽지 조회", description = "쪽지 내용을 반환합니다.")
@@ -29,7 +32,8 @@ public class NoteController {
     @GetMapping("/latest")
     @Operation(summary = "최근 받은 쪽지 리스트 조회", description = "24시간 내 받은 쪽지 목록을 최신순 정렬하여 반환합니다.")
     public List<SimpleNoteResponse> getLatestNotes() {
-        return noteService.findLatestNotesSorted();
+        Member me = memberUtil.getCurrentMember();
+        return noteService.findLatestNotesSortedByMember(me);
     }
 
     @GetMapping("/saved")

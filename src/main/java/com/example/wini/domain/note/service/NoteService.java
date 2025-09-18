@@ -58,12 +58,11 @@ public class NoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<SimpleNoteResponse> findLatestNotesSorted() {
-        Member me = memberUtil.getCurrentMember();
+    public List<SimpleNoteResponse> findLatestNotesSortedByMember(Member member) {
         Room room = roomRepository
-                .findOpenRoomByMemberId(me.getId())
+                .findOpenRoomByMemberId(member.getId())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
-        List<Note> notes = noteRepository.findLatestNotesSortedByCreatedAtDesc(me.getId(), room.getId());
+        List<Note> notes = noteRepository.findLatestNotesSortedByCreatedAtDesc(member.getId(), room.getId());
         return notes.stream().map(SimpleNoteResponse::from).toList();
     }
 
@@ -89,7 +88,7 @@ public class NoteService {
         noteRepository.save(note);
         notifyRoommateOfNewNote(mate.getId());
 
-        sseService.send(mate, findLatestNotesSorted());
+        sseService.send(mate, findLatestNotesSortedByMember(mate));
 
         return NoteResponse.from(note);
     }
