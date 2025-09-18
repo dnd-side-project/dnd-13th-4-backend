@@ -75,4 +75,17 @@ public class Member extends BaseEntity {
         this.statusStartedAt = statusStartedAt;
         this.statusDuration = statusDuration;
     }
+
+    public void deleteData() {
+        this.name = null;
+        this.email = null;
+        this.image = null;
+
+        this.oauthId = null;
+        this.oauthProvider = null;
+
+        this.status = null;
+        this.statusStartedAt = null;
+        this.statusDuration = null;
+    }
 }

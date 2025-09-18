@@ -126,6 +126,6 @@ public class MemberService {
     @Transactional(readOnly = false)
     public void withdrawMember() {
         Member member = memberUtil.getCurrentMember();
-        memberRepository.delete(member);
+        member.deleteData();
     }
 }
