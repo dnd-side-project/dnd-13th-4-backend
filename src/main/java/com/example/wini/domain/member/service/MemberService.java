@@ -96,7 +96,7 @@ public class MemberService {
         Long statusDurationSeconds = request.reservedTimeInfo().toSeconds();
 
         member.updateStatus(status, request.startedAt(), statusDurationSeconds);
-        notifyRoommateOfStatusUpdate(member.getId(), status.getText());
+        notifyRoommateOfStatusUpdate(mate.getId(), status.getText());
 
         MemberStatusResponse updatedStatus = MemberStatusResponse.from(member, request.reservedTimeInfo());
         sseService.send(mate, updatedStatus);
@@ -104,11 +104,8 @@ public class MemberService {
         return updatedStatus;
     }
 
-    private void notifyRoommateOfStatusUpdate(Long memberId, String statusText) {
-        Member mate = memberRepository
-                .findRoommateByMemberId(memberId)
-                .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
-        NotificationEvent event = NotificationEvent.from(mate.getId(), NotificationType.NEW_STATUS, statusText);
+    private void notifyRoommateOfStatusUpdate(Long mateId, String statusText) {
+        NotificationEvent event = NotificationEvent.from(mateId, NotificationType.NEW_STATUS, statusText);
         eventPublisher.publishEvent(event);
     }
 
