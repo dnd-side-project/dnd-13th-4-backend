@@ -15,6 +15,7 @@ import com.example.wini.domain.notification.domain.NotificationType;
 import com.example.wini.domain.notification.event.NotificationEvent;
 import com.example.wini.domain.room.entity.Room;
 import com.example.wini.domain.room.repository.RoomRepository;
+import com.example.wini.domain.sse.service.SseService;
 import com.example.wini.domain.template.domain.*;
 import com.example.wini.domain.template.repository.action.ActionRepository;
 import com.example.wini.domain.template.repository.closing.ClosingRepository;
@@ -42,8 +43,9 @@ public class NoteService {
     private final ClosingRepository closingRepository;
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
-    private final MemberUtil memberUtil;
     private final ApplicationEventPublisher eventPublisher;
+    private final SseService sseService;
+    private final MemberUtil memberUtil;
 
     @Transactional(readOnly = false)
     public NoteResponse findNoteById(Long noteId) {
@@ -86,6 +88,9 @@ public class NoteService {
         Note note = buildNewNote(request, me, mate);
         noteRepository.save(note);
         notifyRoommateOfNewNote(mate.getId());
+
+        sseService.send(mate, findLatestNotesSorted());
+
         return NoteResponse.from(note);
     }
 
