@@ -35,6 +35,7 @@ public class InMemoryEmitterRepository implements EmitterRepository {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    @Override
     public Map<String, Object> findAllEventCacheStartWithMemberId(String memberId) {
         return eventCache.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(memberId))
