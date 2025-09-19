@@ -59,6 +59,9 @@ public enum ErrorCode {
     SITUATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상황입니다."),
     PROMISE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 약속입니다."),
     CLOSING_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 끝맺음입니다."),
+
+    // SSE
+    SSE_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SSE 연결 오류가 발생했습니다."),
     ;
 
     private final HttpStatus httpStatus;

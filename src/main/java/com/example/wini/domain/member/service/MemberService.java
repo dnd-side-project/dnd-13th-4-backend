@@ -19,7 +19,7 @@ import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.domain.member.repository.StatusRepository;
 import com.example.wini.domain.notification.domain.NotificationType;
 import com.example.wini.domain.notification.event.NotificationEvent;
-import com.example.wini.domain.room.repository.RoomRepository;
+import com.example.wini.domain.sse.service.SseService;
 import com.example.wini.global.error.exception.CustomException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -33,9 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final RoomRepository roomRepository;
     private final StatusRepository statusRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final SseService sseService;
     private final MemberUtil memberUtil;
 
     @Transactional(readOnly = true)
@@ -86,6 +86,9 @@ public class MemberService {
     @Transactional
     public MemberStatusResponse updateStatus(MemberStatusUpdateRequest request) {
         Member member = memberUtil.getCurrentMember();
+        Member mate = memberRepository
+                .findRoommateWithStatusByMemberId(member.getId())
+                .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
 
         Status status =
                 statusRepository.findById(request.statusId()).orElseThrow(() -> new CustomException(STATUS_NOT_FOUND));
@@ -93,16 +96,16 @@ public class MemberService {
         Long statusDurationSeconds = request.reservedTimeInfo().toSeconds();
 
         member.updateStatus(status, request.startedAt(), statusDurationSeconds);
-        notifyRoommateOfStatusUpdate(member.getId(), status.getText());
+        notifyRoommateOfStatusUpdate(mate.getId(), status.getText());
 
-        return MemberStatusResponse.from(member, request.reservedTimeInfo());
+        MemberStatusResponse updatedStatus = MemberStatusResponse.from(member, request.reservedTimeInfo());
+        sseService.send(mate, updatedStatus);
+
+        return updatedStatus;
     }
 
-    private void notifyRoommateOfStatusUpdate(Long memberId, String statusText) {
-        Member mate = memberRepository
-                .findRoommateByMemberId(memberId)
-                .orElseThrow(() -> new CustomException(MATE_NOT_FOUND));
-        NotificationEvent event = NotificationEvent.from(mate.getId(), NotificationType.NEW_STATUS, statusText);
+    private void notifyRoommateOfStatusUpdate(Long mateId, String statusText) {
+        NotificationEvent event = NotificationEvent.from(mateId, NotificationType.NEW_STATUS, statusText);
         eventPublisher.publishEvent(event);
     }
 
