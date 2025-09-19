@@ -39,7 +39,7 @@ public class LogController {
         return logService.getActionTrendsAndWeeklyPositiveNoteCounts();
     }
 
-    @GetMapping("/emotion/count")
+    @GetMapping("/emotions/count")
     @Operation(summary = "이번주 주고받은 감정별 개수 조회", description = "이번주에 주고받은 쪽지 개수를 감정별로 조회합니다.")
     public List<EmotionCountResponse> countEmotion() {
         return logService.countThisWeekEmotion();
