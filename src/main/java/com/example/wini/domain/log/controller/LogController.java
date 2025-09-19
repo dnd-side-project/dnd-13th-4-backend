@@ -1,11 +1,13 @@
 package com.example.wini.domain.log.controller;
 
+import com.example.wini.domain.log.dto.response.EmotionCountResponse;
 import com.example.wini.domain.log.dto.response.GrowthResponse;
 import com.example.wini.domain.log.dto.response.KeywordResponse;
 import com.example.wini.domain.log.dto.response.StatisticsResponse;
 import com.example.wini.domain.log.service.LogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,5 +37,11 @@ public class LogController {
     @Operation(summary = "나의 성장", description = "가장 많이 변화한 액션 횟수와 주차별 받은 긍정 쪽지 개수를 반환합니다.")
     public GrowthResponse getGrowth() {
         return logService.getActionTrendsAndWeeklyPositiveNoteCounts();
+    }
+
+    @GetMapping("/emotion/count")
+    @Operation(summary = "이번주 주고받은 감정별 개수 조회", description = "이번주에 주고받은 쪽지 개수를 감정별로 조회합니다.")
+    public List<EmotionCountResponse> countEmotion() {
+        return logService.countThisWeekEmotion();
     }
 }
