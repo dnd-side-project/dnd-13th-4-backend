@@ -40,8 +40,9 @@ public class AuthController {
     @GetMapping("/kakao/callback")
     @SecurityRequirements(value = {})
     @Operation(summary = "카카오 로그인 콜백", description = "카카오 로그인 후 토큰을 반환합니다.")
-    public TokenResponse kakaoLogin(@RequestParam("code") String authCode) {
-        return authService.kakaoLogin(authCode);
+    public void kakaoLogin(@RequestParam("code") String authCode, HttpServletResponse response) throws IOException {
+        String redirectUrl = authService.kakaoLogin(authCode);
+        response.sendRedirect(redirectUrl);
     }
 
     @PostMapping("/login/apple")
