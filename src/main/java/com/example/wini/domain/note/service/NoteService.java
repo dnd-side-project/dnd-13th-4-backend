@@ -4,6 +4,7 @@ import static com.example.wini.global.common.constant.NoteConstants.DAILY_NOTE_L
 import static com.example.wini.global.error.exception.ErrorCode.*;
 
 import com.example.wini.domain.common.util.MemberUtil;
+import com.example.wini.domain.log.dto.response.NoteCountResponse;
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.member.repository.MemberRepository;
 import com.example.wini.domain.note.domain.Note;
@@ -78,6 +79,12 @@ public class NoteService {
         return notes.stream().map(SimpleNoteResponse::from).toList();
     }
 
+    @Transactional(readOnly = true)
+    public NoteCountResponse countTodayNotes() {
+        int todayNotes = getNotesSentToday();
+        return NoteCountResponse.from(todayNotes);
+    }
+
     @Transactional(readOnly = false)
     public NoteResponse createNote(NoteCreateRequest request) {
         Member me = memberUtil.getCurrentMember();
@@ -120,19 +127,19 @@ public class NoteService {
         Closing closing = closingRepository
                 .findById(request.closingId())
                 .orElseThrow(() -> new CustomException(CLOSING_NOT_FOUND));
-        int nextSequence = getNextSequence();
+        int nextSequence = getNotesSentToday() + 1;
 
         checkDailyLimit(nextSequence);
 
         return Note.create(me, mate, room, emotion, action, situation, promise, closing, nextSequence);
     }
 
-    private int getNextSequence() {
+    private int getNotesSentToday() {
         Member me = memberUtil.getCurrentMember();
         Room room = roomRepository
                 .findOpenRoomByMemberId(me.getId())
                 .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
-        return noteRepository.countNotesSentToday(me.getId(), room.getId()).intValue() + 1;
+        return noteRepository.countNotesSentToday(me.getId(), room.getId()).intValue();
     }
 
     private void notifyRoommateOfNewNote(Long mateMemberId) {

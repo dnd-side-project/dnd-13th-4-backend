@@ -1,6 +1,7 @@
 package com.example.wini.domain.note.controller;
 
 import com.example.wini.domain.common.util.MemberUtil;
+import com.example.wini.domain.log.dto.response.NoteCountResponse;
 import com.example.wini.domain.member.domain.Member;
 import com.example.wini.domain.note.dto.request.NoteCreateRequest;
 import com.example.wini.domain.note.dto.response.NoteResponse;
@@ -42,6 +43,12 @@ public class NoteController {
             @RequestParam(value = "sort", required = false, defaultValue = "latest") String sort) {
         // TODO : 페이징 추가 시 Pageable로 수정
         return noteService.findSavedNotesSorted(sort);
+    }
+
+    @GetMapping("/today/count")
+    @Operation(summary = "오늘 보낸 쪽지 개수 조회", description = "사용자가 오늘 보낸 쪽지 개수를 조회합니다.")
+    public NoteCountResponse countTodayNotes() {
+        return noteService.countTodayNotes();
     }
 
     @PostMapping
