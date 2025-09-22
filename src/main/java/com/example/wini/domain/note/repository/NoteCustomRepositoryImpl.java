@@ -3,8 +3,10 @@ package com.example.wini.domain.note.repository;
 import static com.example.wini.domain.note.domain.QNote.note;
 import static com.example.wini.domain.template.domain.QAction.action;
 import static com.example.wini.domain.template.domain.QActionCategory.actionCategory;
+import static com.example.wini.domain.template.domain.QEmotion.emotion;
 
 import com.example.wini.domain.log.dto.response.ActionChange;
+import com.example.wini.domain.log.dto.response.EmotionCount;
 import com.example.wini.domain.log.dto.response.WeeklyNoteCount;
 import com.example.wini.domain.note.domain.Note;
 import com.example.wini.domain.note.domain.SortOrder;
@@ -19,10 +21,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -173,6 +173,23 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
         }
 
         return results;
+    }
+
+    @Override
+    public List<EmotionCount> countThisWeekNotesByEmotion(Long memberId, Long roomId) {
+        List<Tuple> results = queryFactory
+                .select(note.emotion, note.count())
+                .from(note)
+                .join(note.emotion, emotion)
+                .where(isThisRoom(roomId)
+                        .and(isSender(memberId).or(isReceiver(memberId)))
+                        .and(isCreatedThisWeek()))
+                .groupBy(note.emotion)
+                .fetch();
+
+        return results.stream()
+                .map(t -> new EmotionCount(t.get(note.emotion), t.get(note.count())))
+                .collect(Collectors.toList());
     }
 
     @Override

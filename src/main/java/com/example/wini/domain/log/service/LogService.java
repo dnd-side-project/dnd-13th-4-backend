@@ -69,4 +69,16 @@ public class LogService {
 
         return GrowthResponse.from(increasedPositiveAction, decreasedNegativeAction, weeklyPositiveNoteCounts);
     }
+
+    @Transactional(readOnly = true)
+    public List<EmotionCountResponse> countThisWeekEmotion() {
+        Member me = memberUtil.getCurrentMember();
+        Room room = roomRepository
+                .findOpenRoomByMemberId(me.getId())
+                .orElseThrow(() -> new CustomException(ROOM_NOT_FOUND));
+
+        List<EmotionCount> thisWeekEmotionCount = noteRepository.countThisWeekNotesByEmotion(me.getId(), room.getId());
+
+        return thisWeekEmotionCount.stream().map(EmotionCountResponse::from).toList();
+    }
 }
