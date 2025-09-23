@@ -38,7 +38,7 @@ public class AuthService {
         TokenResponse tokenResponse = loginOrRegister(oauthMemberInfo, KAKAO);
 
         String redirectUrl = String.format(
-                "winiapp://auth/callback?accessToken=%s&refreshToken=%s",
+                "com.kirikiri.wini://auth/callback?accessToken=%s&refreshToken=%s",
                 URLEncoder.encode(tokenResponse.accessToken(), StandardCharsets.UTF_8),
                 URLEncoder.encode(tokenResponse.refreshToken(), StandardCharsets.UTF_8));
 
