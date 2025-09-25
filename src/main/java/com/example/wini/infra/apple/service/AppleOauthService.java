@@ -42,7 +42,6 @@ public class AppleOauthService {
 
     private DecodedJWT verifyIdToken(String idToken) {
         try {
-            log.info(idToken);
             DecodedJWT decoded = JWT.decode(idToken);
             String kid = decoded.getKeyId();
 
