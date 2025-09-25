@@ -50,7 +50,6 @@ public class AuthService {
     @Transactional
     public TokenResponse appleLogin(IdTokenRequest request) {
         String idToken = request.idToken();
-        log.info("idToken: {}", request.idToken());
         OauthMemberInfo oauthMemberInfo = appleOauthService.parseMemberInfo(idToken);
         return loginOrRegister(oauthMemberInfo, APPLE);
     }
