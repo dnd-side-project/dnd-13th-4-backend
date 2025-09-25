@@ -7,7 +7,6 @@ import com.example.wini.domain.auth.dto.response.TokenResponse;
 import com.example.wini.domain.auth.service.AuthService;
 import com.example.wini.domain.auth.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,6 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/login/apple")
+    @SecurityRequirements
     @Operation(summary = "애플 로그인", description = "idToken으로 유저 정보 추출 후 토큰을 반환합니다.")
     public TokenResponse appleLogin(@RequestBody IdTokenRequest request) {
         return authService.appleLogin(request);
