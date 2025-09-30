@@ -77,12 +77,14 @@ public class Member extends BaseEntity {
     }
 
     public void deleteData() {
-        this.name = null;
-        this.email = null;
+        String uniqueSuffix = "deleted_" + this.id + "_" + System.currentTimeMillis();
+
+        this.name = "탈퇴회원";
+        this.email = uniqueSuffix + "@deleted.com";
         this.image = null;
 
-        this.oauthId = null;
-        this.oauthProvider = null;
+        this.oauthId = uniqueSuffix;
+        this.oauthProvider = OauthProvider.NONE;
 
         this.status = null;
         this.statusStartedAt = null;
