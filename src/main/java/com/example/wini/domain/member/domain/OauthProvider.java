@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum OauthProvider {
     KAKAO("kakao"),
     APPLE("apple"),
+    NONE(""),
     ;
 
     private final String value;
